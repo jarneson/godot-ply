@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://addons/ply/gui/face.gd" type="Script" id=1]
+
+[sub_resource type="SphereMesh" id=1]
+radius = 0.05
+height = 0.1
+
+[sub_resource type="SpatialMaterial" id=2]
+flags_transparent = true
+flags_unshaded = true
+albedo_color = Color( 0, 0, 0, 0.635294 )
+
+[node name="Spatial" type="Spatial"]
+script = ExtResource( 1 )
+face_idx = -1
+pbmesh = null
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+
+[node name="MeshInstance2" type="MeshInstance" parent="."]
+mesh = SubResource( 1 )
+material/0 = SubResource( 2 )

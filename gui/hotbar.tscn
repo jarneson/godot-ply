@@ -1,0 +1,229 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/ply/gui/selection_buttongroup.tres" type="ButtonGroup" id=1]
+[ext_resource path="res://addons/ply/gui/hotbar.gd" type="Script" id=3]
+
+[node name="PolyBuilder" type="VBoxContainer"]
+margin_right = 145.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+margin_right = 145.0
+margin_bottom = 14.0
+text = "PolyBuilder"
+
+[node name="Selection" type="VBoxContainer" parent="."]
+margin_top = 18.0
+margin_right = 145.0
+margin_bottom = 78.0
+
+[node name="HSeparator" type="HSeparator" parent="Selection"]
+margin_right = 145.0
+margin_bottom = 4.0
+
+[node name="SelectionModes" type="GridContainer" parent="Selection"]
+margin_top = 8.0
+margin_right = 145.0
+margin_bottom = 60.0
+columns = 2
+
+[node name="SelectMesh" type="CheckBox" parent="Selection/SelectionModes"]
+margin_right = 63.0
+margin_bottom = 24.0
+pressed = true
+group = ExtResource( 1 )
+text = "Mesh"
+
+[node name="SelectFace" type="CheckBox" parent="Selection/SelectionModes"]
+margin_left = 67.0
+margin_right = 136.0
+margin_bottom = 24.0
+group = ExtResource( 1 )
+text = "Face"
+
+[node name="SelectEdge" type="CheckBox" parent="Selection/SelectionModes"]
+margin_top = 28.0
+margin_right = 63.0
+margin_bottom = 52.0
+group = ExtResource( 1 )
+text = "Edge"
+
+[node name="SelectVertex" type="CheckBox" parent="Selection/SelectionModes"]
+margin_left = 67.0
+margin_top = 28.0
+margin_right = 136.0
+margin_bottom = 52.0
+group = ExtResource( 1 )
+text = "Vertex"
+
+[node name="MeshContainer" type="VBoxContainer" parent="."]
+margin_top = 82.0
+margin_right = 145.0
+margin_bottom = 108.0
+
+[node name="HSeparator" type="HSeparator" parent="MeshContainer"]
+margin_right = 145.0
+margin_bottom = 4.0
+
+[node name="Label" type="Label" parent="MeshContainer"]
+margin_top = 8.0
+margin_right = 145.0
+margin_bottom = 22.0
+text = "Mesh Tools"
+
+[node name="Tools" type="GridContainer" parent="MeshContainer"]
+margin_top = 26.0
+margin_right = 145.0
+margin_bottom = 26.0
+columns = 2
+
+[node name="FaceContainer" type="VBoxContainer" parent="."]
+margin_top = 112.0
+margin_right = 145.0
+margin_bottom = 158.0
+
+[node name="HSeparator" type="HSeparator" parent="FaceContainer"]
+margin_right = 145.0
+margin_bottom = 4.0
+
+[node name="Label" type="Label" parent="FaceContainer"]
+margin_top = 8.0
+margin_right = 145.0
+margin_bottom = 22.0
+text = "Face Tools"
+
+[node name="Tools" type="GridContainer" parent="FaceContainer"]
+margin_top = 26.0
+margin_right = 145.0
+margin_bottom = 46.0
+columns = 2
+
+[node name="Extrude" type="Button" parent="FaceContainer/Tools"]
+margin_right = 60.0
+margin_bottom = 20.0
+text = "Extrude"
+
+[node name="Inset" type="Button" parent="FaceContainer/Tools"]
+margin_left = 64.0
+margin_right = 109.0
+margin_bottom = 20.0
+disabled = true
+text = "Inset"
+
+[node name="EdgeContainer" type="VBoxContainer" parent="."]
+margin_top = 162.0
+margin_right = 145.0
+margin_bottom = 208.0
+
+[node name="HSeparator" type="HSeparator" parent="EdgeContainer"]
+margin_right = 145.0
+margin_bottom = 4.0
+
+[node name="Label" type="Label" parent="EdgeContainer"]
+margin_top = 8.0
+margin_right = 145.0
+margin_bottom = 22.0
+text = "Edge Tools"
+
+[node name="Tools" type="GridContainer" parent="EdgeContainer"]
+margin_top = 26.0
+margin_right = 145.0
+margin_bottom = 46.0
+columns = 2
+
+[node name="Extrude" type="Button" parent="EdgeContainer/Tools"]
+margin_right = 60.0
+margin_bottom = 20.0
+disabled = true
+text = "Extrude"
+
+[node name="EdgeLoop" type="Button" parent="EdgeContainer/Tools"]
+margin_left = 64.0
+margin_right = 141.0
+margin_bottom = 20.0
+disabled = true
+text = "Edge Loop"
+
+[node name="VertexContainer" type="VBoxContainer" parent="."]
+margin_top = 212.0
+margin_right = 145.0
+margin_bottom = 258.0
+
+[node name="HSeparator" type="HSeparator" parent="VertexContainer"]
+margin_right = 145.0
+margin_bottom = 4.0
+
+[node name="Label" type="Label" parent="VertexContainer"]
+margin_top = 8.0
+margin_right = 145.0
+margin_bottom = 22.0
+text = "Vertex Tools"
+
+[node name="Tools" type="GridContainer" parent="VertexContainer"]
+margin_top = 26.0
+margin_right = 145.0
+margin_bottom = 46.0
+columns = 2
+
+[node name="Weld" type="Button" parent="VertexContainer/Tools"]
+margin_right = 45.0
+margin_bottom = 20.0
+disabled = true
+text = "Weld"
+
+[node name="Split" type="Button" parent="VertexContainer/Tools"]
+margin_left = 49.0
+margin_right = 89.0
+margin_bottom = 20.0
+disabled = true
+text = "Split"
+
+[node name="Generators" type="VBoxContainer" parent="."]
+margin_top = 262.0
+margin_right = 145.0
+margin_bottom = 332.0
+
+[node name="HSeparator" type="HSeparator" parent="Generators"]
+margin_right = 145.0
+margin_bottom = 4.0
+
+[node name="Label2" type="Label" parent="Generators"]
+margin_top = 8.0
+margin_right = 145.0
+margin_bottom = 22.0
+text = "Generate"
+
+[node name="Generators" type="GridContainer" parent="Generators"]
+margin_top = 26.0
+margin_right = 145.0
+margin_bottom = 70.0
+columns = 2
+
+[node name="GenerateCube" type="Button" parent="Generators/Generators"]
+margin_right = 56.0
+margin_bottom = 20.0
+text = "Cube"
+
+[node name="GeneratePlane" type="Button" parent="Generators/Generators"]
+margin_left = 60.0
+margin_right = 124.0
+margin_bottom = 20.0
+text = "Plane"
+
+[node name="GenerateSphere" type="Button" parent="Generators/Generators"]
+margin_top = 24.0
+margin_right = 56.0
+margin_bottom = 44.0
+disabled = true
+text = "Sphere"
+
+[node name="GenerateCylinder" type="Button" parent="Generators/Generators"]
+margin_left = 60.0
+margin_top = 24.0
+margin_right = 124.0
+margin_bottom = 44.0
+disabled = true
+text = "Cylinder"
