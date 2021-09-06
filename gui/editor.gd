@@ -33,9 +33,13 @@ func clear_children():
 		n.queue_free()
 
 func _handle_mesh_updated():
+	#TODO: handle deletions when that's added
 	match mode:
+		SelectionMode.EDGE:
+			for idx in range(get_child_count(), edited_node.ply_mesh.edge_count()):
+				instance_edge(idx)
 		SelectionMode.FACE:
-			for idx in range(get_child_count(), edited_node.ply_mesh.face_edges.size()):
+			for idx in range(get_child_count(), edited_node.ply_mesh.face_count()):
 				instance_face(idx)
 
 func instance_face(idx):
@@ -64,17 +68,21 @@ func render_faces():
 	for idx in range(edited_node.ply_mesh.face_count()):
 		instance_face(idx)
 
+func instance_edge(idx):
+	var sc = EdgeScene.instance()
+	sc.name = "edge_%s" % [idx]
+	sc.edge_idx = idx
+	sc.ply_mesh = edited_node.ply_mesh
+	sc.plugin = plugin
+	add_child(sc)
+
+
 func render_edges():
 	clear_children()
 	if not edited_node:
 		return
 	for idx in range(edited_node.ply_mesh.edge_count()):
-		var sc = EdgeScene.instance()
-		sc.name = "edge_%s" % [idx]
-		sc.edge_idx = idx
-		sc.ply_mesh = edited_node.ply_mesh
-		sc.plugin = plugin
-		add_child(sc)
+		instance_edge(idx)
 
 func render_vertices():
 	clear_children()

@@ -116,7 +116,7 @@ text = "Inset"
 [node name="EdgeContainer" type="VBoxContainer" parent="."]
 margin_top = 162.0
 margin_right = 145.0
-margin_bottom = 208.0
+margin_bottom = 232.0
 
 [node name="HSeparator" type="HSeparator" parent="EdgeContainer"]
 margin_right = 145.0
@@ -131,26 +131,35 @@ text = "Edge Tools"
 [node name="Tools" type="GridContainer" parent="EdgeContainer"]
 margin_top = 26.0
 margin_right = 145.0
-margin_bottom = 46.0
+margin_bottom = 70.0
 columns = 2
 
+[node name="Subdivide" type="Button" parent="EdgeContainer/Tools"]
+margin_right = 77.0
+margin_bottom = 20.0
+text = "Subdivide"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Extrude" type="Button" parent="EdgeContainer/Tools"]
-margin_right = 60.0
+margin_left = 81.0
+margin_right = 141.0
 margin_bottom = 20.0
 disabled = true
 text = "Extrude"
 
 [node name="EdgeLoop" type="Button" parent="EdgeContainer/Tools"]
-margin_left = 64.0
-margin_right = 141.0
-margin_bottom = 20.0
+margin_top = 24.0
+margin_right = 77.0
+margin_bottom = 44.0
 disabled = true
 text = "Edge Loop"
 
 [node name="VertexContainer" type="VBoxContainer" parent="."]
-margin_top = 212.0
+margin_top = 236.0
 margin_right = 145.0
-margin_bottom = 258.0
+margin_bottom = 282.0
 
 [node name="HSeparator" type="HSeparator" parent="VertexContainer"]
 margin_right = 145.0
@@ -182,9 +191,9 @@ disabled = true
 text = "Split"
 
 [node name="Generators" type="VBoxContainer" parent="."]
-margin_top = 262.0
+margin_top = 286.0
 margin_right = 145.0
-margin_bottom = 332.0
+margin_bottom = 356.0
 
 [node name="HSeparator" type="HSeparator" parent="Generators"]
 margin_right = 145.0

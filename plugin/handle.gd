@@ -12,9 +12,23 @@ var previous_xform = Transform.IDENTITY
 func _ready():
     previous_xform = transform
 
+export var selected_idxs = []
+
+func _set_selected_idxs():
+    self.selected_idxs = []
+    for n in _plugin.selector.selection:
+        match _plugin.selector.mode:
+            SelectionMode.FACE:
+                self.selected_idxs.push_back(n.face_idx)
+            SelectionMode.EDGE:
+                self.selected_idxs.push_back(n.edge_idx)
+            SelectionMode.VERTEX:
+                self.selected_idxs.push_back(n.vertex_idx)
+
 func _process(_delta):
     if not _plugin:
         return
+    _set_selected_idxs()
     match _plugin.selector.mode:
         SelectionMode.FACE:
             var f_idxs = []

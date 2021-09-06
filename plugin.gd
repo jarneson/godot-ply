@@ -14,6 +14,7 @@ const SpatialEditor = preload("./plugin/spatial_editor.gd")
 
 const PlyNode = preload("./nodes/ply.gd")
 const Face = preload("./gui/face.gd")
+const Edge = preload("./gui/edge.gd")
 const Editor = preload("./gui/editor.gd")
 const Handle = preload("./plugin/handle.gd")
 
@@ -84,7 +85,7 @@ func _generate_cube():
     if not selector.editing:
         return
     _generate_plane()
-    selector.editing.ply_mesh.extrude_face(0)
+    Extrude.face(selector.editing.ply_mesh, 0)
 
 func _generate_plane():
     if not selector.editing:
@@ -98,6 +99,7 @@ func _generate_plane():
     selector.editing.ply_mesh.set_mesh(vertexes, vertex_edges, face_edges, edge_vertexes, edge_faces, edge_edges)
 
 const Extrude = preload("./resources/extrude.gd")
+const Subdivide = preload("./resources/subdivide.gd")
 
 func _extrude():
     if not selector.editing:
@@ -110,6 +112,18 @@ func _extrude():
     if not selector.selection[0] is Face:
         return
     Extrude.face(selector.editing.ply_mesh, selector.selection[0].face_idx)
+
+func _subdivide_edge():
+    if not selector.editing:
+        return
+    if selector.selection.size() == 0:
+        return
+    if selector.selection.size() > 1:
+        print("NYI: multiselect")
+        return
+    if not selector.selection[0] is Edge:
+        return
+    Subdivide.edge(selector.editing.ply_mesh, selector.selection[0].edge_idx)
 
 """
 ██╗   ██╗██╗███████╗██╗██████╗ ██╗██╗     ██╗████████╗██╗   ██╗
@@ -128,3 +142,4 @@ func make_visible(vis):
         hotbar.generate_cube.connect("pressed", self, "_generate_cube")
         hotbar.generate_plane.connect("pressed", self, "_generate_plane")
         hotbar.face_extrude.connect("pressed", self, "_extrude")
+        hotbar.edge_subdivide.connect("pressed", self, "_subdivide_edge")

@@ -42,6 +42,10 @@ func set_vertex(idx, pos):
 	vertexes[idx] = pos
 	emit_signal("mesh_updated")
 
+func set_vertex_all(idx, pos, edge):
+	vertexes[idx] = pos
+	vertex_edges[idx] = edge
+
 func expand_vertexes(more):
 	vertexes.resize(vertexes.size()+more)
 	vertex_edges.resize(vertex_edges.size()+more)
@@ -102,6 +106,35 @@ func edge_side(e_idx, f_idx):
 		return Side.RIGHT
 	assert(false, "edge %s does not touch face %s" % [e_idx, f_idx])
 
+func edge_face(e_idx, side):
+	match side:
+		Side.LEFT:
+			return edge_face_left(e_idx)
+		Side.RIGHT:
+			return edge_face_right(e_idx)
+
+func get_face_edges_starting_at(start, side):
+	var f_idx = edge_face(start, side)
+	if f_idx < 0:
+		return []
+	var out = []
+	out.push_back(start)
+	var e = edge_next_cw(start, f_idx)
+	while e != start:
+		out.push_back(e)
+		e = edge_next_cw(e, f_idx)
+	return out
+
+func edge_cw(idx, side):
+	match side:
+		Side.LEFT:
+			return edge_left_cw(idx)
+		Side.RIGHT:
+			return edge_right_cw(idx)
+
+func edge_next_cw(edge, face):
+	return edge_cw(edge, edge_side(edge, face))
+
 func edge_left_cw(idx):
 	return edge_edges[2*idx]
 
@@ -129,8 +162,14 @@ func set_edge_face_right(idx, f):
 func edge_origin_idx(idx):
 	return edge_vertexes[2*idx]
 
+func set_edge_origin_idx(e, v):
+	edge_vertexes[2*e] = v
+
 func edge_destination_idx(idx):
 	return edge_vertexes[2*idx+1]
+
+func set_edge_destination_idx(e, v):
+	edge_vertexes[2*e+1] = v
 
 func edge_origin(idx):
 	return vertexes[edge_origin_idx(idx)]
