@@ -20,7 +20,7 @@ signal mesh_updated
 ███████╗██║ ╚████║╚██████╔╝██║ ╚═╝ ██║███████║
 ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
 """
-enum Side {UNKNOWN, LEFT, RIGHT}
+const Side = preload("../utils/direction.gd")
 
 """
 ██╗   ██╗███████╗██████╗ ████████╗██╗ ██████╗███████╗███████╗
@@ -42,6 +42,9 @@ func set_vertex(idx, pos):
 	vertexes[idx] = pos
 	emit_signal("mesh_updated")
 
+func expand_vertexes(more):
+	vertexes.resize(vertexes.size()+more)
+	vertex_edges.resize(vertex_edges.size()+more)
 
 func geometric_median(verts, iters=5):
 	var start = Vector3.ZERO
@@ -86,6 +89,11 @@ export var edge_edges = PoolIntArray()
 
 func edge_count():
 	return edge_vertexes.size() / 2
+
+func expand_edges(more):
+	edge_vertexes.resize(edge_vertexes.size()+more*2)
+	edge_faces.resize(edge_faces.size()+more*2)
+	edge_edges.resize(edge_edges.size()+more*2)
 
 func edge_side(e_idx, f_idx):
 	if edge_face_left(e_idx) == f_idx:
@@ -149,7 +157,10 @@ export var face_edges = PoolIntArray()
 func face_count():
 	return face_edges.size()
 
-func face_edges(idx):
+func expand_faces(more):
+	face_edges.resize(face_edges.size()+more)
+
+func get_face_edges(idx):
 	var start = face_edges[idx]
 	var edges = PoolIntArray()
 	edges.push_back(start)
@@ -173,7 +184,7 @@ func face_edges(idx):
 	return edges
 
 func face_vertex_indexes(idx):
-	var edges = face_edges(idx)
+	var edges = get_face_edges(idx)
 	assert(edges.size() > 0, "face %s has no edges" % [idx])
 	var verts = PoolIntArray()
 	for e in edges:
@@ -249,97 +260,10 @@ func set_mesh(vs, ves, fes, evs, efs, ees):
    ██║   ╚██████╔╝╚██████╔╝███████╗███████║
    ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
 """
+func begin_edit():
+	pass
 
-func extrude_face(f_idx, distance=1):
-	# this is face normal extrusion, better default might be per vertex normal
-	var extrude_direction = distance*face_normal(f_idx)
-	var existing_edges = face_edges(f_idx)
-
-	var vertex_start = vertexes.size()
-	var face_start = face_edges.size()
-	var edge_start = edge_vertexes.size()/2
-
-	# expand arrays
-	# adding k new vertices
-	vertexes.resize(vertexes.size()+existing_edges.size())
-	vertex_edges.resize(vertex_edges.size()+existing_edges.size())
-	# adding k+1 new faces 
-	face_edges.resize(face_edges.size()+existing_edges.size())
-	# adding 2*k new edges
-	edge_vertexes.resize(edge_vertexes.size()+existing_edges.size()*2*2)
-	edge_faces.resize(edge_faces.size()+existing_edges.size()*2*2)
-	edge_edges.resize(edge_edges.size()+existing_edges.size()*2*2)
-
-	face_edges[f_idx] = edge_start+existing_edges.size()
-	# how to keep track of and assign new vertexes?
-	for ee_idx in range(existing_edges.size()):
-		var e_idx = existing_edges[ee_idx]
-		var curr = ee_idx
-		var next = ee_idx+1
-		if next == existing_edges.size():
-			next = 0
-		var prev = ee_idx-1
-		if prev == -1:
-			prev = existing_edges.size()-1
-		var direction = edge_side(e_idx, f_idx)
-
-		var x_face_idx = face_start+curr
-		var x_edge_idx = edge_start+curr
-		var new_edge_idx = edge_start+existing_edges.size()+curr
-
-		match direction:
-			Side.LEFT:
-				# create new vtx
-				vertexes[vertex_start+curr] = edge_destination(e_idx)+extrude_direction
-				vertex_edges[vertex_start+curr] = x_edge_idx
-
-				face_edges[x_face_idx] = x_edge_idx
-
-				# update edge face and cw
-				set_edge_face_left(e_idx, x_face_idx)
-				set_edge_left_cw(  e_idx, x_edge_idx)
-
-				# extruded edge
-				set_edge_origin(     x_edge_idx, vertex_start+curr)
-				set_edge_destination(x_edge_idx, edge_destination_idx(e_idx))
-				set_edge_face_right( x_edge_idx, x_face_idx)
-				set_edge_right_cw(   x_edge_idx, new_edge_idx)
-				set_edge_face_left(  x_edge_idx, face_start+next)
-				set_edge_left_cw(    x_edge_idx, existing_edges[next])
-
-				# new edge
-				set_edge_origin(     new_edge_idx, vertex_start+prev)
-				set_edge_destination(new_edge_idx, vertex_start+curr)
-				set_edge_face_right( new_edge_idx, x_face_idx)
-				set_edge_right_cw(   new_edge_idx, edge_start+prev)
-				set_edge_face_left(  new_edge_idx, f_idx)
-				set_edge_left_cw(    new_edge_idx, edge_start+existing_edges.size()+next)
-			Side.RIGHT:
-				# create new vtx
-				vertexes[vertex_start+curr] = edge_origin(e_idx)+extrude_direction
-				vertex_edges[vertex_start+curr] = x_edge_idx
-
-				face_edges[x_face_idx] = x_edge_idx
-
-				# update edge face and cw
-				set_edge_face_right(e_idx, x_face_idx)
-				set_edge_right_cw(  e_idx, x_edge_idx)
-
-				# extruded edge
-				set_edge_origin(     x_edge_idx, vertex_start+curr)
-				set_edge_destination(x_edge_idx, edge_origin_idx(e_idx))
-				set_edge_face_right( x_edge_idx, x_face_idx)
-				set_edge_right_cw(   x_edge_idx, new_edge_idx)
-				set_edge_face_left(  x_edge_idx, face_start+next)
-				set_edge_left_cw(    x_edge_idx, existing_edges[next])
-
-				# new edge
-				set_edge_origin(     new_edge_idx, vertex_start+prev)
-				set_edge_destination(new_edge_idx, vertex_start+curr)
-				set_edge_face_right( new_edge_idx, x_face_idx)
-				set_edge_right_cw(   new_edge_idx, edge_start+prev)
-				set_edge_face_left(  new_edge_idx, f_idx)
-				set_edge_left_cw(    new_edge_idx, edge_start+existing_edges.size()+next)
+func commit_edit():
 	emit_signal("mesh_updated")
 
 """

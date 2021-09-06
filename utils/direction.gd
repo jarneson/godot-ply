@@ -1,0 +1,1 @@
+enum { UNKNOWN, LEFT, RIGHT }

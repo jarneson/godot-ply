@@ -97,6 +97,8 @@ func _generate_plane():
     var edge_edges = [ 1 , 3, 2 , 0, 3 , 1, 0 , 2 ]
     selector.editing.ply_mesh.set_mesh(vertexes, vertex_edges, face_edges, edge_vertexes, edge_faces, edge_edges)
 
+const Extrude = preload("./resources/extrude.gd")
+
 func _extrude():
     if not selector.editing:
         return
@@ -107,7 +109,7 @@ func _extrude():
         return
     if not selector.selection[0] is Face:
         return
-    selector.editing.ply_mesh.extrude_face(selector.selection[0].face_idx)
+    Extrude.face(selector.editing.ply_mesh, selector.selection[0].face_idx)
 
 """
 ██╗   ██╗██╗███████╗██╗██████╗ ██╗██╗     ██╗████████╗██╗   ██╗

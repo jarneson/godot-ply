@@ -8,7 +8,7 @@ const Vertex = preload("../gui/vertex.gd")
 const SelectionMode = preload("../utils/selection_mode.gd")
 const Handle = preload("./handle.gd")
 
-signal selection_changed(mode, polybuilder, selection)
+signal selection_changed(mode, ply_instance, selection)
 
 var _plugin
 
