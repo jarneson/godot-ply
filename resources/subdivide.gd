@@ -1,14 +1,14 @@
 const Side = preload("../utils/direction.gd")
 
 # returns [new_edge_idx, new_vertex_idx]
-static func edge(ply_mesh, edge_idx):
-    ply_mesh.begin_edit()
+static func edge(ply_mesh, edge_idx, in_edit=false):
+    if not in_edit:
+        ply_mesh.begin_edit()
     var origin = ply_mesh.edge_origin(edge_idx)
     var destination = ply_mesh.edge_destination(edge_idx)
     var midpoint = (origin+destination)/2
 
     var left_edge = ply_mesh.get_face_edges_starting_at(edge_idx, Side.LEFT).back()
-    print("subdivide edge %s: %s -> %s -> %s. backfill %s" % [edge_idx, origin, midpoint, destination, left_edge])
 
     var new_vertex_idx = ply_mesh.vertex_count()
     var new_edge_idx = ply_mesh.edge_count()
@@ -35,5 +35,6 @@ static func edge(ply_mesh, edge_idx):
             Side.RIGHT:
                 ply_mesh.set_edge_right_cw(left_edge, new_edge_idx)
     
-    ply_mesh.commit_edit()
+    if not in_edit:
+        ply_mesh.commit_edit()
     return [new_edge_idx, new_vertex_idx]

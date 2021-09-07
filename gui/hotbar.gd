@@ -21,11 +21,7 @@ onready var face_select_loop_0 = $"FaceContainer/LoopSelect/Offset0"
 onready var face_select_loop_1 = $"FaceContainer/LoopSelect/Offset1"
 
 onready var edge_subdivide = $"EdgeContainer/Tools/Subdivide"
-onready var edge_extrude = $"EdgeContainer/Tools/Extrude"
-onready var edge_loop = $"EdgeContainer/Tools/EdgeLoop"
-
-onready var vertex_weld = $"VertexContainer/Tools/Weld"
-onready var vertex_split = $"VertexContainer/Tools/Split"
+onready var edge_cut_loop = $"EdgeContainer/Tools/EdgeLoop"
 
 func _ready():
 	selection_mesh.connect("toggled", self, "_update_selection_mode", [SelectionMode.MESH])

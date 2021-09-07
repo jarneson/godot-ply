@@ -134,8 +134,17 @@ func _select_face_loop(offset):
     if not selector.selection[0] is Face:
         return
     var loop = Loop.get_face_loop(selector.editing.ply_mesh, selector.selection[0].face_idx, offset)
-    selector.set_selection(spatial_editor.get_nodes_for_indexes(loop))
-    
+    selector.set_selection(spatial_editor.get_nodes_for_indexes(loop)[0])
+
+func _cut_edge_loop():
+    if not selector.editing:
+        return
+    if selector.selection.size() != 1:
+        return
+    if not selector.selection[0] is Edge:
+        return
+    Loop.edge_cut(selector.editing.ply_mesh, selector.selection[0].edge_idx)
+
 
 
 """
@@ -156,5 +165,6 @@ func make_visible(vis):
         hotbar.generate_plane.connect("pressed", self, "_generate_plane")
         hotbar.face_extrude.connect("pressed", self, "_extrude")
         hotbar.edge_subdivide.connect("pressed", self, "_subdivide_edge")
+        hotbar.edge_cut_loop.connect("pressed", self, "_cut_edge_loop")
         hotbar.face_select_loop_0.connect("pressed", self, "_select_face_loop", [0])
         hotbar.face_select_loop_1.connect("pressed", self, "_select_face_loop", [1])
