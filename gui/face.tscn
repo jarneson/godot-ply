@@ -3,18 +3,16 @@
 [ext_resource path="res://addons/ply/gui/face.gd" type="Script" id=1]
 
 [sub_resource type="SphereMesh" id=1]
-radius = 0.05
-height = 0.1
+radius = 0.025
+height = 0.05
 
 [sub_resource type="SpatialMaterial" id=2]
-flags_transparent = true
 flags_unshaded = true
+flags_do_not_receive_shadows = true
 albedo_color = Color( 0, 0, 0, 0.635294 )
 
 [node name="Spatial" type="Spatial"]
 script = ExtResource( 1 )
-face_idx = -1
-pbmesh = null
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 
