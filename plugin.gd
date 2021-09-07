@@ -94,8 +94,8 @@ func _generate_plane():
     var vertex_edges = [0, 0, 3, 3]
     var edge_vertexes = [ 0, 1, 1, 3, 3, 2, 2, 0 ]
     var face_edges = [0, 0]
-    var edge_faces = [ 0 , 1, 0 , 1, 0 , 1, 0 , 1 ]
-    var edge_edges = [ 1 , 3, 2 , 0, 3 , 1, 0 , 2 ]
+    var edge_faces = [ 1 , 0, 1 , 0, 1 , 0, 1 , 0 ]
+    var edge_edges = [ 3 , 1, 0 , 2, 1 , 3, 2 , 0 ]
     selector.editing.ply_mesh.set_mesh(vertexes, vertex_edges, face_edges, edge_vertexes, edge_faces, edge_edges)
 
 const Extrude = preload("./resources/extrude.gd")

@@ -23,6 +23,8 @@ static func get_face_loop(ply_mesh, f_idx, edge_offset=0):
     face_edges = ply_mesh.get_face_edges(f_idx)
     next_edge = face_edges[(edge_offset + 2)%4]
     next = ply_mesh.edge_face(next_edge, Side.invert(ply_mesh.edge_side(next_edge, f_idx)))
+
+    # this could be either left or right, need to look at both edges, and see which ones point to the destination
     while next != f_idx:
         face_edges = ply_mesh.get_face_edges_starting_at(next_edge, ply_mesh.edge_side(next_edge, next))
         if face_edges.size() != 4:
