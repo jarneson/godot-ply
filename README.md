@@ -16,7 +16,15 @@ Toggle them in the GUI to get handles for that selection mode.
 Translation, rotation, and scaling are all using the built-in Godot widget. Transform snapping also works out of the box.
 
 Other mesh editing are buttons in the hotbar.
-- Extrude Face: Extrudes a face along the (approximate) face normal by 1 unit.
+- Faces
+    - Extrude: Extrudes a face along the (approximate) face normal by 1 unit.
+- Edges
+    - Subdivide: Add a vertex at the midpoint of the edge, and split it in two.
+    - Edge Loop: Add an edge loop along the quad loop perpindicular to the selected edge.
+
+There are also selection utilities.
+- Faces
+    - Select Quad Loop: Select a quad loop containing the selected face. There are two directions, one for each axis of the plane.
 
 Generate base shapes in the hotbar as well.
 - Plane: A two-sided unit x/z plane
