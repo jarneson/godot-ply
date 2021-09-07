@@ -21,3 +21,33 @@ Other mesh editing are buttons in the hotbar.
 Generate base shapes in the hotbar as well.
 - Plane: A two-sided unit x/z plane
 - Cube: A unit cube
+
+## Details
+Meshes are meant to only be oriented manifolds. Some properties:
+- Each edge has one or two faces (although we generally use exactly 2)
+- All of an edge's faces have compatible orientation -- that is the edge origin and destination are in opposite order for opposite faces.
+
+Ply uses a winged edge representation for edges, but omit counterclockwise navigation:
+```
+omitted
+left ccw        right cw
+         \     /
+          \   /
+           \ /
+            o destination
+            ^
+            |
+left face   |   right face
+            |
+            o origin
+           / \
+          /   \
+         /     \
+left cw          right ccw
+                 omitted
+```
+
+### Implications
+Given this representation, a few limitations occur that are representable in other tools:
+- One cannot abritrarily extrude edges into one-sided faces, or one edge would be incident with >2 faces.
+- One cannot flip individual faces, as the faces would no longer have compatible orientation.
