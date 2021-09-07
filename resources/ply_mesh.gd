@@ -200,27 +200,7 @@ func expand_faces(more):
 	face_edges.resize(face_edges.size()+more)
 
 func get_face_edges(idx):
-	var start = face_edges[idx]
-	var edges = PoolIntArray()
-	edges.push_back(start)
-	var e = start
-	if edge_face_left(e) == idx:
-		e = edge_left_cw(e)
-	elif edge_face_right(e) == idx:
-		e = edge_right_cw(e)
-	var iters = 0
-	while iters < 100 and e != start:
-		edges.push_back(e)
-		if edge_face_left(e) == idx:
-			e = edge_left_cw(e)
-		elif edge_face_right(e) == idx:
-			e = edge_right_cw(e)
-		else:
-			assert(false, "bad iter for face %s with start %s halted on %s" % [idx, start, e])
-		iters = iters + 1
-	if iters >= 100:
-		assert(false, "too many iters for face %s with start %s halted on %s" % [idx, start, e])
-	return edges
+	return get_face_edges_starting_at(face_edges[idx], edge_side(face_edges[idx], idx))
 
 func face_vertex_indexes(idx):
 	var edges = get_face_edges(idx)

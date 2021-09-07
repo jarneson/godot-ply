@@ -100,6 +100,7 @@ func _generate_plane():
 
 const Extrude = preload("./resources/extrude.gd")
 const Subdivide = preload("./resources/subdivide.gd")
+const Loop = preload("./resources/loop.gd")
 
 func _extrude():
     if not selector.editing:
@@ -125,6 +126,18 @@ func _subdivide_edge():
         return
     Subdivide.edge(selector.editing.ply_mesh, selector.selection[0].edge_idx)
 
+func _select_face_loop(offset):
+    if not selector.editing:
+        return
+    if selector.selection.size() != 1:
+        return
+    if not selector.selection[0] is Face:
+        return
+    var loop = Loop.get_face_loop(selector.editing.ply_mesh, selector.selection[0].face_idx, offset)
+    selector.set_selection(spatial_editor.get_nodes_for_indexes(loop))
+    
+
+
 """
 ██╗   ██╗██╗███████╗██╗██████╗ ██╗██╗     ██╗████████╗██╗   ██╗
 ██║   ██║██║██╔════╝██║██╔══██╗██║██║     ██║╚══██╔══╝╚██╗ ██╔╝
@@ -143,3 +156,5 @@ func make_visible(vis):
         hotbar.generate_plane.connect("pressed", self, "_generate_plane")
         hotbar.face_extrude.connect("pressed", self, "_extrude")
         hotbar.edge_subdivide.connect("pressed", self, "_subdivide_edge")
+        hotbar.face_select_loop_0.connect("pressed", self, "_select_face_loop", [0])
+        hotbar.face_select_loop_1.connect("pressed", self, "_select_face_loop", [1])

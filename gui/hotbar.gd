@@ -17,6 +17,9 @@ onready var generate_cylinder = $"Generators/Generators/GenerateCylinder"
 onready var face_extrude = $"FaceContainer/Tools/Extrude"
 onready var face_inset = $"FaceContainer/Tools/Inset"
 
+onready var face_select_loop_0 = $"FaceContainer/LoopSelect/Offset0"
+onready var face_select_loop_1 = $"FaceContainer/LoopSelect/Offset1"
+
 onready var edge_subdivide = $"EdgeContainer/Tools/Subdivide"
 onready var edge_extrude = $"EdgeContainer/Tools/Extrude"
 onready var edge_loop = $"EdgeContainer/Tools/EdgeLoop"

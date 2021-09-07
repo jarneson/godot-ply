@@ -43,3 +43,11 @@ func _on_selection_change(mode, editing, selection):
         editor.is_visible = editing != null
         editor.edited_node = editing
         editor.mode = mode
+
+func get_nodes_for_indexes(idxs):
+    var out = []
+    if not editor:
+        return out
+    for idx in idxs:
+        out.push_back(editor.get_child(idx))
+    return out

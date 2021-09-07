@@ -1,5 +1,6 @@
 const Side = preload("../utils/direction.gd")
 
+# returns [new_edge_idx, new_vertex_idx]
 static func edge(ply_mesh, edge_idx):
     ply_mesh.begin_edit()
     var origin = ply_mesh.edge_origin(edge_idx)
@@ -34,3 +35,6 @@ static func edge(ply_mesh, edge_idx):
                 ply_mesh.set_edge_left_cw(right_edge, new_edge_idx)
             Side.RIGHT:
                 ply_mesh.set_edge_right_cw(right_edge, new_edge_idx)
+    
+    ply_mesh.commit_edit()
+    return [new_edge_idx, new_vertex_idx]

@@ -168,3 +168,7 @@ func _on_selection_mode_change(m):
         _plugin.get_editor_interface().inspect_object(editing)
         selection = [editing]
     emit_signal("selection_changed", mode, editing, selection)
+
+func set_selection(nodes):
+    selection = nodes
+    emit_signal("selection_changed", mode, editing, selection)
