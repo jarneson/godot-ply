@@ -15,7 +15,6 @@ onready var generate_sphere = $"Generators/Generators/GenerateSphere"
 onready var generate_cylinder = $"Generators/Generators/GenerateCylinder"
 
 onready var face_extrude = $"FaceContainer/Tools/Extrude"
-onready var face_inset = $"FaceContainer/Tools/Inset"
 
 onready var face_select_loop_0 = $"FaceContainer/LoopSelect/Offset0"
 onready var face_select_loop_1 = $"FaceContainer/LoopSelect/Offset1"
