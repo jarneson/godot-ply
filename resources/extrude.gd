@@ -1,5 +1,17 @@
 const Side = preload("../utils/direction.gd")
 
+static func faces(ply_mesh, faces, distance=1):
+    print("extruding faces %s" % [faces])
+    ply_mesh.begin_edit()
+    # get face edges
+    # make sure they form a connected graph
+    # separate into internal and border edges
+    # extrude border edges
+    # calculate average face normal
+    # extrude border edges along distance*normal
+    # fix winding of internal edges (eg map winding from old edge to new)
+    ply_mesh.commit_edit()
+
 static func face(ply_mesh, face_idx, distance=1):
     ply_mesh.begin_edit()
     # this is face normal extrusion, better default might be per vertex normal

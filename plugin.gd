@@ -108,7 +108,12 @@ func _extrude():
     if selector.selection.size() == 0:
         return
     if selector.selection.size() > 1:
-        print("NYI: multiselect")
+        var face_idxs = []
+        for n in selector.selection:
+            if not n is Face:
+                return
+            face_idxs.push_back(n.face_idx)
+        Extrude.faces(selector.editing.ply_mesh, face_idxs)
         return
     if not selector.selection[0] is Face:
         return
@@ -117,10 +122,7 @@ func _extrude():
 func _subdivide_edge():
     if not selector.editing:
         return
-    if selector.selection.size() == 0:
-        return
-    if selector.selection.size() > 1:
-        print("NYI: multiselect")
+    if selector.selection.size() != 0:
         return
     if not selector.selection[0] is Edge:
         return
