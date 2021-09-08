@@ -1,56 +1,44 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://addons/ply/gui/selection_buttongroup.tres" type="ButtonGroup" id=1]
-[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://addons/ply/icon.png" type="Texture" id=2]
 [ext_resource path="res://addons/ply/gui/hotbar.gd" type="Script" id=3]
 
 [node name="PolyBuilder" type="VBoxContainer"]
-margin_right = 164.0
+margin_right = 20.0
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="."]
-margin_right = 164.0
-margin_bottom = 14.0
-text = "PolyBuilder"
-
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
-margin_top = 18.0
-margin_right = 164.0
-margin_bottom = 38.0
-size_flags_vertical = 0
-
-[node name="Button" type="Button" parent="HBoxContainer"]
-margin_right = 12.0
-margin_bottom = 20.0
+margin_right = 265.0
+margin_bottom = 16.0
 
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
-margin_left = 16.0
-margin_right = 164.0
-margin_bottom = 20.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
+margin_right = 16.0
+margin_bottom = 16.0
 texture = ExtResource( 2 )
-expand = true
-stretch_mode = 5
-__meta__ = {
-"_edit_use_anchors_": false
-}
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+margin_left = 20.0
+margin_top = 1.0
+margin_right = 93.0
+margin_bottom = 15.0
+text = "PolyBuilder"
 
 [node name="Selection" type="VBoxContainer" parent="."]
-margin_top = 42.0
-margin_right = 164.0
-margin_bottom = 102.0
+margin_top = 20.0
+margin_right = 265.0
+margin_bottom = 80.0
 
 [node name="HSeparator" type="HSeparator" parent="Selection"]
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 4.0
 
 [node name="SelectionModes" type="GridContainer" parent="Selection"]
 margin_top = 8.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 60.0
 columns = 2
 
@@ -84,182 +72,190 @@ group = ExtResource( 1 )
 text = "Vertex"
 
 [node name="MeshContainer" type="VBoxContainer" parent="."]
-margin_top = 106.0
-margin_right = 164.0
-margin_bottom = 132.0
+margin_top = 84.0
+margin_right = 265.0
+margin_bottom = 110.0
 
 [node name="HSeparator" type="HSeparator" parent="MeshContainer"]
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 4.0
 
 [node name="Label" type="Label" parent="MeshContainer"]
 margin_top = 8.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 22.0
 text = "Mesh Tools"
 
 [node name="Tools" type="GridContainer" parent="MeshContainer"]
 margin_top = 26.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 26.0
 columns = 2
 
 [node name="FaceContainer" type="VBoxContainer" parent="."]
-margin_top = 136.0
-margin_right = 164.0
-margin_bottom = 241.0
+margin_top = 114.0
+margin_right = 265.0
+margin_bottom = 219.0
 
 [node name="HSeparator" type="HSeparator" parent="FaceContainer"]
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 4.0
 
 [node name="Label" type="Label" parent="FaceContainer"]
 margin_top = 8.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 22.0
 text = "Face Tools"
 
 [node name="Tools" type="GridContainer" parent="FaceContainer"]
 margin_top = 26.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 46.0
 columns = 2
 
 [node name="Extrude" type="Button" parent="FaceContainer/Tools"]
-margin_right = 60.0
+margin_right = 130.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 text = "Extrude"
 
 [node name="Inset" type="Button" parent="FaceContainer/Tools"]
-margin_left = 64.0
-margin_right = 109.0
+margin_left = 134.0
+margin_right = 264.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 disabled = true
 text = "Inset"
 
 [node name="Label2" type="Label" parent="FaceContainer"]
 margin_top = 50.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 81.0
 text = "
 Select Quad Loop"
 
 [node name="LoopSelect" type="GridContainer" parent="FaceContainer"]
 margin_top = 85.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 105.0
-columns = 4
+columns = 2
 
 [node name="Offset0" type="Button" parent="FaceContainer/LoopSelect"]
-margin_right = 43.0
+margin_right = 130.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 text = "Dir 1"
 
 [node name="Offset1" type="Button" parent="FaceContainer/LoopSelect"]
-margin_left = 47.0
-margin_right = 90.0
+margin_left = 134.0
+margin_right = 264.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 text = "Dir 2"
 
 [node name="EdgeContainer" type="VBoxContainer" parent="."]
-margin_top = 245.0
-margin_right = 164.0
-margin_bottom = 291.0
+margin_top = 223.0
+margin_right = 265.0
+margin_bottom = 269.0
 
 [node name="HSeparator" type="HSeparator" parent="EdgeContainer"]
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 4.0
 
 [node name="Label" type="Label" parent="EdgeContainer"]
 margin_top = 8.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 22.0
 text = "Edge Tools"
 
 [node name="Tools" type="GridContainer" parent="EdgeContainer"]
 margin_top = 26.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 46.0
 columns = 2
 
 [node name="Subdivide" type="Button" parent="EdgeContainer/Tools"]
-margin_right = 74.0
+margin_right = 130.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 text = "Subdivide"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="EdgeLoop" type="Button" parent="EdgeContainer/Tools"]
-margin_left = 78.0
-margin_right = 155.0
+margin_left = 134.0
+margin_right = 264.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 text = "Edge Loop"
 
 [node name="VertexContainer" type="VBoxContainer" parent="."]
-margin_top = 295.0
-margin_right = 164.0
-margin_bottom = 321.0
+margin_top = 273.0
+margin_right = 265.0
+margin_bottom = 299.0
 
 [node name="HSeparator" type="HSeparator" parent="VertexContainer"]
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 4.0
 
 [node name="Label" type="Label" parent="VertexContainer"]
 margin_top = 8.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 22.0
 text = "Vertex Tools"
 
 [node name="Tools" type="GridContainer" parent="VertexContainer"]
 margin_top = 26.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 26.0
 columns = 2
 
 [node name="Generators" type="VBoxContainer" parent="."]
-margin_top = 325.0
-margin_right = 164.0
-margin_bottom = 395.0
+margin_top = 303.0
+margin_right = 265.0
+margin_bottom = 373.0
 
 [node name="HSeparator" type="HSeparator" parent="Generators"]
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 4.0
 
 [node name="Label2" type="Label" parent="Generators"]
 margin_top = 8.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 22.0
 text = "Generate"
 
 [node name="Generators" type="GridContainer" parent="Generators"]
 margin_top = 26.0
-margin_right = 164.0
+margin_right = 265.0
 margin_bottom = 70.0
 columns = 2
 
 [node name="GenerateCube" type="Button" parent="Generators/Generators"]
-margin_right = 56.0
+margin_right = 130.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 text = "Cube"
 
 [node name="GeneratePlane" type="Button" parent="Generators/Generators"]
-margin_left = 60.0
-margin_right = 124.0
+margin_left = 134.0
+margin_right = 264.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 text = "Plane"
 
 [node name="GenerateSphere" type="Button" parent="Generators/Generators"]
 margin_top = 24.0
-margin_right = 56.0
+margin_right = 130.0
 margin_bottom = 44.0
 disabled = true
 text = "Sphere"
 
 [node name="GenerateCylinder" type="Button" parent="Generators/Generators"]
-margin_left = 60.0
+margin_left = 134.0
 margin_top = 24.0
-margin_right = 124.0
+margin_right = 264.0
 margin_bottom = 44.0
 disabled = true
 text = "Cylinder"

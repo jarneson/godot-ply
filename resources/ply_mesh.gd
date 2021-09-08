@@ -132,6 +132,13 @@ func edge_cw(idx, side):
 		Side.RIGHT:
 			return edge_right_cw(idx)
 
+func set_edge_cw(idx, side, e):
+	match side:
+		Side.LEFT:
+			set_edge_left_cw(idx, e)
+		Side.RIGHT:
+			set_edge_right_cw(idx, e)
+
 func edge_next_cw(edge, face):
 	return edge_cw(edge, edge_side(edge, face))
 
