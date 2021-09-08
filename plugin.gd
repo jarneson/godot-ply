@@ -84,19 +84,26 @@ func _on_scene_change(root):
 func _generate_cube():
     if not selector.editing:
         return
+    selector.editing.ply_mesh.begin_edit()
     _generate_plane()
     Extrude.face(selector.editing.ply_mesh, 0)
+    selector.editing.ply_mesh.commit_edit("Generate Cube", get_undo_redo())
 
-func _generate_plane():
+func _generate_plane(undoable=true):
     if not selector.editing:
         return
+
     var vertexes = [Vector3(0,0,0), Vector3(1,0,0), Vector3(0,0,1), Vector3(1,0,1)]
     var vertex_edges = [0, 0, 3, 3]
     var edge_vertexes = [ 0, 1, 1, 3, 3, 2, 2, 0 ]
     var face_edges = [0, 0]
     var edge_faces = [ 1 , 0, 1 , 0, 1 , 0, 1 , 0 ]
     var edge_edges = [ 3 , 1, 0 , 2, 1 , 3, 2 , 0 ]
+    if undoable:
+        selector.editing.ply_mesh.begin_edit()
     selector.editing.ply_mesh.set_mesh(vertexes, vertex_edges, face_edges, edge_vertexes, edge_faces, edge_edges)
+    if undoable:
+        selector.editing.ply_mesh.commit_edit("Generate Plane", get_undo_redo())
 
 const Extrude = preload("./resources/extrude.gd")
 const Subdivide = preload("./resources/subdivide.gd")
