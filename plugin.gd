@@ -117,7 +117,7 @@ func _extrude():
 func _subdivide_edge():
     if not selector.editing:
         return
-    if selector.selection.size() != 0:
+    if selector.selection.size() != 1:
         return
     if not selector.selection[0] is Edge:
         return
