@@ -48,8 +48,9 @@ static func faces(ply_mesh, faces, undo_redo=null, distance=1):
         sum = sum + ply_mesh.face_normal(f_idx)
     var extrude_direction = distance*sum/faces.size()
 
+    var pre_edit
     if undo_redo:
-        ply_mesh.begin_edit()
+        pre_edit = ply_mesh.begin_edit()
     var old_to_new_edge = {}
     var old_to_new_vertex = {}
     # resize arrays
@@ -138,7 +139,7 @@ static func faces(ply_mesh, faces, undo_redo=null, distance=1):
             if e_idx >= 0:
                 ply_mesh.set_edge_cw(e, side, old_to_new_edge[ee])
     if undo_redo:
-        ply_mesh.commit_edit("Extrude Faces", undo_redo)
+        ply_mesh.commit_edit("Extrude Faces", undo_redo, pre_edit)
 
 static func face(ply_mesh, face_idx, undo_redo=null, distance=1):
     # this is face normal extrusion, better default might be per vertex normal
@@ -149,8 +150,9 @@ static func face(ply_mesh, face_idx, undo_redo=null, distance=1):
     var face_start = ply_mesh.face_count()
     var edge_start = ply_mesh.edge_count()
 
+    var pre_edit = null
     if undo_redo:
-        ply_mesh.begin_edit()
+        pre_edit = ply_mesh.begin_edit()
     # expand arrays
     # adding k new vertices
     ply_mesh.expand_vertexes(existing_edges.size())
@@ -206,4 +208,4 @@ static func face(ply_mesh, face_idx, undo_redo=null, distance=1):
         ply_mesh.set_edge_face_left(  new_edge_idx, face_idx)
         ply_mesh.set_edge_left_cw(    new_edge_idx, edge_start+existing_edges.size()+next)
     if undo_redo:
-        ply_mesh.commit_edit("Extrude Face", undo_redo)
+        ply_mesh.commit_edit("Extrude Face", undo_redo, pre_edit)

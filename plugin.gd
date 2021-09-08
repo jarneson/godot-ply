@@ -29,6 +29,8 @@ var hotbar = preload("./gui/hotbar.tscn").instance()
 var spatial_editor = null
 var selector = null
 
+var undo_redo = null
+
 """
 ███████╗████████╗ █████╗ ██████╗ ████████╗██╗   ██╗██████╗   ██╗████████╗███████╗ █████╗ ██████╗ ██████╗  ██████╗ ██╗    ██╗███╗   ██╗
 ██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██║   ██║██╔══██╗ ██╔╝╚══██╔══╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔═══██╗██║    ██║████╗  ██║
@@ -39,6 +41,7 @@ var selector = null
 """
 func _enter_tree() -> void:
     add_custom_type("PlyInstance", "MeshInstance", preload("./nodes/ply.gd"), preload("./icon.png"))
+    undo_redo = get_undo_redo()
 
     hotbar.hide()
 
@@ -84,10 +87,10 @@ func _on_scene_change(root):
 func _generate_cube():
     if not selector.editing:
         return
-    selector.editing.ply_mesh.begin_edit()
+    var pre_edit = selector.editing.ply_mesh.begin_edit()
     _generate_plane()
     Extrude.face(selector.editing.ply_mesh, 0)
-    selector.editing.ply_mesh.commit_edit("Generate Cube", get_undo_redo())
+    selector.editing.ply_mesh.commit_edit("Generate Cube", undo_redo, pre_edit)
 
 func _generate_plane(undoable=true):
     if not selector.editing:
@@ -99,11 +102,12 @@ func _generate_plane(undoable=true):
     var face_edges = [0, 0]
     var edge_faces = [ 1 , 0, 1 , 0, 1 , 0, 1 , 0 ]
     var edge_edges = [ 3 , 1, 0 , 2, 1 , 3, 2 , 0 ]
+    var pre_edit = null
     if undoable:
-        selector.editing.ply_mesh.begin_edit()
+        pre_edit = selector.editing.ply_mesh.begin_edit()
     selector.editing.ply_mesh.set_mesh(vertexes, vertex_edges, face_edges, edge_vertexes, edge_faces, edge_edges)
     if undoable:
-        selector.editing.ply_mesh.commit_edit("Generate Plane", get_undo_redo())
+        selector.editing.ply_mesh.commit_edit("Generate Plane", undo_redo, pre_edit)
 
 const Extrude = preload("./resources/extrude.gd")
 const Subdivide = preload("./resources/subdivide.gd")
@@ -119,7 +123,7 @@ func _extrude():
         if not n is Face:
             return
         face_idxs.push_back(n.face_idx)
-    Extrude.faces(selector.editing.ply_mesh, face_idxs, get_undo_redo(), 1)
+    Extrude.faces(selector.editing.ply_mesh, face_idxs, undo_redo, 1)
 
 func _subdivide_edge():
     if not selector.editing:
@@ -128,7 +132,7 @@ func _subdivide_edge():
         return
     if not selector.selection[0] is Edge:
         return
-    Subdivide.edge(selector.editing.ply_mesh, selector.selection[0].edge_idx, get_undo_redo())
+    Subdivide.edge(selector.editing.ply_mesh, selector.selection[0].edge_idx, undo_redo)
 
 func _select_face_loop(offset):
     if not selector.editing:
@@ -147,7 +151,7 @@ func _cut_edge_loop():
         return
     if not selector.selection[0] is Edge:
         return
-    Loop.edge_cut(selector.editing.ply_mesh, selector.selection[0].edge_idx, get_undo_redo())
+    Loop.edge_cut(selector.editing.ply_mesh, selector.selection[0].edge_idx, undo_redo)
 
 
 

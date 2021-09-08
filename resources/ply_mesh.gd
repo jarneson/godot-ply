@@ -286,41 +286,26 @@ func set_mesh(vs, ves, fes, evs, efs, ees):
    ██║   ╚██████╔╝╚██████╔╝███████╗███████║
    ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
 """
-export var pre_edit_vertexes = PoolVector3Array()
-export var pre_edit_vertex_edges = PoolIntArray()
-export var pre_edit_edge_vertexes = PoolIntArray()
-export var pre_edit_edge_faces = PoolIntArray()
-export var pre_edit_edge_edges = PoolIntArray()
-export var pre_edit_face_edges = PoolIntArray()
-
-func _store_pre_edits(vs, ves, evs, efs, ees, fes):
-	pre_edit_vertexes = vs
-	pre_edit_vertex_edges = ves
-	pre_edit_edge_vertexes = evs
-	pre_edit_edge_faces = efs
-	pre_edit_edge_edges = ees
-	pre_edit_face_edges = fes
-
 func begin_edit():
-	_store_pre_edits(vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges)
+	return [vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges]
 
 func emit_change_signal():
 	emit_signal("mesh_updated")
 
-func commit_edit(name, undo_redo):
+func commit_edit(name, undo_redo, pre_edits):
 	undo_redo.create_action(name)
 	undo_redo.add_do_property(self, "vertexes", vertexes)
-	undo_redo.add_undo_property(self, "vertexes", pre_edit_vertexes)
+	undo_redo.add_undo_property(self, "vertexes", pre_edits[0])
 	undo_redo.add_do_property(self, "vertex_edges", vertex_edges)
-	undo_redo.add_undo_property(self, "vertex_edges", pre_edit_vertex_edges)
+	undo_redo.add_undo_property(self, "vertex_edges", pre_edits[1])
 	undo_redo.add_do_property(self, "edge_vertexes", edge_vertexes)
-	undo_redo.add_undo_property(self, "edge_vertexes", pre_edit_edge_vertexes)
+	undo_redo.add_undo_property(self, "edge_vertexes", pre_edits[2])
 	undo_redo.add_do_property(self, "edge_faces", edge_faces)
-	undo_redo.add_undo_property(self, "edge_faces", pre_edit_edge_faces)
+	undo_redo.add_undo_property(self, "edge_faces", pre_edits[3])
 	undo_redo.add_do_property(self, "edge_edges", edge_edges)
-	undo_redo.add_undo_property(self, "edge_edges", pre_edit_edge_edges)
+	undo_redo.add_undo_property(self, "edge_edges", pre_edits[4])
 	undo_redo.add_do_property(self, "face_edges", face_edges)
-	undo_redo.add_undo_property(self, "face_edges", pre_edit_face_edges)
+	undo_redo.add_undo_property(self, "face_edges", pre_edits[5])
 	undo_redo.add_do_method(self, "emit_change_signal")
 	undo_redo.add_undo_method(self, "emit_change_signal")
 	undo_redo.commit_action()

@@ -11,8 +11,9 @@ static func edge(ply_mesh, edge_idx, undo_redo=null):
     var new_vertex_idx = ply_mesh.vertex_count()
     var new_edge_idx = ply_mesh.edge_count()
 
+    var pre_edit = null
     if undo_redo:
-        ply_mesh.begin_edit()
+        pre_edit = ply_mesh.begin_edit()
     ply_mesh.expand_edges(1)
     ply_mesh.expand_vertexes(1)
 
@@ -37,5 +38,5 @@ static func edge(ply_mesh, edge_idx, undo_redo=null):
                 ply_mesh.set_edge_right_cw(left_edge, new_edge_idx)
     
     if undo_redo:
-        ply_mesh.commit_edit("Subdivide Edge", undo_redo)
+        ply_mesh.commit_edit("Subdivide Edge", undo_redo, pre_edit)
     return [new_edge_idx, new_vertex_idx]
