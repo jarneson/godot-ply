@@ -48,6 +48,7 @@ func _process(delta):
 	if not geometric_median:
 		return
 
+	# todo: move this out of process to improve performance
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	ply_mesh.render_face(st, face_idx, -geometric_median)

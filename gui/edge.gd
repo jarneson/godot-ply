@@ -16,6 +16,7 @@ func _process(_delta):
 	if edge_idx < 0 or not ply_mesh:
 		return
 
+	# todo: move this out of process to improve performance
 	var origin = ply_mesh.edge_origin(edge_idx)
 	var destination = ply_mesh.edge_destination(edge_idx)
 	transform.origin = (origin+destination)/2

@@ -15,6 +15,7 @@ func _process(_delta):
 		return
 	if vertex_idx < 0 or not ply_mesh:
 		return
+	# todo: move this out of process to improve performance
 	transform.origin = ply_mesh.vertexes[vertex_idx]
 
 	if plugin.selector.selection.has(self):
