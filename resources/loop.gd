@@ -98,18 +98,19 @@ static func _edge_cut_walk(ply_mesh, e_idx, dir):
         walk.push_back(next)
     return [walk, full_loop]
 
-static func edge_cut(ply_mesh, e_idx):
+static func edge_cut(ply_mesh, e_idx, undo_redo=null):
     print("cutting edge loop from edge: ", e_idx)
-    ply_mesh.begin_edit()
     var walk_left_result = _edge_cut_walk(ply_mesh, e_idx, Side.LEFT)
     var walk_right = _edge_cut_walk(ply_mesh, e_idx, Side.RIGHT)[0]
     var walk_left = walk_left_result[0]
     var full_loop = walk_left_result[1]
 
+    if undo_redo:
+        ply_mesh.begin_edit()
     var subdivides = []
     if walk_left.size() > 0:
         for w in walk_left:
-            var result = Subdivide.edge(ply_mesh, w[0], true)
+            var result = Subdivide.edge(ply_mesh, w[0])
             subdivides.push_back([w[0], result[0], result[1]])
 
         for idx in range(walk_left.size()-1):
@@ -136,4 +137,5 @@ static func edge_cut(ply_mesh, e_idx):
     else:
         # do last face cut
         _apply_cut(ply_mesh, walk_left.size()-1, 0, walk_left, subdivides)
-    ply_mesh.commit_edit()
+    if undo_redo:
+        ply_mesh.commit_edit("Edge Loop Cut", undo_redo)

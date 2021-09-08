@@ -36,9 +36,13 @@ func _handle_mesh_updated():
 	#TODO: handle deletions when that's added
 	match mode:
 		SelectionMode.EDGE:
+			for idx in range(get_child_count()-1, edited_node.ply_mesh.edge_count()-1, -1):
+				get_child(idx).queue_free()
 			for idx in range(get_child_count(), edited_node.ply_mesh.edge_count()):
 				instance_edge(idx)
 		SelectionMode.FACE:
+			for idx in range(get_child_count()-1, edited_node.ply_mesh.edge_count()-1, -1):
+				get_child(idx).queue_free()
 			for idx in range(get_child_count(), edited_node.ply_mesh.face_count()):
 				instance_face(idx)
 

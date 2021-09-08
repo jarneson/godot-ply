@@ -112,7 +112,7 @@ func _extrude():
         if not n is Face:
             return
         face_idxs.push_back(n.face_idx)
-    Extrude.faces(selector.editing.ply_mesh, face_idxs)
+    Extrude.faces(selector.editing.ply_mesh, face_idxs, get_undo_redo(), 1)
 
 func _subdivide_edge():
     if not selector.editing:
@@ -121,7 +121,7 @@ func _subdivide_edge():
         return
     if not selector.selection[0] is Edge:
         return
-    Subdivide.edge(selector.editing.ply_mesh, selector.selection[0].edge_idx)
+    Subdivide.edge(selector.editing.ply_mesh, selector.selection[0].edge_idx, get_undo_redo())
 
 func _select_face_loop(offset):
     if not selector.editing:
@@ -140,7 +140,7 @@ func _cut_edge_loop():
         return
     if not selector.selection[0] is Edge:
         return
-    Loop.edge_cut(selector.editing.ply_mesh, selector.selection[0].edge_idx)
+    Loop.edge_cut(selector.editing.ply_mesh, selector.selection[0].edge_idx, get_undo_redo())
 
 
 
