@@ -246,7 +246,7 @@ func face_median(idx):
 ██║  ██║███████╗██║ ╚████║██████╔╝███████╗██║  ██║██║██║ ╚████║╚██████╔╝
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
 """
-func render_face(st, f_idx, offset=Vector3.ZERO):
+func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
 	var verts = face_vertices(f_idx)
 	var uvs = PoolVector2Array()
 	var offset_verts = PoolVector3Array()
@@ -254,23 +254,70 @@ func render_face(st, f_idx, offset=Vector3.ZERO):
 	if verts.size() == 0:
 		return
 
-	var face_normal = face_normal(f_idx)
-	var axis_a = (verts[verts.size()-1] - verts[0]).normalized()
-	var axis_b = axis_a.cross(face_normal)
-	var p_origin = verts[0]
-	for vtx in verts:
-		offset_verts.push_back(vtx + offset)
-		# todo: flatten somehow. probably rotations or something:
-		# calculate vertex normal, rotate into flattening.
-		uvs.push_back(Vector2((vtx-p_origin).dot(axis_a), (vtx-p_origin).dot(axis_b)))
-	st.add_triangle_fan(offset_verts, uvs)
+	if true:
+		var face_normal = face_normal(f_idx)
+		var axis_a = (verts[verts.size()-1] - verts[0]).normalized()
+		var axis_b = axis_a.cross(face_normal)
+		var p_origin = verts[0]
+		for vtx in verts:
+			st.add_uv(Vector2((vtx-p_origin).dot(axis_a), (vtx-p_origin).dot(axis_b)))
+			st.add_vertex(vtx+offset)
+
+	var remaining = []
+	remaining.resize(verts.size())
+	for i in range(verts.size()):
+		remaining[i] = i
+
+	while remaining.size() > 3:
+		var min_idx = null
+		var min_dot = null
+		for curr in range(remaining.size()):
+			var prev = curr-1
+			if prev < 0:
+				prev = verts.size()-1
+			var next = curr+1
+			if next >= verts.size():
+				next = 0
+
+			var va = verts[remaining[prev]]
+			var vb = verts[remaining[curr]]
+			var vc = verts[remaining[next]]
+
+			var ab = vb-va
+			var bc = vc-vb
+
+			var d = ab.dot(bc)
+
+			if not min_dot or d < min_dot:
+				min_idx = curr
+				min_dot = d
+				
+		var curr = min_idx
+		var prev = curr-1
+		if prev < 0:
+			prev = verts.size()-1
+		var next = curr+1
+		if next >= verts.size():
+			next = 0
+		st.add_index(remaining[prev] + num_verts)
+		st.add_index(remaining[curr] + num_verts)
+		st.add_index(remaining[next] + num_verts)
+
+		remaining.erase(min_idx)
+
+	if remaining.size() == 3:
+		for idx in remaining:
+			st.add_index(idx + num_verts)
+
+	return verts.size()
 
 func get_mesh():
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
+	var num_verts = 0
 	for v in range(face_edges.size()):
-		render_face(st, v)
+		num_verts += render_face(st, v, Vector3.ZERO, num_verts)
 	
 	st.generate_normals()
 	return st.commit()
