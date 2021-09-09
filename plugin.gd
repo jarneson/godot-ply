@@ -88,7 +88,7 @@ func _generate_cube():
     if not selector.editing:
         return
     var pre_edit = selector.editing.ply_mesh.begin_edit()
-    _generate_plane()
+    _generate_plane(false)
     Extrude.face(selector.editing.ply_mesh, 0)
     selector.editing.ply_mesh.commit_edit("Generate Cube", undo_redo, pre_edit)
 

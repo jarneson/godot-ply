@@ -15,20 +15,27 @@ var vertex_idxs = PoolIntArray()
 var vertexes = PoolVector3Array()
 var geometric_median 
 var face_normal
+var is_selected = false
 
 func _enter_tree():
 	if face_idx < 0 or not ply_mesh:
 		return
-	calculate_vertex_data()
-
+	
+	if plugin:
+		plugin.selector.connect("selection_changed", self, "_on_selection_changed")
 	if ply_mesh:
-		ply_mesh.connect("mesh_updated", self, "calculate_vertex_data")
+		ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 
 func _exit_tree():
+	if plugin:
+		plugin.selector.disconnect("selection_changed", self, "_on_selection_changed")
 	if ply_mesh:
-		ply_mesh.disconnect("mesh_updated", self, "calculate_vertex_data")
+		ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
 
-func calculate_vertex_data():
+func _ready():
+	_on_mesh_updated()
+
+func _on_mesh_updated():
 	if not ply_mesh or face_idx < 0 or face_idx >= ply_mesh.face_edges.size():
 		return 
 	vertex_idxs = ply_mesh.face_vertex_indexes(face_idx)
@@ -39,23 +46,19 @@ func calculate_vertex_data():
 	face_normal = ply_mesh.average_vertex_normal(vertexes)
 	self.transform.origin = geometric_median + 0.0001 * face_normal
 
-func _process(delta):
-	if not plugin:
-		return
-	if not ply_mesh or face_idx < 0 or face_idx >= ply_mesh.face_edges.size():
-		queue_free()
-		return
-	if not geometric_median:
-		return
-
-	# todo: move this out of process to improve performance
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	ply_mesh.render_face(st, face_idx, -geometric_median)
 	st.generate_normals()
 	mesh_instance.mesh = st.commit()
+	if is_selected:
+		mesh_instance.set("material/0", selected_material)
+	else:
+		mesh_instance.set("material/0", material)
 
-	if plugin.selector.selection.has(self):
+func _on_selection_changed(mode, ply_instance, selection):
+	is_selected = selection.has(self)
+	if is_selected:
 		mesh_instance.set("material/0", selected_material)
 	else:
 		mesh_instance.set("material/0", material)

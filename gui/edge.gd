@@ -9,14 +9,24 @@ var material = preload("./vertex_material.tres")
 var selected_material = preload("./vertex_selected_material.tres")
 
 onready var mesh_instance = $MeshInstance
+var is_selected = false
 
-func _process(_delta):
-	if not plugin:
-		return
-	if edge_idx < 0 or not ply_mesh:
-		return
+func _enter_tree():
+	if plugin:
+		plugin.selector.connect("selection_changed", self, "_on_selection_changed")
+	if ply_mesh:
+		ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 
-	# todo: move this out of process to improve performance
+func _exit_tree():
+	if plugin:
+		plugin.selector.disconnect("selection_changed", self, "_on_selection_changed")
+	if ply_mesh:
+		ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
+
+func _ready():
+	_on_mesh_updated()
+
+func _on_mesh_updated():
 	var origin = ply_mesh.edge_origin(edge_idx)
 	var destination = ply_mesh.edge_destination(edge_idx)
 	transform.origin = (origin+destination)/2
@@ -34,7 +44,15 @@ func _process(_delta):
 	var v_y = v_z.cross(v_x).normalized()
 	mesh_instance.transform.basis = Basis(v_x, v_y, v_z)
 
-	if plugin.selector.selection.has(self):
+	if is_selected:
+		mesh_instance.set("material/0", selected_material)
+	else:
+		mesh_instance.set("material/0", material)
+
+func _on_selection_changed(_mode, _ply_instance, selection):
+	is_selected = selection.has(self)
+
+	if is_selected:
 		mesh_instance.set("material/0", selected_material)
 	else:
 		mesh_instance.set("material/0", material)

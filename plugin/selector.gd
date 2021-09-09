@@ -62,13 +62,11 @@ var handle = null
 
 func _free_handle():
     if handle:
-        if is_instance_valid(handle):
-            handle.queue_free()
         handle = null
 
 func _create_handle():
     _free_handle()
-    handle = Handle.new(_plugin)
+    handle = Handle.new(mode, editing, selection)
     var sum = Vector3.ZERO
     for n in selection:
         sum = sum+n.transform.origin
@@ -171,4 +169,5 @@ func _on_selection_mode_change(m):
 
 func set_selection(nodes):
     selection = nodes
+    _prepare_handle()
     emit_signal("selection_changed", mode, editing, selection)
