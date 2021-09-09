@@ -33,7 +33,7 @@ func _exit_tree():
 		ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
 
 func _ready():
-	is_selected = plugin.selector.selection.has(self)
+	is_selected = plugin.selector.selection.has(face_idx)
 	_on_mesh_updated()
 
 func _on_mesh_updated():
@@ -59,7 +59,7 @@ func _on_mesh_updated():
 		mesh_instance.set("material/0", material)
 
 func _on_selection_changed(_mode, _ply_instance, selection):
-	is_selected = selection.has(self)
+	is_selected = selection.has(face_idx)
 	if is_selected:
 		mesh_instance.set("material/0", selected_material)
 	else:

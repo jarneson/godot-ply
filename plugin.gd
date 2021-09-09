@@ -12,6 +12,7 @@ extends EditorPlugin
 const Selector = preload("./plugin/selector.gd")
 const SpatialEditor = preload("./plugin/spatial_editor.gd")
 
+const SelectionMode = preload("./utils/selection_mode.gd")
 const PlyNode = preload("./nodes/ply.gd")
 const Face = preload("./gui/face.gd")
 const Edge = preload("./gui/edge.gd")
@@ -114,44 +115,25 @@ const Subdivide = preload("./resources/subdivide.gd")
 const Loop = preload("./resources/loop.gd")
 
 func _extrude():
-    if not selector.editing:
+    if not selector.editing or selector.mode != SelectionMode.FACE or selector.selection.size() == 0:
         return
-    if selector.selection.size() == 0:
-        return
-    var face_idxs = []
-    for n in selector.selection:
-        if not n is Face:
-            return
-        face_idxs.push_back(n.face_idx)
-    Extrude.faces(selector.editing.ply_mesh, face_idxs, undo_redo, 1)
+    Extrude.faces(selector.editing.ply_mesh, selector.selection, undo_redo, 1)
 
 func _subdivide_edge():
-    if not selector.editing:
+    if not selector.editing or selector.mode != SelectionMode.EDGE or selector.selection.size() != 1:
         return
-    if selector.selection.size() != 1:
-        return
-    if not selector.selection[0] is Edge:
-        return
-    Subdivide.edge(selector.editing.ply_mesh, selector.selection[0].edge_idx, undo_redo)
+    Subdivide.edge(selector.editing.ply_mesh, selector.selection[0], undo_redo)
 
 func _select_face_loop(offset):
-    if not selector.editing:
+    if not selector.editing or selector.mode != SelectionMode.FACE or selector.selection.size() != 1:
         return
-    if selector.selection.size() != 1:
-        return
-    if not selector.selection[0] is Face:
-        return
-    var loop = Loop.get_face_loop(selector.editing.ply_mesh, selector.selection[0].face_idx, offset)[0]
+    var loop = Loop.get_face_loop(selector.editing.ply_mesh, selector.selection[0], offset)[0]
     selector.set_selection(spatial_editor.get_nodes_for_indexes(loop))
 
 func _cut_edge_loop():
-    if not selector.editing:
+    if not selector.editing or selector.mode != SelectionMode.EDGE or selector.selection.size() != 1:
         return
-    if selector.selection.size() != 1:
-        return
-    if not selector.selection[0] is Edge:
-        return
-    Loop.edge_cut(selector.editing.ply_mesh, selector.selection[0].edge_idx, undo_redo)
+    Loop.edge_cut(selector.editing.ply_mesh, selector.selection[0], undo_redo)
 
 
 
@@ -164,7 +146,7 @@ func _cut_edge_loop():
   ╚═══╝  ╚═╝╚══════╝╚═╝╚═════╝ ╚═╝╚══════╝╚═╝   ╚═╝      ╚═╝   
 """
 func _on_selection_changed(mode, editing, selection):
-    make_visible(editing != null)
+    make_visible(editing && true)
 
 func make_visible(vis):
     hotbar.set_visible(vis)

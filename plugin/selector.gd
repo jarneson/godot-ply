@@ -33,6 +33,8 @@ var selection = []
 var cursor = null
 var handle = null
 
+var _mesh_index_sentry = -90
+
 func _set_selection(new_mode, new_editing, new_selection):
     var selection_compare = selection.duplicate()
     for s in new_selection:
@@ -70,13 +72,19 @@ func _set_selection(new_mode, new_editing, new_selection):
     var new_cursor = null
     var new_handle = null
     var root = _plugin.get_tree().get_edited_scene_root()
-    if root and new_editing and new_selection.size() > 0 and mode != SelectionMode.MESH:
+    if root and new_editing and new_selection.size() > 0 and new_mode != SelectionMode.MESH:
         # print("creating new handle: %s %s %s!=%s" % [new_editing, new_selection.size(), mode, SelectionMode.MESH])
         new_cursor = Spatial.new()
         new_handle = Handle.new(new_mode, new_editing, new_selection)
         var sum = Vector3.ZERO
-        for n in new_selection:
-            sum = sum+n.transform.origin
+        for idx in new_selection:
+            match new_mode:
+                SelectionMode.FACE:
+                    sum += new_editing.ply_mesh.face_median(idx)
+                SelectionMode.EDGE:
+                    sum += new_editing.ply_mesh.edge_midpoint(idx)
+                SelectionMode.VERTEX:
+                    sum += new_editing.ply_mesh.vertexes[idx]
         ur.add_do_reference(new_cursor)
         ur.add_do_reference(new_handle)
         ur.add_do_method(root, "add_child", new_cursor)
@@ -92,8 +100,8 @@ func _set_selection(new_mode, new_editing, new_selection):
     ur.add_do_property(self, "handle", new_handle)
     ur.add_undo_property(self, "handle", handle)
 
-    var new_safe_editing = editing
-    if not editing:
+    var new_safe_editing = new_editing
+    if not new_safe_editing:
         new_safe_editing = false
     ur.add_do_method(self, "emit_signal", "selection_changed", new_mode, new_safe_editing, new_selection)
     var safe_editing = editing
@@ -103,23 +111,25 @@ func _set_selection(new_mode, new_editing, new_selection):
 
     _editor_selection = _plugin.get_editor_interface().get_selection()
 
-    expected_undo_work += 1
-    ur.add_undo_method(_editor_selection, "clear")
-    if mode == SelectionMode.MESH and selection.size() == 1:
-        ur.add_undo_method(_editor_selection, "add_node", selection[0])
-        ur.add_undo_method(_plugin.get_editor_interface(), "inspect_object", selection[0])
-    elif handle:
-        ur.add_undo_method(_editor_selection, "add_node", handle)
-        ur.add_undo_method(_plugin.get_editor_interface(), "inspect_object", handle)
+    if editing:
+        expected_undo_work += 1
+        ur.add_undo_method(_editor_selection, "clear")
+        if mode == SelectionMode.MESH and selection.size() == 1 and selection[0] == _mesh_index_sentry:
+            ur.add_undo_method(_editor_selection, "add_node", editing)
+            ur.add_undo_method(_plugin.get_editor_interface(), "inspect_object", editing)
+        elif handle:
+            ur.add_undo_method(_editor_selection, "add_node", handle)
+            ur.add_undo_method(_plugin.get_editor_interface(), "inspect_object", handle)
 
-    expected_do_work += 1
-    ur.add_do_method(_editor_selection, "clear")
-    if new_mode == SelectionMode.MESH and new_selection.size() == 1:
-        ur.add_do_method(_editor_selection, "add_node", new_selection[0])
-        ur.add_do_method(_plugin.get_editor_interface(), "inspect_object", new_selection[0])
-    elif new_handle:
-        ur.add_do_method(_editor_selection, "add_node", new_handle)
-        ur.add_do_method(_plugin.get_editor_interface(), "inspect_object", new_handle)
+    if new_editing:
+        expected_do_work += 1
+        ur.add_do_method(_editor_selection, "clear")
+        if new_mode == SelectionMode.MESH and new_selection.size() == 1 and new_selection[0] == _mesh_index_sentry: 
+            ur.add_do_method(_editor_selection, "add_node", new_editing)
+            ur.add_do_method(_plugin.get_editor_interface(), "inspect_object", new_editing)
+        elif new_handle:
+            ur.add_do_method(_editor_selection, "add_node", new_handle)
+            ur.add_do_method(_plugin.get_editor_interface(), "inspect_object", new_handle)
 
     ur.add_do_property(self, "_in_work", expected_do_work)
     ur.add_undo_property(self, "_in_work", expected_undo_work)
@@ -150,16 +160,16 @@ func _on_selection_change():
             elif selected[0] is PlyNode:
                 new_editing = selected[0]
                 if mode == SelectionMode.MESH:
-                    new_selection = selected
+                    new_selection = [_mesh_index_sentry]
                 else:
                     _editor_selection.remove_node(selected[0])
                     new_selection = []
             elif selected[0] is Face and mode == SelectionMode.FACE:
-                new_selection = selected
+                new_selection = [selected[0].face_idx]
             elif selected[0] is Edge and mode == SelectionMode.EDGE:
-                new_selection = selected
+                new_selection = [selected[0].edge_idx]
             elif selected[0] is Vertex and mode == SelectionMode.VERTEX:
-                new_selection = selected
+                new_selection = [selected[0].vertex_idx]
             else:
                 new_editing = null
                 new_selection = []
@@ -168,21 +178,26 @@ func _on_selection_change():
             for node in selected:
                 if node is Handle:
                     continue
+                var idx = -1
                 match mode:
                     SelectionMode.MESH:
                         ok = ok and node is PlyNode
+                        idx = _mesh_index_sentry
                     SelectionMode.FACE:
                         ok = ok and node is Face
+                        idx = node.face_idx
                     SelectionMode.EDGE:
                         ok = ok and node is Edge
+                        idx = node.edge_idx
                     SelectionMode.VERTEX:
                         ok = ok and node is Vertex
+                        idx = node.vertex_idx
                 if not ok:
                     break
-                if handle and selection.has(node):
-                    new_selection.erase(node)
-                elif not selection.has(node):
-                    new_selection.push_back(node)
+                if handle and selection.has(idx):
+                    new_selection.erase(idx)
+                elif not selection.has(idx):
+                    new_selection.push_back(idx)
             if not ok:
                 new_editing = null
                 new_selection = []
@@ -195,7 +210,7 @@ func _on_selection_mode_change(m):
         return
     if m != mode:
         if m == SelectionMode.MESH:
-            _set_selection(m, editing, [editing])
+            _set_selection(m, editing, [_mesh_index_sentry])
         else:
             _set_selection(m, editing, [])
 

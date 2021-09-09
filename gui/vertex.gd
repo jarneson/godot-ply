@@ -18,7 +18,7 @@ func _process(_delta):
 	# todo: move this out of process to improve performance
 	transform.origin = ply_mesh.vertexes[vertex_idx]
 
-	if plugin.selector.selection.has(self):
+	if plugin.selector.selection.has(vertex_idx):
 		mesh_instance.set("material/0", selected_material)
 	else:
 		mesh_instance.set("material/0", material)

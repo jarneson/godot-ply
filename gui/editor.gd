@@ -21,7 +21,6 @@ var mode = SelectionMode.MESH setget set_mode
 func set_mode(m):
 	if mode == m:
 		return
-	print("editor mode ", mode, "->", m)
 	mode = m
 	render()
 
@@ -36,15 +35,9 @@ func clear_children():
 func _handle_mesh_updated():
 	match mode:
 		SelectionMode.EDGE:
-			for idx in range(get_child_count()-1, edited_node.ply_mesh.edge_count()-1, -1):
-				get_child(idx).queue_free()
-			for idx in range(get_child_count(), edited_node.ply_mesh.edge_count()):
-				instance_edge(idx)
+			render_edges()
 		SelectionMode.FACE:
-			for idx in range(get_child_count()-1, edited_node.ply_mesh.face_count()-1, -1):
-				get_child(idx).queue_free()
-			for idx in range(get_child_count(), edited_node.ply_mesh.face_count()):
-				instance_face(idx)
+			render_faces()
 
 func instance_face(idx):
 	var sc = FaceScene.instance()
@@ -66,13 +59,11 @@ func render():
 			render_vertices()
 
 func render_faces():
-	print("rendering faces: ", edited_node.ply_mesh.face_count())
 	clear_children()
 	if not edited_node:
 		return 
 	for idx in range(edited_node.ply_mesh.face_count()):
 		instance_face(idx)
-	print("rendered faces: ", get_child_count())
 
 func instance_edge(idx):
 	var sc = EdgeScene.instance()
@@ -84,17 +75,14 @@ func instance_edge(idx):
 
 
 func render_edges():
-	print("rendering edges: ", edited_node.ply_mesh.edge_count())
 	clear_children()
 	if not edited_node:
 		return
 	for idx in range(edited_node.ply_mesh.edge_count()):
 		instance_edge(idx)
-	print("rendered edges: ", get_child_count())
 
 func render_vertices():
 	clear_children()
-	print("rendering vertices: ", edited_node.ply_mesh.vertex_count())
 	for idx in range(edited_node.ply_mesh.vertex_count()):
 		var v = edited_node.ply_mesh.vertexes[idx]
 		var sc = VertexScene.instance()
@@ -104,9 +92,12 @@ func render_vertices():
 		sc.transform.origin = v
 		sc.plugin = plugin
 		add_child(sc)
-	print("rendered vertices: ", get_child_count())
 
+var next_log = 5.0
 func _process(_delta):
+	next_log -= _delta
+	if next_log <= 0:
+		next_log = 5.0
 	if not is_visible:
 		hide()
 		return
@@ -114,4 +105,5 @@ func _process(_delta):
 		return
 	transform = edited_node.global_transform
 	show()
+
 	

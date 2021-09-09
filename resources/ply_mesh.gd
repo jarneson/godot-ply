@@ -190,6 +190,9 @@ func set_edge_origin(e, v):
 func set_edge_destination(e, v):
 	edge_vertexes[2*e+1] = v
 
+func edge_midpoint(e):
+	return (edge_origin(e) + edge_destination(e)) / 2
+
 """
 ███████╗ █████╗  ██████╗███████╗███████╗
 ██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝
@@ -231,6 +234,9 @@ func face_vertices(idx):
 
 func face_normal(idx):
 	return average_vertex_normal(face_vertices(idx))
+
+func face_median(idx):
+	return geometric_median(face_vertices(idx))
 
 """
 ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ ██╗███╗   ██╗ ██████╗ 
