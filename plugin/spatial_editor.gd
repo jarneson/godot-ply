@@ -37,11 +37,14 @@ func set_scene(scene):
     _free_editor()
     _instantiate_editor()
 
-func _on_selection_change(mode, editing, selection):
+func _on_selection_change(mode, editing, _selection):
     _instantiate_editor()
     if editor:
-        editor.is_visible = editing != null
-        editor.edited_node = editing
+        editor.is_visible = editing && true
+        if editing:
+            editor.edited_node = editing
+        else:
+            editor.edited_node = null
         editor.mode = mode
 
 func get_nodes_for_indexes(idxs):

@@ -27,6 +27,9 @@ func _ready():
 	_on_mesh_updated()
 
 func _on_mesh_updated():
+	if edge_idx >= ply_mesh.edge_count():
+		# about to be freed
+		return
 	var origin = ply_mesh.edge_origin(edge_idx)
 	var destination = ply_mesh.edge_destination(edge_idx)
 	transform.origin = (origin+destination)/2

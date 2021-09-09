@@ -33,11 +33,13 @@ func _exit_tree():
 		ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
 
 func _ready():
+	is_selected = plugin.selector.selection.has(self)
 	_on_mesh_updated()
 
 func _on_mesh_updated():
-	if not ply_mesh or face_idx < 0 or face_idx >= ply_mesh.face_edges.size():
-		return 
+	if face_idx >= ply_mesh.face_count():
+		# about to be freed
+		return
 	vertex_idxs = ply_mesh.face_vertex_indexes(face_idx)
 	vertexes.resize(0)
 	for idx in vertex_idxs:
@@ -56,7 +58,7 @@ func _on_mesh_updated():
 	else:
 		mesh_instance.set("material/0", material)
 
-func _on_selection_changed(mode, ply_instance, selection):
+func _on_selection_changed(_mode, _ply_instance, selection):
 	is_selected = selection.has(self)
 	if is_selected:
 		mesh_instance.set("material/0", selected_material)

@@ -11,16 +11,17 @@ func _init(mode, editing, selection):
     _mode = mode
     _editing = editing
     _selection = selection
+    _set_selected_idxs()
 
 var previous_xform = Transform.IDENTITY
 export var selected_idxs = []
 
-func _enter_tree() -> void:
+var _has_begun = false
+func begin():
     previous_xform = transform
     set_notify_transform(true)
-    _set_selected_idxs()
 
-func _exit_tree() -> void:
+func stop():
     set_notify_transform(false)
 
 func _notification(what):

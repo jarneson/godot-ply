@@ -11,15 +11,10 @@ const Handle = preload("./handle.gd")
 signal selection_changed(mode, ply_instance, selection)
 
 var _plugin
-
-var mode = SelectionMode.MESH
+var _editor_selection
 
 func _init(p: EditorPlugin):
     _plugin = p
-
-var _editor_selection
-
-var cursor = null
 
 func startup():
     _editor_selection = _plugin.get_editor_interface().get_selection()
@@ -31,104 +26,143 @@ func teardown():
     _plugin.hotbar.disconnect("selection_mode_changed", self, "_on_selection_mode_change")
     cursor.queue_free()
 
-func _new_cursor():
-    if cursor:
-        return
-    var root = _plugin.get_tree().get_edited_scene_root()
-    if root:
-        cursor = Spatial.new()
-        cursor.name = "__ply__cursor"
-        root.add_child(cursor)
-        _on_selection_change()
-
-func _free_cursor():
-    if cursor:
-        if is_instance_valid(cursor):
-            cursor.queue_free()
-        cursor = null
-
-func set_scene(scene):
-    _free_handle()
-    _free_cursor()
-    _new_cursor()
-    selection = []
-    editing = null
-    emit_signal("selection_changed", mode, editing, selection)
-
+var mode = SelectionMode.MESH
 var editing = null
 var selection = []
 
+var cursor = null
 var handle = null
 
-func _free_handle():
-    if handle:
-        handle = null
-
-func _create_handle():
-    _free_handle()
-    handle = Handle.new(mode, editing, selection)
-    var sum = Vector3.ZERO
-    for n in selection:
-        sum = sum+n.transform.origin
-    handle.transform.origin = sum / selection.size()
-    cursor.add_child(handle)
-
-func _select_handle():
-    var editor_selection = _editor_selection.get_selected_nodes()
-    if editor_selection.size() == 1 and selection[0] == handle:
+func _set_selection(new_mode, new_editing, new_selection):
+    var selection_compare = selection.duplicate()
+    for s in new_selection:
+        selection_compare.erase(s)
+    if mode == new_mode and editing == new_editing and selection.size() == new_selection.size() and selection_compare.size() == 0:
+        # print("selection equal %s==%s %s==%s %s==%s" % [mode,new_mode,editing,new_editing,selection,new_selection])
         return
-    _editor_selection.clear()
-    _editor_selection.add_node(handle)
-    _editor_selection = _plugin.get_editor_interface().get_selection()
-    _plugin.get_editor_interface().inspect_object(handle)
+    # print("not selection equal %s==%s %s==%s %s==%s" % [mode,new_mode,editing,new_editing,selection,new_selection])
 
-func _prepare_handle():
+    var expected_do_work = 0
+    var expected_undo_work = 0
+    var ur = _plugin.undo_redo
+    ur.create_action("Ply Selection Changed")
+    if cursor:
+        ur.add_do_method(cursor.get_parent(), "remove_child", cursor)
+        ur.add_undo_method(cursor.get_parent(), "add_child", cursor)
+        ur.add_undo_reference(cursor)
+        if handle:
+            ur.add_do_method(cursor, "remove_child", handle)
+            ur.add_undo_method(cursor, "add_child", handle)
+            ur.add_undo_reference(handle)
+
+    ur.add_do_property(self, "mode", new_mode)
+    ur.add_undo_property(self, "mode", mode)
+    if mode != new_mode:
+        ur.add_do_method(_plugin.hotbar, "set_selection_mode", new_mode)
+        ur.add_undo_method(_plugin.hotbar, "set_selection_mode", mode)
+
+    ur.add_do_property(self, "editing", new_editing)
+    ur.add_undo_property(self, "editing", editing)
+
+    ur.add_do_property(self, "selection", new_selection)
+    ur.add_undo_property(self, "selection", selection)
+
+    var new_cursor = null
+    var new_handle = null
+    var root = _plugin.get_tree().get_edited_scene_root()
+    if root and new_editing and new_selection.size() > 0 and mode != SelectionMode.MESH:
+        # print("creating new handle: %s %s %s!=%s" % [new_editing, new_selection.size(), mode, SelectionMode.MESH])
+        new_cursor = Spatial.new()
+        new_handle = Handle.new(new_mode, new_editing, new_selection)
+        var sum = Vector3.ZERO
+        for n in new_selection:
+            sum = sum+n.transform.origin
+        ur.add_do_reference(new_cursor)
+        ur.add_do_reference(new_handle)
+        ur.add_do_method(root, "add_child", new_cursor)
+        ur.add_undo_method(root, "remove_child", new_cursor)
+        ur.add_do_property(new_cursor, "transform", new_editing.global_transform)
+        ur.add_do_property(new_handle, "transform", Transform(Basis.IDENTITY, sum / new_selection.size()))
+        ur.add_do_method(new_cursor, "add_child", new_handle)
+        ur.add_undo_method(new_cursor, "remove_child", new_handle)
+        ur.add_do_method(new_handle, "begin")
+        ur.add_undo_method(new_handle, "begin")
+    ur.add_do_property(self, "cursor", new_cursor)
+    ur.add_undo_property(self, "cursor", cursor)
+    ur.add_do_property(self, "handle", new_handle)
+    ur.add_undo_property(self, "handle", handle)
+
+    var new_safe_editing = editing
     if not editing:
-        _free_handle()
-        return
-    if selection.size() == 0:
-        _free_handle()
-        return
-    if mode == SelectionMode.MESH:
-        _free_handle()
-        return
-    _new_cursor()
-    _create_handle()
-    _select_handle()
+        new_safe_editing = false
+    ur.add_do_method(self, "emit_signal", "selection_changed", new_mode, new_safe_editing, new_selection)
+    var safe_editing = editing
+    if not editing:
+        safe_editing = false
+    ur.add_undo_method(self, "emit_signal", "selection_changed", mode, safe_editing, selection)
 
-func _position_cursor():
-    if not cursor:
-        return
-    if selection.size() == 0:
-        cursor.transform = Transform.IDENTITY
-    else:
-        cursor.transform = editing.global_transform
+    _editor_selection = _plugin.get_editor_interface().get_selection()
+
+    expected_undo_work += 1
+    ur.add_undo_method(_editor_selection, "clear")
+    if mode == SelectionMode.MESH and selection.size() == 1:
+        ur.add_undo_method(_editor_selection, "add_node", selection[0])
+        ur.add_undo_method(_plugin.get_editor_interface(), "inspect_object", selection[0])
+    elif handle:
+        ur.add_undo_method(_editor_selection, "add_node", handle)
+        ur.add_undo_method(_plugin.get_editor_interface(), "inspect_object", handle)
+
+    expected_do_work += 1
+    ur.add_do_method(_editor_selection, "clear")
+    if new_mode == SelectionMode.MESH and new_selection.size() == 1:
+        ur.add_do_method(_editor_selection, "add_node", new_selection[0])
+        ur.add_do_method(_plugin.get_editor_interface(), "inspect_object", new_selection[0])
+    elif new_handle:
+        ur.add_do_method(_editor_selection, "add_node", new_handle)
+        ur.add_do_method(_plugin.get_editor_interface(), "inspect_object", new_handle)
+
+    ur.add_do_property(self, "_in_work", expected_do_work)
+    ur.add_undo_property(self, "_in_work", expected_undo_work)
+    ur.commit_action()
+
+func set_scene(scene):
+    _set_selection(mode, null, [])
+
+var _in_work = false setget _set_in_work
+
+func _set_in_work(val):
+    _in_work = val
 
 func _on_selection_change():
+    if _in_work:
+        _in_work -= 1
+        return
     _editor_selection = _plugin.get_editor_interface().get_selection()
     var selected = _editor_selection.get_selected_nodes()
+    var new_selection = selection.duplicate()
+    var new_editing = editing
     match selected.size():
         0:
-            selection = []
+            new_selection = []
         1:
             if selected[0] is Handle:
                 return
             elif selected[0] is PlyNode:
-                editing = selected[0]
+                new_editing = selected[0]
                 if mode == SelectionMode.MESH:
-                    selection = selected
+                    new_selection = selected
                 else:
                     _editor_selection.remove_node(selected[0])
-                    selection = []
+                    new_selection = []
             elif selected[0] is Face and mode == SelectionMode.FACE:
-                selection = selected
+                new_selection = selected
             elif selected[0] is Edge and mode == SelectionMode.EDGE:
-                selection = selected
+                new_selection = selected
             elif selected[0] is Vertex and mode == SelectionMode.VERTEX:
-                selection = selected
+                new_selection = selected
             else:
-                editing = null
-                selection = []
+                new_editing = null
+                new_selection = []
         _:
             var ok = true
             for node in selected:
@@ -146,28 +180,24 @@ func _on_selection_change():
                 if not ok:
                     break
                 if handle and selection.has(node):
-                    selection.erase(node)
+                    new_selection.erase(node)
                 elif not selection.has(node):
-                    selection.push_back(node)
+                    new_selection.push_back(node)
             if not ok:
-                editing = null
-                selection = []
-    _prepare_handle()
-    _position_cursor()
-    emit_signal("selection_changed", mode, editing, selection)
+                new_editing = null
+                new_selection = []
+
+    _set_selection(mode, new_editing, new_selection)
             
 func _on_selection_mode_change(m):
-    if mode != m:
-        _editor_selection.clear()
-        selection = []
-    mode = m
-    if editing and mode == SelectionMode.MESH:
-        _editor_selection.add_node(editing)
-        _plugin.get_editor_interface().inspect_object(editing)
-        selection = [editing]
-    emit_signal("selection_changed", mode, editing, selection)
+    if _in_work:
+        _in_work -= 1
+        return
+    if m != mode:
+        if m == SelectionMode.MESH:
+            _set_selection(m, editing, [editing])
+        else:
+            _set_selection(m, editing, [])
 
 func set_selection(nodes):
-    selection = nodes
-    _prepare_handle()
-    emit_signal("selection_changed", mode, editing, selection)
+    _set_selection(mode, editing, nodes)

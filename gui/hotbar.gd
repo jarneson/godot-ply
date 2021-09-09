@@ -31,3 +31,14 @@ func _ready():
 func _update_selection_mode(selected, mode):
 	if selected:
 		emit_signal("selection_mode_changed", mode)
+
+func set_selection_mode(mode):
+	match mode:
+		SelectionMode.MESH:
+			selection_mesh.pressed = true
+		SelectionMode.FACE:
+			selection_face.pressed = true
+		SelectionMode.EDGE:
+			selection_edge.pressed = true
+		SelectionMode.VERTEX:
+			selection_vertex.pressed = true
