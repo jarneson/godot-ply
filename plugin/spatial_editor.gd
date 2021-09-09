@@ -16,12 +16,6 @@ func startup():
 func teardown():
     var _err = _plugin.selector.disconnect("selection_changed", self, "_on_selection_change")
 
-func _free_editor():
-    if editor:
-        if is_instance_valid(editor):
-            editor.queue_free()
-        editor = null
-
 func _instantiate_editor():
     if editor:
         return
@@ -33,9 +27,21 @@ func _instantiate_editor():
         editor.plugin = _plugin
         root.add_child(editor)
 
-func set_scene(scene):
-    _free_editor()
-    _instantiate_editor()
+func get_state():
+    var path = null
+    var root = _plugin.get_tree().get_edited_scene_root()
+    if root and editor:
+        path = root.get_path_to(editor)
+    return {
+        "editor": path
+    }
+
+func set_state(d):
+    var root = _plugin.get_tree().get_edited_scene_root()
+    if d and d["editor"] and root:
+        editor = root.get_node_or_null(d["editor"])
+    else:
+        editor = null
 
 func _on_selection_change(mode, editing, _selection):
     _instantiate_editor()

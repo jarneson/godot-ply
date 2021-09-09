@@ -19,12 +19,10 @@ const Edge = preload("./gui/edge.gd")
 const Editor = preload("./gui/editor.gd")
 const Handle = preload("./plugin/handle.gd")
 
-const DEBUG = true
-func debug_print(s):
-    if not DEBUG:
-        return
-    print(s)
+func get_plugin_name():
+    return "Ply"
 
+const DEBUG = true
 var hotbar = preload("./gui/hotbar.tscn").instance()
 
 var spatial_editor = null
@@ -48,19 +46,11 @@ func _enter_tree() -> void:
 
     add_control_to_container(CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , hotbar)
     
-    connect("scene_changed", self, "_on_scene_change")
-
     selector = Selector.new(self)
     selector.startup()
     selector.connect("selection_changed", self, "_on_selection_changed")
     spatial_editor = SpatialEditor.new(self)
     spatial_editor.startup()
-
-    var scene_root = get_tree().get_edited_scene_root()
-    if scene_root:
-        _on_scene_change(scene_root)
-
-    debug_print("Ply initialized")
 
 func _exit_tree() -> void:
     remove_custom_type("PlyInstance")
@@ -71,11 +61,16 @@ func _exit_tree() -> void:
     hotbar.queue_free()
 
     disconnect("scene_changed", self, "_on_scene_change")
-    debug_print("Ply torn down")
 
-func _on_scene_change(root):
-    spatial_editor.set_scene(root)
-    selector.set_scene(root)
+func get_state():
+    return { 
+        "selector": selector.get_state(),
+        "spatial_editor": spatial_editor.get_state()
+    }
+
+func set_state(state):
+    selector.set_state(state.get("selector"))
+    spatial_editor.set_state(state.get("spatial_editor"))
 
 """
 ██╗  ██╗ ██████╗ ████████╗██████╗  █████╗ ██████╗     ██╗     ██╗███████╗████████╗███████╗███╗   ██╗███████╗██████╗ ███████╗

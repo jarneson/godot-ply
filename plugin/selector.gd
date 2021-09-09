@@ -40,9 +40,7 @@ func _set_selection(new_mode, new_editing, new_selection):
     for s in new_selection:
         selection_compare.erase(s)
     if mode == new_mode and editing == new_editing and selection.size() == new_selection.size() and selection_compare.size() == 0:
-        # print("selection equal %s==%s %s==%s %s==%s" % [mode,new_mode,editing,new_editing,selection,new_selection])
         return
-    # print("not selection equal %s==%s %s==%s %s==%s" % [mode,new_mode,editing,new_editing,selection,new_selection])
 
     var expected_do_work = 0
     var expected_undo_work = 0
@@ -73,7 +71,6 @@ func _set_selection(new_mode, new_editing, new_selection):
     var new_handle = null
     var root = _plugin.get_tree().get_edited_scene_root()
     if root and new_editing and new_selection.size() > 0 and new_mode != SelectionMode.MESH:
-        # print("creating new handle: %s %s %s!=%s" % [new_editing, new_selection.size(), mode, SelectionMode.MESH])
         new_cursor = Spatial.new()
         new_handle = Handle.new(new_mode, new_editing, new_selection)
         var sum = Vector3.ZERO
@@ -135,16 +132,56 @@ func _set_selection(new_mode, new_editing, new_selection):
     ur.add_undo_property(self, "_in_work", expected_undo_work)
     ur.commit_action()
 
-func set_scene(scene):
-    _set_selection(mode, null, [])
+func get_state():
+    var editing_path = null
+    var handle_path = null
+    var cursor_path = null
+    var root = _plugin.get_tree().get_edited_scene_root()
+    if root:
+        if editing:
+            editing_path = root.get_path_to(editing)
+        if handle:
+            handle_path = root.get_path_to(handle)
+        if cursor:
+            cursor_path = root.get_path_to(cursor)
 
-var _in_work = false setget _set_in_work
+    var d = {
+        "mode": mode,
+        "editing": editing_path,
+        "selection": selection,
+        "handle": handle_path,
+        "cursor": cursor_path
+    }
+    return d
 
-func _set_in_work(val):
-    _in_work = val
+func set_state(d):
+    var root = _plugin.get_tree().get_edited_scene_root()
+    if d and root:
+        mode = d["mode"]
+        selection = d["selection"]
+        if root:
+            if d["editing"]:
+                editing = root.get_node_or_null(d["editing"])
+            else:
+                editing = null
+            if d["handle"]:
+                handle = root.get_node_or_null(d["handle"])
+            else:
+                handle = null
+            if d["cursor"]:
+                cursor = root.get_node_or_null(d["cursor"])
+            else:
+                cursor = null
+    else:
+        editing = null
+        selection = []
+        handle = null
+        cursor = null
+
+var _in_work = 0
 
 func _on_selection_change():
-    if _in_work:
+    if _in_work > 0:
         _in_work -= 1
         return
     _editor_selection = _plugin.get_editor_interface().get_selection()
@@ -182,16 +219,20 @@ func _on_selection_change():
                 match mode:
                     SelectionMode.MESH:
                         ok = ok and node is PlyNode
-                        idx = _mesh_index_sentry
+                        if ok:
+                            idx = _mesh_index_sentry
                     SelectionMode.FACE:
                         ok = ok and node is Face
-                        idx = node.face_idx
+                        if ok:
+                            idx = node.face_idx
                     SelectionMode.EDGE:
                         ok = ok and node is Edge
-                        idx = node.edge_idx
+                        if ok:
+                            idx = node.edge_idx
                     SelectionMode.VERTEX:
                         ok = ok and node is Vertex
-                        idx = node.vertex_idx
+                        if ok:
+                            idx = node.vertex_idx
                 if not ok:
                     break
                 if handle and selection.has(idx):
@@ -205,7 +246,7 @@ func _on_selection_change():
     _set_selection(mode, new_editing, new_selection)
             
 func _on_selection_mode_change(m):
-    if _in_work:
+    if _in_work > 0:
         _in_work -= 1
         return
     if m != mode:

@@ -12,9 +12,17 @@ func set_node(n):
 	edited_node = n
 	if edited_node:
 		edited_node.ply_mesh.connect("mesh_updated", self, "_handle_mesh_updated")
+		transform = edited_node.global_transform
 	render()
 
-var is_visible = true
+var is_visible = true setget set_is_visible
+func set_is_visible(val):
+	is_visible = val
+	if is_visible:
+		show()
+	else:
+		hide()
+
 var plugin = null
 
 var mode = SelectionMode.MESH setget set_mode
@@ -93,17 +101,5 @@ func render_vertices():
 		sc.plugin = plugin
 		add_child(sc)
 
-var next_log = 5.0
-func _process(_delta):
-	next_log -= _delta
-	if next_log <= 0:
-		next_log = 5.0
-	if not is_visible:
-		hide()
-		return
-	if not edited_node:
-		return
-	transform = edited_node.global_transform
-	show()
 
 	
