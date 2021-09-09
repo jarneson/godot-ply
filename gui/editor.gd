@@ -46,6 +46,8 @@ func _handle_mesh_updated():
 			render_edges()
 		SelectionMode.FACE:
 			render_faces()
+		SelectionMode.VERTEX:
+			render_vertices()
 
 func instance_face(idx):
 	var sc = FaceScene.instance()
