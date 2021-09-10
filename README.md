@@ -3,6 +3,8 @@ Godot plugin for in-editor box modeling.
 
 Only tested in Godot 3.3.3.
 
+See demos [on youtube](https://www.youtube.com/channel/UCf1IV6ABf3a4nW1wEyPwmMQ).
+
 ## Installation
 - Copy the contents of this repository into your `addons` folder for your godot project.
 - Activate the plugin in your project settings.
