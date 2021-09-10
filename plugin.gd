@@ -123,7 +123,7 @@ func _select_face_loop(offset):
     if not selector.editing or selector.mode != SelectionMode.FACE or selector.selection.size() != 1:
         return
     var loop = Loop.get_face_loop(selector.editing.ply_mesh, selector.selection[0], offset)[0]
-    selector.set_selection(spatial_editor.get_nodes_for_indexes(loop))
+    selector.set_selection(loop)
 
 func _cut_edge_loop():
     if not selector.editing or selector.mode != SelectionMode.EDGE or selector.selection.size() != 1:
