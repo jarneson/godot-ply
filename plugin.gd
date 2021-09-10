@@ -52,6 +52,8 @@ func _enter_tree() -> void:
     spatial_editor = SpatialEditor.new(self)
     spatial_editor.startup()
 
+    set_input_event_forwarding_always_enabled()
+
 func _exit_tree() -> void:
     remove_custom_type("PlyInstance")
 
@@ -153,3 +155,18 @@ func make_visible(vis):
         hotbar.edge_cut_loop.connect("pressed", self, "_cut_edge_loop")
         hotbar.face_select_loop_0.connect("pressed", self, "_select_face_loop", [0])
         hotbar.face_select_loop_1.connect("pressed", self, "_select_face_loop", [1])
+
+"""
+███████╗███████╗██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
+██╔════╝██╔════╝██║     ██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
+███████╗█████╗  ██║     █████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║
+╚════██║██╔══╝  ██║     ██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║
+███████║███████╗███████╗███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║
+╚══════╝╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+"""
+
+func forward_spatial_gui_input(camera, event):
+    if event is InputEventMouseButton:
+        if event.button_index == BUTTON_LEFT:
+            print(camera, ": ", event.position)
+    return false
