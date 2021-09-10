@@ -62,8 +62,6 @@ func _exit_tree() -> void:
 
     hotbar.queue_free()
 
-    disconnect("scene_changed", self, "_on_scene_change")
-
 func get_state():
     return { 
         "selector": selector.get_state(),
@@ -168,5 +166,5 @@ func make_visible(vis):
 func forward_spatial_gui_input(camera, event):
     if event is InputEventMouseButton:
         if event.button_index == BUTTON_LEFT:
-            print(camera, ": ", event.position)
+            return selector.handle_click(camera, event)
     return false

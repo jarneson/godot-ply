@@ -10,6 +10,13 @@ var selected_material = preload("./vertex_selected_material.tres")
 
 onready var mesh_instance = $MeshInstance
 
+func _ready():
+	set_meta("_edit_lock_", true)
+	mesh_instance.set_meta("_edit_lock", true)
+
+func get_idx():
+	return vertex_idx
+
 func _process(_delta):
 	if not plugin:
 		return

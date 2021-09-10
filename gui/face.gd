@@ -17,6 +17,9 @@ var geometric_median
 var face_normal
 var is_selected = false
 
+func get_idx():
+	return face_idx
+
 func _enter_tree():
 	if face_idx < 0 or not ply_mesh:
 		return
@@ -33,6 +36,8 @@ func _exit_tree():
 		ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
 
 func _ready():
+	set_meta("_edit_lock_", true)
+	mesh_instance.set_meta("_edit_lock", true)
 	is_selected = plugin.selector.selection.has(face_idx)
 	_on_mesh_updated()
 

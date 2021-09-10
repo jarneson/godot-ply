@@ -180,70 +180,47 @@ func set_state(d):
 
 var _in_work = 0
 
+func _enforce_selection():
+    _editor_selection = _plugin.get_editor_interface().get_selection()
+    var _selected_nodes = _editor_selection.get_selected_nodes()
+    if mode == SelectionMode.MESH and editing:
+        if _selected_nodes.size() == 1 and _selected_nodes[0] == editing:
+            return
+        print("select plymesh")
+        _editor_selection.clear()
+        _editor_selection.add_node(editing)
+        return
+
+    if handle and _plugin.hotbar.transform_toggle.pressed:
+        if _selected_nodes.size() == 1 and _selected_nodes[0] == handle:
+            return
+        print("select handle")
+        _editor_selection.clear()
+        _editor_selection.add_node(handle)
+        return
+
+
 func _on_selection_change():
     if _in_work > 0:
         _in_work -= 1
         return
-    _editor_selection = _plugin.get_editor_interface().get_selection()
-    var selected = _editor_selection.get_selected_nodes()
-    var new_selection = selection.duplicate()
     var new_editing = editing
-    match selected.size():
-        0:
-            new_selection = []
-        1:
-            if selected[0] is Handle:
-                return
-            elif selected[0] is PlyNode:
-                new_editing = selected[0]
-                if mode == SelectionMode.MESH:
-                    new_selection = [_mesh_index_sentry]
-                else:
-                    _editor_selection.remove_node(selected[0])
-                    new_selection = []
-            elif selected[0] is Face and mode == SelectionMode.FACE:
-                new_selection = [selected[0].face_idx]
-            elif selected[0] is Edge and mode == SelectionMode.EDGE:
-                new_selection = [selected[0].edge_idx]
-            elif selected[0] is Vertex and mode == SelectionMode.VERTEX:
-                new_selection = [selected[0].vertex_idx]
-            else:
-                new_editing = null
-                new_selection = []
-        _:
-            var ok = true
-            for node in selected:
-                if node is Handle:
-                    continue
-                var idx = -1
-                match mode:
-                    SelectionMode.MESH:
-                        ok = ok and node is PlyNode
-                        if ok:
-                            idx = _mesh_index_sentry
-                    SelectionMode.FACE:
-                        ok = ok and node is Face
-                        if ok:
-                            idx = node.face_idx
-                    SelectionMode.EDGE:
-                        ok = ok and node is Edge
-                        if ok:
-                            idx = node.edge_idx
-                    SelectionMode.VERTEX:
-                        ok = ok and node is Vertex
-                        if ok:
-                            idx = node.vertex_idx
-                if not ok:
-                    break
-                if handle and selection.has(idx):
-                    new_selection.erase(idx)
-                elif not selection.has(idx):
-                    new_selection.push_back(idx)
-            if not ok:
-                new_editing = null
-                new_selection = []
 
-    _set_selection(mode, new_editing, new_selection)
+    _editor_selection = _plugin.get_editor_interface().get_selection()
+    var _selected_nodes = _editor_selection.get_selected_nodes()
+
+    match _selected_nodes.size():
+        1:
+            if _selected_nodes[0] is Handle:
+                pass
+            elif _selected_nodes[0] is PlyNode:
+                new_editing = _selected_nodes[0]
+            else:
+                if not _plugin.hotbar.transform_toggle.pressed:
+                    new_editing = null
+
+    _set_selection(mode, new_editing, selection)
+    _enforce_selection()
             
 func _on_selection_mode_change(m):
     if _in_work > 0:
@@ -257,3 +234,55 @@ func _on_selection_mode_change(m):
 
 func set_selection(nodes):
     _set_selection(mode, editing, nodes)
+
+func toggle_selected(idx):
+    var new_selection = selection.duplicate()
+    if new_selection.has(idx):
+        new_selection.erase(idx)
+    else:
+        new_selection.push_back(idx)
+    _set_selection(mode, editing, new_selection)
+    
+
+func handle_click(camera, event):
+    if event.pressed and editing and not _plugin.hotbar.transform_toggle.pressed:
+        if mode == SelectionMode.MESH:
+            return false
+        var ray = camera.project_ray_normal(event.position) # todo: viewport scale
+        var ray_pos = camera.project_ray_origin(event.position) # todo: viewport scale
+        var root = _plugin.get_tree().get_edited_scene_root()
+        var instances = VisualServer.instances_cull_ray(ray_pos, ray, root.get_world().scenario)
+        var target = null
+        match mode:
+            SelectionMode.FACE:
+                target = Face
+            SelectionMode.EDGE:
+                target = Edge
+            SelectionMode.VERTEX:
+                target = Vertex
+        var hits = []
+        for rid in instances:
+            var inst = instance_from_id(rid)
+            print(inst.get_gizmo())
+            var parent = inst.get_parent()
+            if parent and parent is target:
+                hits.push_back(parent)
+        
+        var min_hit = null
+        var min_dist = null
+        for hit in hits:
+            var dist = camera.global_transform.origin.distance_squared_to(hit.global_transform.origin)
+            if not min_dist or dist < min_dist:
+                min_dist = dist
+                min_hit = hit
+
+        if event.shift:
+            if min_hit:
+                toggle_selected(min_hit.get_idx())
+        else:
+            if min_hit:
+                set_selection([min_hit.get_idx()])
+            else:
+                set_selection([])
+        return true
+    return false

@@ -4,7 +4,9 @@ extends VBoxContainer
 const SelectionMode = preload("../utils/selection_mode.gd")
 
 signal selection_mode_changed(mode)
+signal transform_mode_changed(mode)
 
+onready var transform_toggle = $"Transform"
 onready var selection_mesh = $"Selection/SelectionModes/SelectMesh"
 onready var selection_face = $"Selection/SelectionModes/SelectFace"
 onready var selection_edge = $"Selection/SelectionModes/SelectEdge"
@@ -23,10 +25,14 @@ onready var edge_subdivide = $"EdgeContainer/Tools/Subdivide"
 onready var edge_cut_loop = $"EdgeContainer/Tools/EdgeLoop"
 
 func _ready():
+	transform_toggle.connect("toggled", self, "_update_transform_toggle")
 	selection_mesh.connect("toggled", self, "_update_selection_mode", [SelectionMode.MESH])
 	selection_face.connect("toggled", self, "_update_selection_mode", [SelectionMode.FACE])
 	selection_edge.connect("toggled", self, "_update_selection_mode", [SelectionMode.EDGE])
 	selection_vertex.connect("toggled", self, "_update_selection_mode", [SelectionMode.VERTEX])
+
+func _update_transform_toggle(selected):
+	emit_signal("transform_mode_changed", selected)
 
 func _update_selection_mode(selected, mode):
 	if selected:
