@@ -8,10 +8,12 @@ func set_node(n):
 	if n == edited_node:
 		return
 	if edited_node:
-		edited_node.ply_mesh.disconnect("mesh_updated", self, "_handle_mesh_updated")
+		edited_node.disconnect("transform_updated", self, "_on_transform_updated")
+		edited_node.ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
 	edited_node = n
 	if edited_node:
-		edited_node.ply_mesh.connect("mesh_updated", self, "_handle_mesh_updated")
+		edited_node.connect("transform_updated", self, "_on_transform_updated")
+		edited_node.ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 		transform = edited_node.global_transform
 	render()
 
@@ -40,7 +42,7 @@ func clear_children():
 	for n in get_children():
 		n.queue_free()
 
-func _handle_mesh_updated():
+func _on_mesh_updated():
 	match mode:
 		SelectionMode.EDGE:
 			render_edges()
@@ -48,6 +50,9 @@ func _handle_mesh_updated():
 			render_faces()
 		SelectionMode.VERTEX:
 			render_vertices()
+
+func _on_transform_updated():
+	self.transform = edited_node.global_transform
 
 func instance_face(idx):
 	var sc = FaceScene.instance()
@@ -102,6 +107,3 @@ func render_vertices():
 		sc.transform.origin = v
 		sc.plugin = plugin
 		add_child(sc)
-
-
-	
