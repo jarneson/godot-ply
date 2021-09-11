@@ -39,7 +39,7 @@ var undo_redo = null
 ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝   ╚═╝       ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝
 """
 func _enter_tree() -> void:
-    add_custom_type("PlyInstance", "MeshInstance", preload("./nodes/ply.gd"), preload("./icon.png"))
+    add_custom_type("PlyInstance", "MeshInstance", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
     undo_redo = get_undo_redo()
 
     hotbar.hide()
