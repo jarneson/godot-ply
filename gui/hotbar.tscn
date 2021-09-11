@@ -27,10 +27,16 @@ margin_right = 93.0
 margin_bottom = 15.0
 text = "PolyBuilder"
 
-[node name="Selection" type="VBoxContainer" parent="."]
+[node name="Transform" type="CheckButton" parent="."]
 margin_top = 20.0
 margin_right = 155.0
-margin_bottom = 80.0
+margin_bottom = 60.0
+text = "Transform"
+
+[node name="Selection" type="VBoxContainer" parent="."]
+margin_top = 64.0
+margin_right = 155.0
+margin_bottom = 124.0
 
 [node name="HSeparator" type="HSeparator" parent="Selection"]
 margin_right = 155.0
@@ -72,9 +78,9 @@ group = ExtResource( 1 )
 text = "Vertex"
 
 [node name="MeshContainer" type="VBoxContainer" parent="."]
-margin_top = 84.0
+margin_top = 128.0
 margin_right = 155.0
-margin_bottom = 110.0
+margin_bottom = 154.0
 
 [node name="HSeparator" type="HSeparator" parent="MeshContainer"]
 margin_right = 155.0
@@ -93,9 +99,9 @@ margin_bottom = 26.0
 columns = 2
 
 [node name="FaceContainer" type="VBoxContainer" parent="."]
-margin_top = 114.0
+margin_top = 158.0
 margin_right = 155.0
-margin_bottom = 219.0
+margin_bottom = 263.0
 
 [node name="HSeparator" type="HSeparator" parent="FaceContainer"]
 margin_right = 155.0
@@ -146,9 +152,9 @@ size_flags_horizontal = 3
 text = "Dir 2"
 
 [node name="EdgeContainer" type="VBoxContainer" parent="."]
-margin_top = 223.0
+margin_top = 267.0
 margin_right = 155.0
-margin_bottom = 269.0
+margin_bottom = 313.0
 
 [node name="HSeparator" type="HSeparator" parent="EdgeContainer"]
 margin_right = 155.0
@@ -183,9 +189,9 @@ size_flags_horizontal = 3
 text = "Edge Loop"
 
 [node name="VertexContainer" type="VBoxContainer" parent="."]
-margin_top = 273.0
+margin_top = 317.0
 margin_right = 155.0
-margin_bottom = 299.0
+margin_bottom = 343.0
 
 [node name="HSeparator" type="HSeparator" parent="VertexContainer"]
 margin_right = 155.0
@@ -204,9 +210,9 @@ margin_bottom = 26.0
 columns = 2
 
 [node name="Generators" type="VBoxContainer" parent="."]
-margin_top = 303.0
+margin_top = 347.0
 margin_right = 155.0
-margin_bottom = 373.0
+margin_bottom = 417.0
 
 [node name="HSeparator" type="HSeparator" parent="Generators"]
 margin_right = 155.0

@@ -20,11 +20,14 @@ func startup():
     _editor_selection = _plugin.get_editor_interface().get_selection()
     _editor_selection.connect("selection_changed", self, "_on_selection_change")
     _plugin.hotbar.connect("selection_mode_changed", self, "_on_selection_mode_change")
+    _plugin.hotbar.connect("transform_mode_changed", self, "_on_transform_mode_change")
 
 func teardown():
+    print("selector teardown")
     _editor_selection.disconnect("selection_changed", self, "_on_selection_change")
     _plugin.hotbar.disconnect("selection_mode_changed", self, "_on_selection_mode_change")
-    cursor.queue_free()
+    _plugin.hotbar.disconnect("transform_mode_changed", self, "_on_transform_mode_change")
+    show_spatial_gizmo()
 
 var mode = SelectionMode.MESH
 var editing = null
@@ -106,27 +109,8 @@ func _set_selection(new_mode, new_editing, new_selection):
         safe_editing = false
     ur.add_undo_method(self, "emit_signal", "selection_changed", mode, safe_editing, selection)
 
-    _editor_selection = _plugin.get_editor_interface().get_selection()
-
-    if editing:
-        expected_undo_work += 1
-        ur.add_undo_method(_editor_selection, "clear")
-        if mode == SelectionMode.MESH and selection.size() == 1 and selection[0] == _mesh_index_sentry:
-            ur.add_undo_method(_editor_selection, "add_node", editing)
-            ur.add_undo_method(_plugin.get_editor_interface(), "inspect_object", editing)
-        elif handle:
-            ur.add_undo_method(_editor_selection, "add_node", handle)
-            ur.add_undo_method(_plugin.get_editor_interface(), "inspect_object", handle)
-
-    if new_editing:
-        expected_do_work += 1
-        ur.add_do_method(_editor_selection, "clear")
-        if new_mode == SelectionMode.MESH and new_selection.size() == 1 and new_selection[0] == _mesh_index_sentry: 
-            ur.add_do_method(_editor_selection, "add_node", new_editing)
-            ur.add_do_method(_plugin.get_editor_interface(), "inspect_object", new_editing)
-        elif new_handle:
-            ur.add_do_method(_editor_selection, "add_node", new_handle)
-            ur.add_do_method(_plugin.get_editor_interface(), "inspect_object", new_handle)
+    ur.add_do_method(self, "_enforce_selection")
+    ur.add_undo_method(self, "_enforce_selection")
 
     ur.add_do_property(self, "_in_work", expected_do_work)
     ur.add_undo_property(self, "_in_work", expected_undo_work)
@@ -177,73 +161,68 @@ func set_state(d):
         selection = []
         handle = null
         cursor = null
+    _enforce_selection()
 
 var _in_work = 0
+
+func _enforce_selection():
+    _editor_selection = _plugin.get_editor_interface().get_selection()
+    var _selected_nodes = _editor_selection.get_selected_nodes()
+
+    while true:
+        if mode == SelectionMode.MESH and editing:
+            if _selected_nodes.size() == 1 and _selected_nodes[0] == editing:
+                break
+            _editor_selection.clear()
+            _editor_selection.add_node(editing)
+            _plugin.get_editor_interface().inspect_object(editing)
+            break
+
+        if editing and handle:
+            if _selected_nodes.size() == 1 and _selected_nodes[0] == handle:
+                break
+            _editor_selection.clear()
+            _editor_selection.add_node(handle)
+            _plugin.get_editor_interface().inspect_object(handle)
+            break
+        break
+    
+    if is_selecting():
+        hide_spatial_gizmo()
+    else:
+        show_spatial_gizmo()
 
 func _on_selection_change():
     if _in_work > 0:
         _in_work -= 1
         return
-    _editor_selection = _plugin.get_editor_interface().get_selection()
-    var selected = _editor_selection.get_selected_nodes()
-    var new_selection = selection.duplicate()
     var new_editing = editing
-    match selected.size():
-        0:
-            new_selection = []
-        1:
-            if selected[0] is Handle:
-                return
-            elif selected[0] is PlyNode:
-                new_editing = selected[0]
-                if mode == SelectionMode.MESH:
-                    new_selection = [_mesh_index_sentry]
-                else:
-                    _editor_selection.remove_node(selected[0])
-                    new_selection = []
-            elif selected[0] is Face and mode == SelectionMode.FACE:
-                new_selection = [selected[0].face_idx]
-            elif selected[0] is Edge and mode == SelectionMode.EDGE:
-                new_selection = [selected[0].edge_idx]
-            elif selected[0] is Vertex and mode == SelectionMode.VERTEX:
-                new_selection = [selected[0].vertex_idx]
-            else:
-                new_editing = null
-                new_selection = []
-        _:
-            var ok = true
-            for node in selected:
-                if node is Handle:
-                    continue
-                var idx = -1
-                match mode:
-                    SelectionMode.MESH:
-                        ok = ok and node is PlyNode
-                        if ok:
-                            idx = _mesh_index_sentry
-                    SelectionMode.FACE:
-                        ok = ok and node is Face
-                        if ok:
-                            idx = node.face_idx
-                    SelectionMode.EDGE:
-                        ok = ok and node is Edge
-                        if ok:
-                            idx = node.edge_idx
-                    SelectionMode.VERTEX:
-                        ok = ok and node is Vertex
-                        if ok:
-                            idx = node.vertex_idx
-                if not ok:
-                    break
-                if handle and selection.has(idx):
-                    new_selection.erase(idx)
-                elif not selection.has(idx):
-                    new_selection.push_back(idx)
-            if not ok:
-                new_editing = null
-                new_selection = []
 
-    _set_selection(mode, new_editing, new_selection)
+    _editor_selection = _plugin.get_editor_interface().get_selection()
+    var _selected_nodes = _editor_selection.get_selected_nodes()
+
+    match _selected_nodes.size():
+        0:
+            pass
+        1:
+            if _selected_nodes[0] is Handle:
+                pass
+            elif _selected_nodes[0] is PlyNode:
+                new_editing = _selected_nodes[0]
+            else:
+                if not _plugin.hotbar.transform_toggle.pressed:
+                    new_editing = null
+        _:
+            for n in _selected_nodes:
+                if n is Handle:
+                    continue
+                if not n is PlyNode:
+                    new_editing = null
+                    break
+                new_editing = n 
+
+    _set_selection(mode, new_editing, selection)
+    _enforce_selection() 
             
 func _on_selection_mode_change(m):
     if _in_work > 0:
@@ -257,3 +236,83 @@ func _on_selection_mode_change(m):
 
 func set_selection(nodes):
     _set_selection(mode, editing, nodes)
+
+func toggle_selected(idx):
+    var new_selection = selection.duplicate()
+    if new_selection.has(idx):
+        new_selection.erase(idx)
+    else:
+        new_selection.push_back(idx)
+    _set_selection(mode, editing, new_selection)
+    
+func is_selecting():
+    return editing and not _plugin.hotbar.transform_toggle.pressed and mode != SelectionMode.MESH
+
+func handle_click(camera, event):
+    if event.pressed and is_selecting():
+        var ray = camera.project_ray_normal(event.position) # todo: viewport scale
+        var ray_pos = camera.project_ray_origin(event.position) # todo: viewport scale
+        var root = _plugin.get_tree().get_edited_scene_root()
+        var instances = VisualServer.instances_cull_ray(ray_pos, ray, root.get_world().scenario)
+        var target = null
+        match mode:
+            SelectionMode.FACE:
+                target = Face
+            SelectionMode.EDGE:
+                target = Edge
+            SelectionMode.VERTEX:
+                target = Vertex
+        var hits = []
+        for rid in instances:
+            var inst = instance_from_id(rid)
+            var parent = inst.get_parent()
+            if parent and parent is target:
+                hits.push_back(parent)
+        
+        var min_hit = null
+        var min_dist = null
+        var ai = editing.global_transform.affine_inverse()
+        for hit in hits:
+            # TODO: apply transform first
+            var dist = hit.intersect_ray_distance(ai.xform(ray_pos), ai.basis.xform(ray).normalized())
+            if dist and (not min_dist or dist < min_dist):
+                min_dist = dist
+                min_hit = hit
+
+        if event.shift:
+            if min_hit:
+                toggle_selected(min_hit.get_idx())
+        else:
+            if min_hit:
+                set_selection([min_hit.get_idx()])
+            else:
+                set_selection([])
+        return true
+    return false
+
+var _spatial_gizmo_hidden = false
+var _user_gizmo_size = null
+func hide_spatial_gizmo():
+    print("hide gizmo")
+    if _spatial_gizmo_hidden:
+        return
+
+    var editor_settings = _plugin.get_editor_interface().get_editor_settings()
+    _user_gizmo_size = editor_settings.get_setting("editors/3d/manipulator_gizmo_size")
+    editor_settings.set_setting("editors/3d/manipulator_gizmo_size", 0)
+    _spatial_gizmo_hidden = true
+
+func show_spatial_gizmo():
+    print("show gizmo")
+    if not _spatial_gizmo_hidden:
+        return
+
+    var editor_settings = _plugin.get_editor_interface().get_editor_settings()
+    editor_settings.set_setting("editors/3d/manipulator_gizmo_size", _user_gizmo_size)
+    _spatial_gizmo_hidden = false
+
+func _on_transform_mode_change(on):
+    if is_selecting():
+        hide_spatial_gizmo()
+    else:
+        show_spatial_gizmo()

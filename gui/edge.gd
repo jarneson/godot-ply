@@ -11,6 +11,9 @@ var selected_material = preload("./vertex_selected_material.tres")
 onready var mesh_instance = $MeshInstance
 var is_selected = false
 
+func get_idx():
+	return edge_idx
+
 func _enter_tree():
 	if plugin:
 		plugin.selector.connect("selection_changed", self, "_on_selection_changed")
@@ -24,6 +27,8 @@ func _exit_tree():
 		ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
 
 func _ready():
+	set_meta("_edit_lock_", true)
+	mesh_instance.set_meta("_edit_lock", true)
 	is_selected = plugin.selector.selection.has(edge_idx)
 	_on_mesh_updated()
 
@@ -60,3 +65,6 @@ func _on_selection_changed(_mode, _ply_instance, selection):
 		mesh_instance.set("material/0", selected_material)
 	else:
 		mesh_instance.set("material/0", material)
+
+func intersect_ray_distance(ray_start, ray_dir):
+	return (ray_start - global_transform.origin).length()
