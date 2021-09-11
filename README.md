@@ -1,4 +1,4 @@
-# ![icon](./icon.png) godot-ply ![icon](./icon.png)
+# ![icon](./icons/plugin.svg) godot-ply ![icon](./icons/plugin.svg)
 Godot plugin for in-editor box modeling.
 
 Only tested in Godot 3.3.3.
