@@ -246,37 +246,35 @@ func face_median(idx):
 ██║  ██║███████╗██║ ╚████║██████╔╝███████╗██║  ██║██║██║ ╚████║╚██████╔╝
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
 """
-func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
+func face_tris(f_idx):
 	var verts = face_vertices(f_idx)
-	var uvs = PoolVector2Array()
-	var offset_verts = PoolVector3Array()
-
 	if verts.size() == 0:
-		return
+		return []
 
+	var mapped_verts = []
 	if true:
 		var face_normal = face_normal(f_idx)
 		var axis_a = (verts[verts.size()-1] - verts[0]).normalized()
 		var axis_b = axis_a.cross(face_normal)
 		var p_origin = verts[0]
 		for vtx in verts:
-			st.add_uv(Vector2((vtx-p_origin).dot(axis_a), (vtx-p_origin).dot(axis_b)))
-			st.add_vertex(vtx+offset)
-
+			mapped_verts.push_back([vtx, Vector2((vtx-p_origin).dot(axis_a), (vtx-p_origin).dot(axis_b))])
+	
+	var tris = []
 	var remaining = []
 	remaining.resize(verts.size())
 	for i in range(verts.size()):
 		remaining[i] = i
-
+	
 	while remaining.size() > 3:
 		var min_idx = null
 		var min_dot = null
 		for curr in range(remaining.size()):
 			var prev = curr-1
 			if prev < 0:
-				prev = verts.size()-1
+				prev = remaining.size()-1
 			var next = curr+1
-			if next >= verts.size():
+			if next >= remaining.size():
 				next = 0
 
 			var va = verts[remaining[prev]]
@@ -299,15 +297,29 @@ func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
 		var next = curr+1
 		if next >= verts.size():
 			next = 0
-		st.add_index(remaining[prev] + num_verts)
-		st.add_index(remaining[curr] + num_verts)
-		st.add_index(remaining[next] + num_verts)
-
+		tris.push_back([remaining[prev], remaining[curr], remaining[next]])
 		remaining.erase(min_idx)
 
 	if remaining.size() == 3:
-		for idx in remaining:
-			st.add_index(idx + num_verts)
+		tris.push_back([remaining[0], remaining[1], remaining[2]])
+
+	return [mapped_verts, tris]
+
+func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
+	var tri_res = face_tris(f_idx)
+	var verts = tri_res[0]
+	var tris = tri_res[1]
+
+	if verts.size() == 0:
+		return
+
+	for vtx in verts:
+		st.add_uv(vtx[1])
+		st.add_vertex(vtx[0]+offset)
+
+	for tri in tris:
+		for val in tri:
+			st.add_index(val+num_verts)
 
 	return verts.size()
 
@@ -330,6 +342,45 @@ func set_mesh(vs, ves, fes, evs, efs, ees):
 	edge_faces = PoolIntArray(efs)
 	edge_edges = PoolIntArray(ees)
 	emit_signal("mesh_updated")
+
+
+func face_intersect_ray_distance(face_idx, ray_start, ray_dir):
+	var tri_res = face_tris(face_idx)
+	var vtxs = tri_res[0]
+	var tris = tri_res[1]
+
+	var min_dist = null
+
+	for tri in tris:
+		var verts = [
+			vtxs[tri[0]][0],
+			vtxs[tri[1]][0],
+			vtxs[tri[2]][0]
+		]
+		var normal = (verts[1]-verts[0]).cross(verts[2]-verts[0]).normalized()
+		var t = -(normal.dot(ray_start)+normal.dot(verts[0]))/normal.dot(ray_dir)
+		var hit = ray_start + t * ray_dir
+
+
+		var e0 = verts[1] - verts[0]
+		var e1 = verts[2] - verts[1]
+		var e2 = verts[0] - verts[2]
+		var c0 = hit - verts[0]
+		var c1 = hit - verts[1]
+		var c2 = hit - verts[2]
+		var in_tri = (
+			normal.dot(e0.cross(c0)) > 0 and
+			normal.dot(e1.cross(c1)) > 0 and
+			normal.dot(e2.cross(c2)) > 0 
+		)
+		print(in_tri, ": ", hit, " ",
+			normal.dot(e0.cross(c0)), " ",
+			normal.dot(e1.cross(c1)), " ",
+			normal.dot(e2.cross(c2)))
+		if in_tri:
+			if not min_dist or t < min_dist:
+				min_dist = t
+	return min_dist
 
 """
 ████████╗ ██████╗  ██████╗ ██╗     ███████╗

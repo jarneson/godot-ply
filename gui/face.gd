@@ -69,3 +69,6 @@ func _on_selection_changed(_mode, _ply_instance, selection):
 		mesh_instance.set("material/0", selected_material)
 	else:
 		mesh_instance.set("material/0", material)
+
+func intersect_ray_distance(ray_start, ray_dir):
+	return ply_mesh.face_intersect_ray_distance(face_idx, ray_start, ray_dir)
