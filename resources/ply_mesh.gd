@@ -351,23 +351,20 @@ func face_intersect_ray_distance(face_idx, ray_start, ray_dir):
 
 	var min_dist = null
 
-	print("ray:      ", ray_start, " -> ", ray_dir)
 	for tri in tris:
 		var verts = [
 			vtxs[tri[0]][0],
 			vtxs[tri[1]][0],
 			vtxs[tri[2]][0]
 		]
-		print("tri:      ", verts)
+
 		var normal = (verts[2]-verts[0]).cross(verts[1]-verts[0]).normalized()
 		var denom = normal.dot(ray_dir)
 		if is_equal_approx(0, denom):
 			continue
+
 		var t = -normal.dot(ray_start - verts[0])/normal.dot(ray_dir)
 		var hit = ray_start + t * ray_dir
-		print("normal:   ", normal)
-		print("distance: ", t)
-
 
 		var e0 = verts[1] - verts[0]
 		var e1 = verts[2] - verts[1]
@@ -379,14 +376,6 @@ func face_intersect_ray_distance(face_idx, ray_start, ray_dir):
 		var x1 = c1.cross(e1)
 		var x2 = c2.cross(e2)
 		var in_tri = normal.dot(x0) >= 0 and normal.dot(x1) >= 0 and normal.dot(x2) >= 0
-		print("hit:      ", hit)
-		print("x0:       ", x0)
-		print("d0:       ", normal.dot(x0))
-		print("x1:       ", x1)
-		print("d1:       ", normal.dot(x1))
-		print("x2:       ", x2)
-		print("d2:       ", normal.dot(x2))
-		print("in_tri:   ", in_tri)
 		if in_tri:
 			if not min_dist or t < min_dist:
 				min_dist = t

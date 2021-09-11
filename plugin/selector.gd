@@ -186,7 +186,6 @@ func _enforce_selection():
     if mode == SelectionMode.MESH and editing:
         if _selected_nodes.size() == 1 and _selected_nodes[0] == editing:
             return
-        print("select plymesh")
         _editor_selection.clear()
         _editor_selection.add_node(editing)
         return
@@ -194,7 +193,6 @@ func _enforce_selection():
     if handle and _plugin.hotbar.transform_toggle.pressed:
         if _selected_nodes.size() == 1 and _selected_nodes[0] == handle:
             return
-        print("select handle")
         _editor_selection.clear()
         _editor_selection.add_node(handle)
         return
@@ -271,7 +269,6 @@ func handle_click(camera, event):
         var min_dist = null
         for hit in hits:
             # TODO: apply transform first
-            print("check: ", hit.get_idx())
             var dist = hit.intersect_ray_distance(ray_pos, ray)
             if dist and (not min_dist or dist < min_dist):
                 min_dist = dist
