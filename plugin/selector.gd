@@ -263,7 +263,6 @@ func handle_click(camera, event):
         var hits = []
         for rid in instances:
             var inst = instance_from_id(rid)
-            print(inst.get_gizmo())
             var parent = inst.get_parent()
             if parent and parent is target:
                 hits.push_back(parent)
@@ -271,8 +270,10 @@ func handle_click(camera, event):
         var min_hit = null
         var min_dist = null
         for hit in hits:
-            var dist = camera.global_transform.origin.distance_squared_to(hit.global_transform.origin)
-            if not min_dist or dist < min_dist:
+            # TODO: apply transform first
+            print("check: ", hit.get_idx())
+            var dist = hit.intersect_ray_distance(ray_pos, ray)
+            if dist and (not min_dist or dist < min_dist):
                 min_dist = dist
                 min_hit = hit
 
