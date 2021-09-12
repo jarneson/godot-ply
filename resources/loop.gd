@@ -43,7 +43,6 @@ static func _apply_cut(ply_mesh, curr, next, walk, subdivides):
     ply_mesh.expand_faces(1)
 
     var existing_face = ply_mesh.edge_face(walk[curr][0], walk[curr][1])
-    print("process %s: <%s %s> = %s" % [walk[0], new_face_idx, existing_face, new_edge_idx])
     ply_mesh.face_edges[new_face_idx] = new_edge_idx
     ply_mesh.face_edges[existing_face] = new_edge_idx
 
@@ -78,7 +77,6 @@ static func _apply_cut(ply_mesh, curr, next, walk, subdivides):
             ply_mesh.set_edge_right_cw(new_edge_idx, subdivides[next][0])
             ply_mesh.set_edge_left_cw(subdivides[next][1], new_edge_idx)
             ply_mesh.set_edge_face_left(subdivides[next][1], new_face_idx)
-    print("edge %s faces [ %s | %s ] edges [%s | %s]" % [new_edge_idx, new_face_idx, existing_face, ply_mesh.edge_left_cw(new_edge_idx), ply_mesh.edge_right_cw(new_edge_idx)])
 
 static func _edge_cut_walk(ply_mesh, e_idx, dir):
     var walk = [[e_idx, dir, null]]
@@ -99,7 +97,6 @@ static func _edge_cut_walk(ply_mesh, e_idx, dir):
     return [walk, full_loop]
 
 static func edge_cut(ply_mesh, e_idx, undo_redo=null):
-    print("cutting edge loop from edge: ", e_idx)
     var walk_left_result = _edge_cut_walk(ply_mesh, e_idx, Side.LEFT)
     var walk_right = _edge_cut_walk(ply_mesh, e_idx, Side.RIGHT)[0]
     var walk_left = walk_left_result[0]
@@ -118,7 +115,6 @@ static func edge_cut(ply_mesh, e_idx, undo_redo=null):
             _apply_cut(ply_mesh, idx, idx+1, walk_left, subdivides)
 
     if not full_loop:
-        print("going right")
         if walk_right.size() > 0:
             if subdivides.size() > 0:
                 subdivides = [subdivides[0]]

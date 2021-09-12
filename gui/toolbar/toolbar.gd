@@ -53,7 +53,6 @@ func _update_tool_visibility():
 	vertex_tools.visible = selection_vertex.pressed
 
 func set_selection_mode(mode):
-	print("set_selection_mode")
 	match mode:
 		SelectionMode.MESH:
 			selection_mesh.pressed = true

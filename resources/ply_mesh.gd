@@ -289,16 +289,16 @@ func face_tris(f_idx):
 			if not min_dot or d < min_dot:
 				min_idx = curr
 				min_dot = d
-				
+
 		var curr = min_idx
 		var prev = curr-1
 		if prev < 0:
-			prev = verts.size()-1
+			prev = remaining.size()-1
 		var next = curr+1
-		if next >= verts.size():
+		if next >= remaining.size():
 			next = 0
 		tris.push_back([remaining[prev], remaining[curr], remaining[next]])
-		remaining.erase(min_idx)
+		remaining.remove(min_idx)
 
 	if remaining.size() == 3:
 		tris.push_back([remaining[0], remaining[1], remaining[2]])
