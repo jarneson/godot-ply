@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://addons/ply/gui/selection_buttongroup.tres" type="ButtonGroup" id=1]
-[ext_resource path="res://addons/ply/icon.png" type="Texture" id=2]
+[ext_resource path="res://addons/ply/icons/select_face.svg" type="Texture" id=2]
 [ext_resource path="res://addons/ply/gui/hotbar.gd" type="Script" id=3]
 
 [node name="PolyBuilder" type="VBoxContainer"]
@@ -13,30 +13,35 @@ __meta__ = {
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 margin_right = 155.0
-margin_bottom = 16.0
+margin_bottom = 14.0
 
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
-margin_right = 16.0
-margin_bottom = 16.0
-texture = ExtResource( 2 )
+margin_bottom = 14.0
 
 [node name="Label" type="Label" parent="HBoxContainer"]
-margin_left = 20.0
-margin_top = 1.0
-margin_right = 93.0
-margin_bottom = 15.0
+margin_left = 4.0
+margin_right = 77.0
+margin_bottom = 14.0
 text = "PolyBuilder"
 
-[node name="Transform" type="CheckButton" parent="."]
-margin_top = 20.0
+[node name="TextureButton" type="ToolButton" parent="."]
+margin_top = 18.0
 margin_right = 155.0
-margin_bottom = 60.0
+margin_bottom = 42.0
+toggle_mode = true
+text = "Edge"
+icon = ExtResource( 2 )
+
+[node name="Transform" type="CheckButton" parent="."]
+margin_top = 46.0
+margin_right = 155.0
+margin_bottom = 86.0
 text = "Transform"
 
 [node name="Selection" type="VBoxContainer" parent="."]
-margin_top = 64.0
+margin_top = 90.0
 margin_right = 155.0
-margin_bottom = 124.0
+margin_bottom = 150.0
 
 [node name="HSeparator" type="HSeparator" parent="Selection"]
 margin_right = 155.0
@@ -78,9 +83,9 @@ group = ExtResource( 1 )
 text = "Vertex"
 
 [node name="MeshContainer" type="VBoxContainer" parent="."]
-margin_top = 128.0
+margin_top = 154.0
 margin_right = 155.0
-margin_bottom = 154.0
+margin_bottom = 180.0
 
 [node name="HSeparator" type="HSeparator" parent="MeshContainer"]
 margin_right = 155.0
@@ -99,9 +104,9 @@ margin_bottom = 26.0
 columns = 2
 
 [node name="FaceContainer" type="VBoxContainer" parent="."]
-margin_top = 158.0
+margin_top = 184.0
 margin_right = 155.0
-margin_bottom = 263.0
+margin_bottom = 289.0
 
 [node name="HSeparator" type="HSeparator" parent="FaceContainer"]
 margin_right = 155.0
@@ -152,9 +157,9 @@ size_flags_horizontal = 3
 text = "Dir 2"
 
 [node name="EdgeContainer" type="VBoxContainer" parent="."]
-margin_top = 267.0
+margin_top = 293.0
 margin_right = 155.0
-margin_bottom = 313.0
+margin_bottom = 339.0
 
 [node name="HSeparator" type="HSeparator" parent="EdgeContainer"]
 margin_right = 155.0
@@ -189,9 +194,9 @@ size_flags_horizontal = 3
 text = "Edge Loop"
 
 [node name="VertexContainer" type="VBoxContainer" parent="."]
-margin_top = 317.0
+margin_top = 343.0
 margin_right = 155.0
-margin_bottom = 343.0
+margin_bottom = 369.0
 
 [node name="HSeparator" type="HSeparator" parent="VertexContainer"]
 margin_right = 155.0
@@ -210,9 +215,9 @@ margin_bottom = 26.0
 columns = 2
 
 [node name="Generators" type="VBoxContainer" parent="."]
-margin_top = 347.0
+margin_top = 373.0
 margin_right = 155.0
-margin_bottom = 417.0
+margin_bottom = 443.0
 
 [node name="HSeparator" type="HSeparator" parent="Generators"]
 margin_right = 155.0
