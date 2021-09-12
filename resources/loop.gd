@@ -71,7 +71,6 @@ static func get_edge_loop(ply_mesh, e_idx):
         first = false
         var neighbors = ply_mesh.get_vertex_edges(next_vtx, next_edge)
         if neighbors.size() != 4:
-            print(neighbors.size())
             break
         next_edge = neighbors[2]
         if ply_mesh.edge_origin_idx(next_edge) == next_vtx:

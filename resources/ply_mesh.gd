@@ -415,7 +415,6 @@ func emit_change_signal():
 	emit_signal("mesh_updated")
 
 func commit_edit(name, undo_redo, pre_edits):
-	print(name,": ", undo_redo)
 	undo_redo.create_action(name)
 	undo_redo.add_do_property(self, "vertexes", vertexes)
 	undo_redo.add_undo_property(self, "vertexes", pre_edits[0])

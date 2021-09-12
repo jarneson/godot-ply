@@ -23,7 +23,6 @@ func startup():
     _plugin.toolbar.toolbar.connect("transform_mode_changed", self, "_on_transform_mode_change")
 
 func teardown():
-    print("selector teardown")
     _editor_selection.disconnect("selection_changed", self, "_on_selection_change")
     _plugin.toolbar.toolbar.disconnect("selection_mode_changed", self, "_on_selection_mode_change")
     _plugin.toolbar.toolbar.disconnect("transform_mode_changed", self, "_on_transform_mode_change")

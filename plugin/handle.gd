@@ -37,6 +37,8 @@ func _notification(what):
 
 func _move_to_median():
     var sum = Vector3.ZERO
+    if _selection.size() == 0:
+        return sum
     for idx in _selection:
         match _mode:
             SelectionMode.FACE:
