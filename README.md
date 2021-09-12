@@ -28,8 +28,8 @@ There are tools for each selection mode:
         - Plane: Generate a two-sided unit plane
         - Cube: Generate a unit cube
 - Face
-    - ![loopicon1](./icons/face_loop.svg) Loop: Select Face Loop in One Direction
-    - ![loopicon2](./icons/face_loop_2.svg) Loop: Select Face Loop in The Other Direction
+    - ![loopicon1](./icons/face_loop.svg) Loop: a quad loop in one direction
+    - ![loopicon2](./icons/face_loop_2.svg) Loop: a quad loop in the other direction
     - ![extrudeicon](./icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
 - Edge
     - ![loopicon](./icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
