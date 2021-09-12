@@ -3,6 +3,9 @@ extends Control
 
 const SelectionMode = preload("../../utils/selection_mode.gd")
 
+signal generate_plane
+signal generate_cube
+
 signal selection_mode_changed(mode)
 signal transform_mode_changed(mode)
 
@@ -12,6 +15,8 @@ onready var selection_mesh   = $Mesh
 onready var selection_face   = $Face
 onready var selection_edge   = $Edge
 onready var selection_vertex = $Vertex
+
+onready var mesh_generators = $MeshTools/Generators
 
 onready var face_select_loop_1 = $FaceTools/FaceLoop1
 onready var face_select_loop_2 = $FaceTools/FaceLoop2
@@ -26,6 +31,8 @@ func _ready():
 	selection_face.connect("toggled", self, "_update_selection_mode", [SelectionMode.FACE])
 	selection_edge.connect("toggled", self, "_update_selection_mode", [SelectionMode.EDGE])
 	selection_vertex.connect("toggled", self, "_update_selection_mode", [SelectionMode.VERTEX])
+
+	mesh_generators.get_popup().connect("id_pressed", self, "_on_generators_id_pressed")
 
 func _update_transform_toggle(selected):
 	emit_signal("transform_mode_changed", selected)
@@ -45,3 +52,11 @@ func set_selection_mode(mode):
 			selection_edge.pressed = true
 		SelectionMode.VERTEX:
 			selection_vertex.pressed = true
+
+func _on_generators_id_pressed(idx):
+	match mesh_generators.get_popup().get_item_text(idx):
+		"Plane":
+			emit_signal("generate_plane")
+		"Cube":
+			emit_signal("generate_cube")
+

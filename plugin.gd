@@ -44,8 +44,8 @@ func _enter_tree() -> void:
     selector = Selector.new(self)
     spatial_editor = SpatialEditor.new(self)
     toolbar = Toolbar.new(self)
+
     selector.startup()
-    selector.connect("selection_changed", self, "_on_selection_changed")
     spatial_editor.startup()
     toolbar.startup()
 

@@ -17,15 +17,15 @@ func _connect_toolbar_handlers():
     if toolbar.face_select_loop_1.is_connected("pressed", self, "_generate_cube"):
         return
 
+    toolbar.connect("generate_plane", self, "_generate_plane")
+    toolbar.connect("generate_cube", self, "_generate_cube")
+
     toolbar.face_select_loop_1.connect("pressed", self, "_face_select_loop", [0])
     toolbar.face_select_loop_2.connect("pressed", self, "_face_select_loop", [1])
     toolbar.face_extrude.connect("pressed", self, "_face_extrude")
 
     toolbar.edge_subdivide.connect("pressed", self, "_edge_subdivide")
     toolbar.edge_cut_loop.connect("pressed", self, "_edge_cut_loop")
-
-    # toolbar.generate_cube.connect("pressed", self, "_generate_cube")
-    # toolbar.generate_plane.connect("pressed", self, "_generate_plane")
 
 
 func startup():

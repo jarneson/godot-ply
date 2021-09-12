@@ -78,16 +78,23 @@ icon = ExtResource( 4 )
 
 [node name="MeshTools" type="HBoxContainer" parent="."]
 margin_left = 459.0
-margin_right = 463.0
+margin_right = 550.0
 margin_bottom = 600.0
 
 [node name="VSeparator" type="VSeparator" parent="MeshTools"]
 margin_right = 4.0
 margin_bottom = 600.0
 
+[node name="Generators" type="MenuButton" parent="MeshTools"]
+margin_left = 8.0
+margin_right = 91.0
+margin_bottom = 600.0
+text = "Generators"
+items = [ "Plane", null, 0, false, false, 0, 0, null, "", false, "Cube", null, 0, false, false, 1, 0, null, "", false ]
+
 [node name="FaceTools" type="HBoxContainer" parent="."]
-margin_left = 467.0
-margin_right = 694.0
+margin_left = 554.0
+margin_right = 781.0
 margin_bottom = 600.0
 
 [node name="VSeparator" type="VSeparator" parent="FaceTools"]
@@ -121,8 +128,8 @@ text = "Extrude"
 icon = ExtResource( 7 )
 
 [node name="EdgeTools" type="HBoxContainer" parent="."]
-margin_left = 698.0
-margin_right = 865.0
+margin_left = 785.0
+margin_right = 952.0
 margin_bottom = 600.0
 
 [node name="VSeparator" type="VSeparator" parent="EdgeTools"]
@@ -150,8 +157,8 @@ __meta__ = {
 }
 
 [node name="VertexTools" type="HBoxContainer" parent="."]
-margin_left = 869.0
-margin_right = 873.0
+margin_left = 956.0
+margin_right = 960.0
 margin_bottom = 600.0
 
 [node name="VSeparator" type="VSeparator" parent="VertexTools"]
