@@ -18,7 +18,7 @@ There are four selection modes:
 - ![edgeicon](./icons/select_edge.svg) ` 3 ` Edge
 - ![vertexicon](./icons/select_vertex.svg) ` 4 ` Vertex
 
-There are two editor modes are toggled by the ![transformicon](./icons/icon_tool_move.svg) `` ` `` toggle in the menu.
+There are two editor modes are toggled by the ![transformicon](./icons/icon_tool_move.svg) `` ` `` Transform toggle in the menu.
 - Selection mode: select faces, edges, and vertices with the mouse
 - Transform mode: use the gizmo to translate, rotate and scale
 
