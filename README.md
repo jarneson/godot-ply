@@ -12,6 +12,7 @@ See demos [on youtube](https://www.youtube.com/channel/UCf1IV6ABf3a4nW1wEyPwmMQ)
 ## Usage
 Create a ![nodeicon](./icons/plugin.svg) PlyInstance node in your scene, and select it.
 
+### Editing Meshes
 There are four selection modes:
 - ![meshicon](./icons/select_mesh.svg) ` 1 ` Mesh
 - ![faceicon](./icons/select_face.svg) ` 2 ` Face
@@ -37,6 +38,9 @@ There are tools for each selection mode:
     - ![subdivideicon](./icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
 - Vertex
     - None, yet!
+
+### Collisions
+Collision meshes are updated automatically if there is a CollisionShape child of the PlyInstance at `$StaticBody/CollsionShape`. This is the default naming if you use the `Create Trimesh Static Body` tool.
 
 ## Details
 Meshes are meant to only be oriented manifolds. Some properties:
