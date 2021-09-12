@@ -19,14 +19,14 @@ func _init(p: EditorPlugin):
 func startup():
     _editor_selection = _plugin.get_editor_interface().get_selection()
     _editor_selection.connect("selection_changed", self, "_on_selection_change")
-    _plugin.hotbar.connect("selection_mode_changed", self, "_on_selection_mode_change")
-    _plugin.hotbar.connect("transform_mode_changed", self, "_on_transform_mode_change")
+    _plugin.toolbar.toolbar.connect("selection_mode_changed", self, "_on_selection_mode_change")
+    _plugin.toolbar.toolbar.connect("transform_mode_changed", self, "_on_transform_mode_change")
 
 func teardown():
     print("selector teardown")
     _editor_selection.disconnect("selection_changed", self, "_on_selection_change")
-    _plugin.hotbar.disconnect("selection_mode_changed", self, "_on_selection_mode_change")
-    _plugin.hotbar.disconnect("transform_mode_changed", self, "_on_transform_mode_change")
+    _plugin.toolbar.toolbar.disconnect("selection_mode_changed", self, "_on_selection_mode_change")
+    _plugin.toolbar.toolbar.disconnect("transform_mode_changed", self, "_on_transform_mode_change")
     show_spatial_gizmo()
 
 var mode = SelectionMode.MESH
@@ -61,8 +61,8 @@ func _set_selection(new_mode, new_editing, new_selection):
     ur.add_do_property(self, "mode", new_mode)
     ur.add_undo_property(self, "mode", mode)
     if mode != new_mode:
-        ur.add_do_method(_plugin.hotbar, "set_selection_mode", new_mode)
-        ur.add_undo_method(_plugin.hotbar, "set_selection_mode", mode)
+        ur.add_do_method(_plugin.toolbar.toolbar, "set_selection_mode", new_mode)
+        ur.add_undo_method(_plugin.toolbar.toolbar, "set_selection_mode", mode)
 
     ur.add_do_property(self, "editing", new_editing)
     ur.add_undo_property(self, "editing", editing)
@@ -136,6 +136,7 @@ func get_state():
         "handle": handle_path,
         "cursor": cursor_path
     }
+    _enforce_selection()
     return d
 
 func set_state(d):
@@ -192,6 +193,8 @@ func _enforce_selection():
     else:
         show_spatial_gizmo()
 
+    _plugin.toolbar.toolbar.set_selection_mode(mode)
+
 func _on_selection_change():
     if _in_work > 0:
         _in_work -= 1
@@ -210,7 +213,7 @@ func _on_selection_change():
             elif _selected_nodes[0] is PlyNode:
                 new_editing = _selected_nodes[0]
             else:
-                if not _plugin.hotbar.transform_toggle.pressed:
+                if not _plugin.toolbar.in_transform_mode():
                     new_editing = null
         _:
             for n in _selected_nodes:
@@ -246,7 +249,7 @@ func toggle_selected(idx):
     _set_selection(mode, editing, new_selection)
     
 func is_selecting():
-    return editing and not _plugin.hotbar.transform_toggle.pressed and mode != SelectionMode.MESH
+    return editing and not _plugin.toolbar.in_transform_mode() and mode != SelectionMode.MESH
 
 func handle_click(camera, event):
     if event.pressed and is_selecting():
@@ -293,7 +296,6 @@ func handle_click(camera, event):
 var _spatial_gizmo_hidden = false
 var _user_gizmo_size = null
 func hide_spatial_gizmo():
-    print("hide gizmo")
     if _spatial_gizmo_hidden:
         return
 
@@ -303,7 +305,6 @@ func hide_spatial_gizmo():
     _spatial_gizmo_hidden = true
 
 func show_spatial_gizmo():
-    print("show gizmo")
     if not _spatial_gizmo_hidden:
         return
 
