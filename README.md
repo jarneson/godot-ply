@@ -32,7 +32,8 @@ There are tools for each selection mode:
     - ![loopicon2](./icons/face_loop_2.svg) Loop: Select Face Loop in The Other Direction
     - ![extrudeicon](./icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
 - Edge
-    - ![loopcuticon](./icons/loop_cut.svg) ` ctrl-r ` Loop: Add a loop cut perpindicular to the selected edge
+    - ![loopicon](./icons/edge_select_loop.svg) ` ctrl-r ` Loop: Select an edge loop from the given edge
+    - ![loopcuticon](./icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
     - ![subdivideicon](./icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
 - Vertex
     - None, yet!

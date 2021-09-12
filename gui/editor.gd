@@ -64,7 +64,6 @@ func _on_mesh_updated():
 					instance_vertex(i)
 	elif expected_children < current_children:
 		for i in range(expected_children, current_children):
-			print(get_child(i).name)
 			get_child(i).queue_free()
 
 func _on_transform_updated():

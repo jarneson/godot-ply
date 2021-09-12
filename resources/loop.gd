@@ -36,6 +36,53 @@ static func get_face_loop(ply_mesh, f_idx, edge_offset=0):
     
     return [out, false]
 
+# only works for verts with 4 edges
+static func get_edge_loop(ply_mesh, e_idx):
+    var out = []
+    var next_vtx = ply_mesh.edge_origin_idx(e_idx)
+    var next_edge = e_idx
+    var first = true
+    var stopped = false
+    while first or next_edge != e_idx:
+        first = false
+        out.push_back(next_edge)
+        var neighbors = ply_mesh.get_vertex_edges(next_vtx, next_edge)
+        if neighbors.size() != 4:
+            stopped = true
+            break
+        next_edge = neighbors[2]
+        if ply_mesh.edge_origin_idx(next_edge) == next_vtx:
+            next_vtx = ply_mesh.edge_destination_idx(next_edge)
+        elif ply_mesh.edge_destination_idx(next_edge) == next_vtx:
+            next_vtx = ply_mesh.edge_origin_idx(next_edge)
+        else:
+            assert(false, "edge %s does not contain vertex %s" % [next_edge, next_vtx])
+
+    if not stopped and next_edge == e_idx:
+        # full loop
+        return out
+
+    next_vtx = ply_mesh.edge_destination_idx(e_idx)
+    next_edge = e_idx
+    first = true
+    while first or next_edge != e_idx:
+        if not first: # don't double insert the start edge
+            out.push_back(next_edge)
+        first = false
+        var neighbors = ply_mesh.get_vertex_edges(next_vtx, next_edge)
+        if neighbors.size() != 4:
+            print(neighbors.size())
+            break
+        next_edge = neighbors[2]
+        if ply_mesh.edge_origin_idx(next_edge) == next_vtx:
+            next_vtx = ply_mesh.edge_destination_idx(next_edge)
+        elif ply_mesh.edge_destination_idx(next_edge) == next_vtx:
+            next_vtx = ply_mesh.edge_origin_idx(next_edge)
+        else:
+            assert(false, "edge %s does not contain vertex %s" % [next_edge, next_vtx])
+    
+    return out
+
 static func _apply_cut(ply_mesh, curr, next, walk, subdivides):
     var new_edge_idx = ply_mesh.edge_count()
     var new_face_idx = ply_mesh.face_count()
@@ -119,13 +166,13 @@ static func edge_cut(ply_mesh, e_idx, undo_redo=null):
             if subdivides.size() > 0:
                 subdivides = [subdivides[0]]
                 for w in walk_right.slice(1, walk_right.size()-1):
-                    var result = Subdivide.edge(ply_mesh, w[0], true)
+                    var result = Subdivide.edge(ply_mesh, w[0])
                     subdivides.push_back([w[0], result[0], result[1]])
                     pass
                 pass
             else:
                 for w in walk_right:
-                    var result = Subdivide.edge(ply_mesh, w[0], true)
+                    var result = Subdivide.edge(ply_mesh, w[0])
                     subdivides.push_back([w[0], result[0], result[1]])
                     pass
 

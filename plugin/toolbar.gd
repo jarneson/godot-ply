@@ -24,8 +24,9 @@ func _connect_toolbar_handlers():
     toolbar.face_select_loop_2.connect("pressed", self, "_face_select_loop", [1])
     toolbar.face_extrude.connect("pressed", self, "_face_extrude")
 
-    toolbar.edge_subdivide.connect("pressed", self, "_edge_subdivide")
+    toolbar.edge_select_loop.connect("pressed", self, "_edge_select_loop")
     toolbar.edge_cut_loop.connect("pressed", self, "_edge_cut_loop")
+    toolbar.edge_subdivide.connect("pressed", self, "_edge_subdivide")
 
 
 func startup():
@@ -74,23 +75,29 @@ func _generate_plane(undoable=true):
     if undoable:
         _plugin.selector.editing.ply_mesh.commit_edit("Generate Plane", _plugin.undo_redo, pre_edit)
 
+func _face_select_loop(offset):
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 1:
+        return
+    var loop = Loop.get_face_loop(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], offset)[0]
+    _plugin.selector.set_selection(loop)
+
 func _face_extrude():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:
         return
     Extrude.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo, 1)
 
-func _edge_subdivide():
+func _edge_select_loop():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() != 1:
         return
-    Subdivide.edge(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.undo_redo)
+    var loop = Loop.get_edge_loop(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0])
+    _plugin.selector.set_selection(loop)
 
 func _edge_cut_loop():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() != 1:
         return
     Loop.edge_cut(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.undo_redo)
 
-func _face_select_loop(offset):
-    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 1:
+func _edge_subdivide():
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() != 1:
         return
-    var loop = Loop.get_face_loop(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], offset)[0]
-    _plugin.selector.set_selection(loop)
+    Subdivide.edge(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.undo_redo)
