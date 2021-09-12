@@ -76,25 +76,13 @@ func _set_selection(new_mode, new_editing, new_selection):
     if root and new_editing and new_selection.size() > 0 and new_mode != SelectionMode.MESH:
         new_cursor = Spatial.new()
         new_handle = Handle.new(new_mode, new_editing, new_selection)
-        var sum = Vector3.ZERO
-        for idx in new_selection:
-            match new_mode:
-                SelectionMode.FACE:
-                    sum += new_editing.ply_mesh.face_median(idx)
-                SelectionMode.EDGE:
-                    sum += new_editing.ply_mesh.edge_midpoint(idx)
-                SelectionMode.VERTEX:
-                    sum += new_editing.ply_mesh.vertexes[idx]
         ur.add_do_reference(new_cursor)
         ur.add_do_reference(new_handle)
         ur.add_do_method(root, "add_child", new_cursor)
         ur.add_undo_method(root, "remove_child", new_cursor)
         ur.add_do_property(new_cursor, "transform", new_editing.global_transform)
-        ur.add_do_property(new_handle, "transform", Transform(Basis.IDENTITY, sum / new_selection.size()))
         ur.add_do_method(new_cursor, "add_child", new_handle)
         ur.add_undo_method(new_cursor, "remove_child", new_handle)
-        ur.add_do_method(new_handle, "begin")
-        ur.add_undo_method(new_handle, "begin")
     ur.add_do_property(self, "cursor", new_cursor)
     ur.add_undo_property(self, "cursor", cursor)
     ur.add_do_property(self, "handle", new_handle)

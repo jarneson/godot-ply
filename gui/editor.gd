@@ -43,13 +43,29 @@ func clear_children():
 		n.queue_free()
 
 func _on_mesh_updated():
+	var expected_children = 0
 	match mode:
-		SelectionMode.EDGE:
-			render_edges()
 		SelectionMode.FACE:
-			render_faces()
+			expected_children = edited_node.ply_mesh.face_count()
+		SelectionMode.EDGE:
+			expected_children = edited_node.ply_mesh.edge_count()
 		SelectionMode.VERTEX:
-			render_vertices()
+			expected_children = edited_node.ply_mesh.vertex_count()
+
+	var current_children = get_child_count()
+	if expected_children > current_children:
+		for i in range(current_children, expected_children):
+			match mode:
+				SelectionMode.FACE:
+					instance_face(i)
+				SelectionMode.EDGE:
+					instance_edge(i)
+				SelectionMode.VERTEX:
+					instance_vertex(i)
+	elif expected_children < current_children:
+		for i in range(expected_children, current_children):
+			print(get_child(i).name)
+			get_child(i).queue_free()
 
 func _on_transform_updated():
 	self.transform = edited_node.global_transform
@@ -88,7 +104,6 @@ func instance_edge(idx):
 	sc.plugin = plugin
 	add_child(sc)
 
-
 func render_edges():
 	clear_children()
 	if not edited_node:
@@ -96,14 +111,17 @@ func render_edges():
 	for idx in range(edited_node.ply_mesh.edge_count()):
 		instance_edge(idx)
 
+func instance_vertex(idx):
+	var v = edited_node.ply_mesh.vertexes[idx]
+	var sc = VertexScene.instance()
+	sc.name = "vertex_%s" % [idx]
+	sc.vertex_idx = idx
+	sc.ply_mesh = edited_node.ply_mesh
+	sc.transform.origin = v
+	sc.plugin = plugin
+	add_child(sc)
+
 func render_vertices():
 	clear_children()
 	for idx in range(edited_node.ply_mesh.vertex_count()):
-		var v = edited_node.ply_mesh.vertexes[idx]
-		var sc = VertexScene.instance()
-		sc.name = "vertex_%s" % [idx]
-		sc.vertex_idx = idx
-		sc.ply_mesh = edited_node.ply_mesh
-		sc.transform.origin = v
-		sc.plugin = plugin
-		add_child(sc)
+		instance_vertex(idx)
