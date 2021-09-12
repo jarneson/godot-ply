@@ -136,6 +136,7 @@ func get_state():
         "handle": handle_path,
         "cursor": cursor_path
     }
+    _enforce_selection()
     return d
 
 func set_state(d):
@@ -191,6 +192,8 @@ func _enforce_selection():
         hide_spatial_gizmo()
     else:
         show_spatial_gizmo()
+
+    _plugin.toolbar.toolbar.set_selection_mode(mode)
 
 func _on_selection_change():
     if _in_work > 0:
