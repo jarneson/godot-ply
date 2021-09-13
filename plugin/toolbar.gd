@@ -5,6 +5,7 @@ const SelectionMode = preload("../utils/selection_mode.gd")
 const Extrude = preload("../resources/extrude.gd")
 const Subdivide = preload("../resources/subdivide.gd")
 const Loop = preload("../resources/loop.gd")
+const Collapse = preload("../resources/collapse.gd")
 
 var toolbar = preload("../gui/toolbar/toolbar.tscn").instance()
 
@@ -27,6 +28,7 @@ func _connect_toolbar_handlers():
     toolbar.edge_select_loop.connect("pressed", self, "_edge_select_loop")
     toolbar.edge_cut_loop.connect("pressed", self, "_edge_cut_loop")
     toolbar.edge_subdivide.connect("pressed", self, "_edge_subdivide")
+    toolbar.edge_collapse.connect("pressed", self, "_edge_collapse")
 
 
 func startup():
@@ -63,7 +65,7 @@ func _generate_plane(undoable=true):
         return
 
     var vertexes = [Vector3(0,0,0), Vector3(1,0,0), Vector3(0,0,1), Vector3(1,0,1)]
-    var vertex_edges = [0, 0, 3, 3]
+    var vertex_edges = [0, 1, 2, 1]
     var edge_vertexes = [ 0, 1, 1, 3, 3, 2, 2, 0 ]
     var face_edges = [0, 0]
     var edge_faces = [ 1 , 0, 1 , 0, 1 , 0, 1 , 0 ]
@@ -101,3 +103,8 @@ func _edge_subdivide():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() != 1:
         return
     Subdivide.edge(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.undo_redo)
+
+func _edge_collapse():
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() == 0:
+        return
+    Collapse.edges(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo)

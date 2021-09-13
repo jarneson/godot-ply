@@ -28,6 +28,7 @@ onready var edge_tools = $EdgeTools
 onready var edge_select_loop = $EdgeTools/SelectLoop
 onready var edge_cut_loop  = $EdgeTools/CutLoop
 onready var edge_subdivide = $EdgeTools/Subdivide
+onready var edge_collapse = $EdgeTools/Collapse
 
 onready var vertex_tools = $VertexTools
 

@@ -222,6 +222,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="VSeparator3" type="VSeparator" parent="EdgeTools"]
+margin_right = 4.0
+margin_bottom = 600.0
+
+[node name="Collapse" type="ToolButton" parent="EdgeTools"]
+margin_left = 74.0
+margin_right = 167.0
+margin_bottom = 600.0
+text = "Collapse"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="VertexTools" type="HBoxContainer" parent="."]
 visible = false
 margin_left = 956.0
