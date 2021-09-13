@@ -1,7 +1,6 @@
 const Side = preload("../utils/direction.gd")
 
 static func edges(ply_mesh, edge_indices, undo_redo = null):
-    print("collapse edges: ", edge_indices)
     var pre_edit
     if undo_redo:
         pre_edit = ply_mesh.begin_edit()
@@ -55,33 +54,51 @@ static func edges(ply_mesh, edge_indices, undo_redo = null):
                 var f_idx = ply_mesh.edge_face(edge_idx, side) 
                 var boundary_edges = ply_mesh.get_face_edges_starting_at(edge_idx, side)
                 if boundary_edges.size() == 3:
-                    # if left face is tri, it's gone now
-                    # combine two remaining edges into one
+                    var winner = boundary_edges[1]
+                    var loser = boundary_edges[2]
                     evict_faces.push_back(f_idx)
-                    evict_edges.push_back(boundary_edges[2])
-                    var i1_this_side = ply_mesh.edge_side(boundary_edges[1], f_idx)
-                    var i2_this_side = ply_mesh.edge_side(boundary_edges[2], f_idx)
-                    var i2_other_side = Side.invert(i2_this_side)
-                    var i2_other_face = ply_mesh.edge_face(boundary_edges[2], i2_other_side)
-                    var fix_faces = ply_mesh.get_face_edges_starting_at(boundary_edges[2], i2_other_side)
-                    var fix_edge = fix_faces.back()
-                    # TODO: still more work here
-                    ply_mesh.set_edge_cw(fix_edge, ply_mesh.edge_side(fix_edge, i2_other_face), boundary_edges[1])
-                    ply_mesh.set_edge_face(boundary_edges[1], i1_this_side, i2_other_face)
-                    ply_mesh.set_edge_cw(boundary_edges[1], i1_this_side, ply_mesh.edge_cw(boundary_edges[2], i2_other_side))
-                    ply_mesh.set_vertex_edge(ply_mesh.edge_origin_idx(boundary_edges[1]), boundary_edges[1])
-                    ply_mesh.set_vertex_edge(ply_mesh.edge_destination_idx(boundary_edges[1]), boundary_edges[1])
-                    ply_mesh.set_face_edge(i2_other_face, boundary_edges[1])
+                    evict_edges.push_back(loser)
+
+                    ply_mesh.set_edge_cw(
+                        winner,
+                        ply_mesh.edge_side(winner, f_idx),
+                        ply_mesh.edge_cw(
+                            loser,
+                            Side.invert(ply_mesh.edge_side(loser, f_idx))
+                        )
+                    )
+
+                    ply_mesh.set_edge_face(
+                        winner,
+                        ply_mesh.edge_side(winner, f_idx),
+                        ply_mesh.edge_face(
+                            loser,
+                            Side.invert(ply_mesh.edge_side(loser, f_idx))
+                        )
+                    )
+
+                    ply_mesh.set_vertex_edge(ply_mesh.edge_origin_idx(winner), winner)
+                    ply_mesh.set_vertex_edge(ply_mesh.edge_destination_idx(winner), winner)
+
+                    var fix_face = ply_mesh.edge_face(
+                        loser,
+                        Side.invert(ply_mesh.edge_side(loser, f_idx))
+                    )
+
+                    var fix_edge = ply_mesh.get_face_edges_starting_at(
+                        loser,
+                        Side.invert(ply_mesh.edge_side(loser, f_idx))
+                    ).back()
+                    ply_mesh.set_edge_cw(fix_edge, ply_mesh.edge_side(fix_edge, fix_face), winner)
+                    ply_mesh.set_face_edge(fix_face, winner)
                     continue
                 var last_edge = boundary_edges.back()
                 ply_mesh.set_edge_cw(last_edge, ply_mesh.edge_side(last_edge, f_idx), boundary_edges[1])
                 ply_mesh.face_edges[f_idx] = boundary_edges[1]
 
             evict_edges.push_back(edge_idx)
-
     ply_mesh.evict_vertices(evict_vertexes, evict_edges)
     ply_mesh.evict_faces(evict_faces, evict_edges)
     ply_mesh.evict_edges(evict_edges)
-    print("SUCCESS")
     if undo_redo:
         ply_mesh.commit_edit("Collapse Edges", undo_redo, pre_edit)

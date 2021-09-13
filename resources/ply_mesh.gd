@@ -34,7 +34,6 @@ export var vertexes = PoolVector3Array()
 export var vertex_edges = PoolIntArray()
 
 func evict_vertices(idxs, ignore_edges=[]):
-    print("evict vertices %s not %s" % [idxs, ignore_edges])
     idxs.sort()
     idxs.invert()
     for idx in idxs:
@@ -57,7 +56,7 @@ func set_vertex(idx, pos):
     emit_signal("mesh_updated")
 
 func set_vertex_edge(idx, e_idx):
-	vertex_edges[idx] = e_idx
+    vertex_edges[idx] = e_idx
 
 func set_vertex_all(idx, pos, edge):
     vertexes[idx] = pos
@@ -128,10 +127,11 @@ export var edge_faces = PoolIntArray()
 export var edge_edges = PoolIntArray()
 
 func evict_edges(idxs):
-    print("evict edges %s" % [idxs])
     idxs.sort()
     idxs.invert()
+    var ignore = idxs.duplicate()
     for idx in idxs:
+        ignore.erase(idx)
         var l = 2*idx
         var r = 2*idx+1
         edge_vertexes.remove(r)
@@ -141,24 +141,21 @@ func evict_edges(idxs):
         edge_edges.remove(r)
         edge_edges.remove(l)
 
-        for i in range(edge_vertexes.size()):
-            if idxs.has(i/2):
+        for i in range(edge_edges.size()):
+            if ignore.has(i/2):
                 continue
             assert(edge_edges[i] != idx, "attempting to evict edge %s in use by edge %s" % [idx, i/2])
             if edge_edges[i] > idx:
-                print("decrement edge %s" % [i/2])
                 edge_edges[i] -= 1
         
         for i in range(vertex_edges.size()):
             assert(vertex_edges[i] != idx, "attempting to evict edge %s in use by vertex %s" % [idx, i])
             if vertex_edges[i] > idx:
-                print("decrement vertex %s" % [i])
                 vertex_edges[i] -= 1
         
         for i in range(face_edges.size()):
             assert(face_edges[i] != idx, "attempting to evict edge %s in use by face %s" % [idx, i])
             if face_edges[i] > idx:
-                print("decrement face %s" % [i])
                 face_edges[i] -= 1
 
 func edge_count():
@@ -281,7 +278,6 @@ func edge_midpoint(e):
 export var face_edges = PoolIntArray()
 
 func evict_faces(idxs, ignore_edges=[]):
-    print("evict faces %s not %s" % [idxs, ignore_edges])
     idxs.sort()
     idxs.invert()
     for f_idx in idxs:
@@ -301,7 +297,7 @@ func expand_faces(more):
     face_edges.resize(face_edges.size()+more)
 
 func set_face_edge(f, e):
-	face_edges[f] = e
+    face_edges[f] = e
 
 func get_face_edges(idx):
     return get_face_edges_starting_at(face_edges[idx], edge_side(face_edges[idx], idx))
