@@ -107,5 +107,5 @@ func _edge_subdivide():
 func _edge_collapse():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() == 0:
         return
-    Collapse.edges(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo)
-    _plugin.selector.set_selection([])
+    if Collapse.edges(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo):
+        _plugin.selector.set_selection([])

@@ -22,6 +22,39 @@ signal mesh_updated
 """
 const Side = preload("../utils/direction.gd")
 
+func is_manifold():
+	if edge_count() == 0:
+		return null
+
+	var arr = []
+	for idx in range(edge_count()):
+		arr.push_back(idx)
+
+	var q = [arr.pop_front()]
+	while q.size() > 0:
+		var e = q.pop_front()
+		for vtx in [edge_origin_idx(e), edge_destination_idx(e)]:
+			var neighbors = get_vertex_edges(vtx, e)
+			for n in neighbors:
+				if arr.has(n):
+					arr.erase(n)
+					q.push_back(n)
+
+	if arr.size() != 0:
+		return "Could not reach all edges."
+
+	var seen_edges = {}
+	for e in range(edge_count()):
+		seen_edges[e] = 0
+	for f in range(face_count()):
+		for e in get_face_edges(f):
+			seen_edges[e] += 1
+	
+	for e in seen_edges:
+		if seen_edges[e] != 2:
+			return "Edge %s has %s face(s)." % [e, seen_edges[e]]
+	return null
+
 """
 ██╗   ██╗███████╗██████╗ ████████╗██╗ ██████╗███████╗███████╗
 ██║   ██║██╔════╝██╔══██╗╚══██╔══╝██║██╔════╝██╔════╝██╔════╝
@@ -481,6 +514,14 @@ func face_intersect_ray_distance(face_idx, ray_start, ray_dir):
 """
 func begin_edit():
     return [vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges]
+
+func reject_edit(pre_edits):
+    vertexes = pre_edits[0]
+    vertex_edges = pre_edits[1]
+    edge_vertexes = pre_edits[2]
+    edge_faces = pre_edits[3]
+    edge_edges = pre_edits[4]
+    face_edges = pre_edits[5]
 
 func emit_change_signal():
     emit_signal("mesh_updated")

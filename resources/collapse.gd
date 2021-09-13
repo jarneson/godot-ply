@@ -121,5 +121,11 @@ static func edges(ply_mesh, edge_indices, undo_redo = null):
     ply_mesh.evict_vertices(evict_vertexes, evict_edges)
     ply_mesh.evict_faces(evict_faces, evict_edges)
     ply_mesh.evict_edges(evict_edges)
+    var manifold_err = ply_mesh.is_manifold()
+    if manifold_err:
+        ply_mesh.reject_edit(pre_edit)
+        print("Collapse would result in non-manifold mesh: ", manifold_err)
+        return false
     if undo_redo:
         ply_mesh.commit_edit("Collapse Edges", undo_redo, pre_edit)
+    return true
