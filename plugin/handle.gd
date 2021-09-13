@@ -39,14 +39,27 @@ func _move_to_median():
     var sum = Vector3.ZERO
     if _selection.size() == 0:
         return sum
+    var bail = false
     for idx in _selection:
         match _mode:
             SelectionMode.FACE:
+                if idx >= _editing.ply_mesh.face_count():
+                    bail = true
+                    break
                 sum += _editing.ply_mesh.face_median(idx)
             SelectionMode.EDGE:
+                if idx >= _editing.ply_mesh.edge_count():
+                    bail = true
+                    break
                 sum += _editing.ply_mesh.edge_midpoint(idx)
             SelectionMode.VERTEX:
+                if idx >= _editing.ply_mesh.vertex_count():
+                    bail = true
+                    break
                 sum += _editing.ply_mesh.vertexes[idx]
+    if bail:
+        # we will probably be removed from the tree
+        return
     previous_xform.origin = sum / _selection.size()
     self.transform.origin = previous_xform.origin
 
