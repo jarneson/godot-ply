@@ -36,6 +36,7 @@ There are tools for each selection mode:
     - ![loopicon](./icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
     - ![loopcuticon](./icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
     - ![subdivideicon](./icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
+    - ![collapseicon](./icons/edge_collapse.svg) Collapse: Collapses an edge into a single vertex at its midpoint
 - Vertex
     - None, yet!
 
