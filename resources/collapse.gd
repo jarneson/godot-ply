@@ -38,7 +38,7 @@ static func edges(ply_mesh, edge_indices, undo_redo = null):
         for v_idx in seen_vtxs:
             var neighbors = ply_mesh.get_vertex_edges(v_idx)
             for neighbor in neighbors:
-                if group.has(edge_indices):
+                if group.has(neighbor):
                     continue
                 ply_mesh.vertex_edges[new_vertex] = neighbor
                 if ply_mesh.edge_origin_idx(neighbor) == v_idx:

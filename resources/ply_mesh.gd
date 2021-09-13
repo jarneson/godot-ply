@@ -36,6 +36,7 @@ export var vertex_edges = PoolIntArray()
 func evict_vertices(idxs, ignore_edges=[]):
     idxs.sort()
     idxs.invert()
+    print("evict vertices %s not %s" % [idxs, ignore_edges])
     for idx in idxs:
         vertexes.remove(idx)
         vertex_edges.remove(idx)
@@ -129,6 +130,7 @@ export var edge_edges = PoolIntArray()
 func evict_edges(idxs):
     idxs.sort()
     idxs.invert()
+    print("evict edges %s" % [idxs])
     var ignore = idxs.duplicate()
     for idx in idxs:
         ignore.erase(idx)
@@ -280,6 +282,7 @@ export var face_edges = PoolIntArray()
 func evict_faces(idxs, ignore_edges=[]):
     idxs.sort()
     idxs.invert()
+    print("evict faces %s not %s" % [idxs, ignore_edges])
     for f_idx in idxs:
         face_edges.remove(f_idx)
 
