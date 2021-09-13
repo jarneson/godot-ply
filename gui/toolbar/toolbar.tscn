@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://addons/ply/icons/select_edge.svg" type="Texture" id=1]
 [ext_resource path="res://addons/ply/icons/select_face.svg" type="Texture" id=2]
@@ -13,6 +13,7 @@
 [ext_resource path="res://addons/ply/gui/toolbar/selection_button_group.tres" type="ButtonGroup" id=11]
 [ext_resource path="res://addons/ply/gui/toolbar/toolbar.gd" type="Script" id=12]
 [ext_resource path="res://addons/ply/icons/edge_select_loop.svg" type="Texture" id=13]
+[ext_resource path="res://addons/ply/icons/edge_collapse.svg" type="Texture" id=14]
 
 [sub_resource type="InputEventKey" id=1]
 scancode = 96
@@ -218,6 +219,20 @@ margin_right = 167.0
 margin_bottom = 600.0
 text = "Subdivide"
 icon = ExtResource( 10 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VSeparator3" type="VSeparator" parent="EdgeTools"]
+margin_right = 4.0
+margin_bottom = 600.0
+
+[node name="Collapse" type="ToolButton" parent="EdgeTools"]
+margin_left = 74.0
+margin_right = 167.0
+margin_bottom = 600.0
+text = "Collapse"
+icon = ExtResource( 14 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
