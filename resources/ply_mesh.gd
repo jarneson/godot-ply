@@ -330,7 +330,7 @@ func face_count():
 
 func expand_faces(more):
 	face_edges.resize(face_edges.size()+more)
-	face_surfaces.resize(face_edges.size()+more)
+	face_surfaces.resize(face_surfaces.size()+more)
 
 func set_face_edge(f, e):
 	face_edges[f] = e
@@ -481,7 +481,6 @@ func get_mesh():
 			
 			st.generate_normals()
 		surfaces[s_idx] = st.commit(mesh)
-
 	return mesh
 		
 

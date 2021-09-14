@@ -14,7 +14,6 @@ func _enter_tree():
     set_notify_transform(true)
     if not ply_mesh.is_connected("mesh_updated", self, "_on_mesh_updated"):
         ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
-    _on_mesh_updated()
 
 func _exit_tree():
     set_notify_transform(false)
