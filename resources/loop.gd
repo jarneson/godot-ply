@@ -90,6 +90,7 @@ static func _apply_cut(ply_mesh, curr, next, walk, subdivides):
 
     var existing_face = ply_mesh.edge_face(walk[curr][0], walk[curr][1])
     ply_mesh.face_edges[new_face_idx] = new_edge_idx
+    ply_mesh.face_surfaces[new_face_idx] = ply_mesh.face_surfaces[existing_face]
     ply_mesh.face_edges[existing_face] = new_edge_idx
 
     ply_mesh.set_edge_origin(new_edge_idx, subdivides[curr][2])
