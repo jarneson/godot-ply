@@ -263,7 +263,6 @@ func handle_click(camera, event):
         var min_dist = null
         var ai = editing.global_transform.affine_inverse()
         for hit in hits:
-            # TODO: apply transform first
             var dist = hit.intersect_ray_distance(ai.xform(ray_pos), ai.basis.xform(ray).normalized())
             if dist and (not min_dist or dist < min_dist):
                 min_dist = dist

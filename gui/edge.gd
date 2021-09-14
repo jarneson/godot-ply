@@ -67,4 +67,21 @@ func _on_selection_changed(_mode, _ply_instance, selection):
 		mesh_instance.set("material/0", material)
 
 func intersect_ray_distance(ray_start, ray_dir):
-	return (ray_start - global_transform.origin).length()
+	var origin = ply_mesh.edge_origin(edge_idx)
+	var destination = ply_mesh.edge_destination(edge_idx)
+	var e = destination - origin
+	var ax_1 = e.normalized()
+	var ax_2 = ax_1.cross(ray_dir).normalized()
+	var norm = ax_1.cross(ax_2).normalized()
+
+	var p = Plane(norm, norm.dot(origin))
+	var hit = p.intersects_ray(ray_start, ray_dir)
+	if not hit:
+		return null
+
+	var hit_offset = hit - origin
+	var t = ax_1.dot(hit_offset/e.length())
+	var dist = (t*e-hit_offset).length()
+	if dist <= 0.06:
+		return (hit - ray_start).length()
+	return null
