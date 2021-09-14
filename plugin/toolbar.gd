@@ -24,6 +24,7 @@ func _connect_toolbar_handlers():
     toolbar.face_select_loop_1.connect("pressed", self, "_face_select_loop", [0])
     toolbar.face_select_loop_2.connect("pressed", self, "_face_select_loop", [1])
     toolbar.face_extrude.connect("pressed", self, "_face_extrude")
+    toolbar.connect("set_face_surface", self, "_set_face_surface")
 
     toolbar.edge_select_loop.connect("pressed", self, "_edge_select_loop")
     toolbar.edge_cut_loop.connect("pressed", self, "_edge_cut_loop")
@@ -32,14 +33,14 @@ func _connect_toolbar_handlers():
 
 
 func startup():
-    _plugin.add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbar)
+    _plugin.add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , toolbar)
     toolbar.visible = false
     _connect_toolbar_handlers()
     _plugin.selector.connect("selection_changed", self, "_on_selection_changed")
 
 func teardown():
     toolbar.visible = false
-    _plugin.remove_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbar)
+    _plugin.remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , toolbar)
     _plugin.selector.disconnect("selection_changed", self, "_on_selection_changed")
     toolbar.queue_free()
 
@@ -68,12 +69,13 @@ func _generate_plane(undoable=true):
     var vertex_edges = [0, 1, 2, 1]
     var edge_vertexes = [ 0, 1, 1, 3, 3, 2, 2, 0 ]
     var face_edges = [0, 0]
+    var face_surfaces = [0, 0]
     var edge_faces = [ 1 , 0, 1 , 0, 1 , 0, 1 , 0 ]
     var edge_edges = [ 3 , 1, 0 , 2, 1 , 3, 2 , 0 ]
     var pre_edit = null
     if undoable:
         pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
-    _plugin.selector.editing.ply_mesh.set_mesh(vertexes, vertex_edges, face_edges, edge_vertexes, edge_faces, edge_edges)
+    _plugin.selector.editing.ply_mesh.set_mesh(vertexes, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, edge_edges)
     if undoable:
         _plugin.selector.editing.ply_mesh.commit_edit("Generate Plane", _plugin.undo_redo, pre_edit)
 
@@ -87,6 +89,14 @@ func _face_extrude():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:
         return
     Extrude.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo, 1)
+
+func _set_face_surface(s):
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:
+        return
+    var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
+    for f_idx in _plugin.selector.selection:
+        _plugin.selector.editing.ply_mesh.set_face_surface(f_idx, s)
+    _plugin.selector.editing.ply_mesh.commit_edit("Paint Face", _plugin.undo_redo, pre_edit)
 
 func _edge_select_loop():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() != 1:

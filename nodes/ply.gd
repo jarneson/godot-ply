@@ -3,9 +3,11 @@ extends MeshInstance
 
 signal transform_updated
 
+var default_material = preload("../debug_material.tres")
+
 var PlyMesh = preload("../resources/ply_mesh.gd")
 export(Resource) var ply_mesh = PlyMesh.new()
-export(Material) var material = preload("../debug_material.tres")
+export(Array, Material) var materials
 
 var mesh_instance = null
 func _enter_tree():
@@ -26,7 +28,11 @@ func _notification(what):
 func _on_mesh_updated():
     if ply_mesh is PlyMesh:
         self.mesh = ply_mesh.get_mesh()
-        set("material/0", material)
+        for i in range(self.mesh.get_surface_count()):
+            if materials and materials.size() > i and materials[i]:
+                set("material/%s" % [i], materials[i])
+            else:
+                set("material/%s" % [i], default_material)
     else:
         print("not a PlyMesh: %s" % [ply_mesh])
 

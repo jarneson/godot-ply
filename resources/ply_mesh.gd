@@ -309,12 +309,14 @@ func edge_midpoint(e):
 ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚══════╝╚══════╝
 """
 export var face_edges = PoolIntArray()
+export var face_surfaces = PoolIntArray()
 
 func evict_faces(idxs, ignore_edges=[]):
 	idxs.sort()
 	idxs.invert()
 	for f_idx in idxs:
 		face_edges.remove(f_idx)
+		face_surfaces.remove(f_idx)
 
 		for i in range(edge_faces.size()):
 			if ignore_edges.has(i/2):
@@ -328,6 +330,7 @@ func face_count():
 
 func expand_faces(more):
 	face_edges.resize(face_edges.size()+more)
+	face_surfaces.resize(face_edges.size()+more)
 
 func set_face_edge(f, e):
 	face_edges[f] = e
@@ -360,6 +363,12 @@ func face_normal(idx):
 
 func face_median(idx):
 	return geometric_median(face_vertices(idx))
+
+func face_surface(idx):
+	return face_surfaces[idx]
+
+func set_face_surface(idx, s):
+	face_surfaces[idx] = s
 
 """
 ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ ██╗███╗   ██╗ ██████╗ 
@@ -447,20 +456,40 @@ func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
 	return verts.size()
 
 func get_mesh():
-	var st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var max_surface = 0
+	var surface_map = {}
+	for f_idx in range(face_surfaces.size()):
+		var s = face_surfaces[f_idx]
+		if surface_map.has(s):
+			surface_map[s].push_back(f_idx)
+		else:
+			if s > max_surface:
+				max_surface = s
+			surface_map[s] = [f_idx]
+	var surfaces = []
+	surfaces.resize(max_surface+1)
+	var mesh = ArrayMesh.new()
+	for s_idx in range(surfaces.size()):
+		var st = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
-	var num_verts = 0
-	for v in range(face_edges.size()):
-		num_verts += render_face(st, v, Vector3.ZERO, num_verts)
-	
-	st.generate_normals()
-	return st.commit()
+		if surface_map.has(s_idx):
+			var num_verts = 0
+			var faces = surface_map[s_idx]
+			for v in faces:
+				num_verts += render_face(st, v, Vector3.ZERO, num_verts)
+			
+			st.generate_normals()
+		surfaces[s_idx] = st.commit(mesh)
 
-func set_mesh(vs, ves, fes, evs, efs, ees):
+	return mesh
+		
+
+func set_mesh(vs, ves, fes, fss, evs, efs, ees):
 	vertexes = PoolVector3Array(vs)
 	vertex_edges = PoolIntArray(ves)
 	face_edges = PoolIntArray(fes)
+	face_surfaces = PoolIntArray(fss)
 	edge_vertexes = PoolIntArray(evs)
 	edge_faces = PoolIntArray(efs)
 	edge_edges = PoolIntArray(ees)
@@ -513,7 +542,7 @@ func face_intersect_ray_distance(face_idx, ray_start, ray_dir):
    ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
 """
 func begin_edit():
-	return [vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges]
+	return [vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges, face_surfaces]
 
 func reject_edit(pre_edits):
 	vertexes = pre_edits[0]
@@ -522,6 +551,7 @@ func reject_edit(pre_edits):
 	edge_faces = pre_edits[3]
 	edge_edges = pre_edits[4]
 	face_edges = pre_edits[5]
+	face_surfaces = pre_edits[6]
 
 func emit_change_signal():
 	emit_signal("mesh_updated")
@@ -540,6 +570,8 @@ func commit_edit(name, undo_redo, pre_edits):
 	undo_redo.add_undo_property(self, "edge_edges", pre_edits[4])
 	undo_redo.add_do_property(self, "face_edges", face_edges)
 	undo_redo.add_undo_property(self, "face_edges", pre_edits[5])
+	undo_redo.add_do_property(self, "face_surfaces", face_surfaces)
+	undo_redo.add_undo_property(self, "face_surfaces", pre_edits[6])
 	undo_redo.add_do_method(self, "emit_change_signal")
 	undo_redo.add_undo_method(self, "emit_change_signal")
 	undo_redo.commit_action()
