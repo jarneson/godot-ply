@@ -6,6 +6,7 @@ const Extrude = preload("../resources/extrude.gd")
 const Subdivide = preload("../resources/subdivide.gd")
 const Loop = preload("../resources/loop.gd")
 const Collapse = preload("../resources/collapse.gd")
+const Connect = preload("../resources/connect.gd")
 
 var toolbar = preload("../gui/toolbar/toolbar.tscn").instance()
 
@@ -24,6 +25,7 @@ func _connect_toolbar_handlers():
     toolbar.face_select_loop_1.connect("pressed", self, "_face_select_loop", [0])
     toolbar.face_select_loop_2.connect("pressed", self, "_face_select_loop", [1])
     toolbar.face_extrude.connect("pressed", self, "_face_extrude")
+    toolbar.face_connect.connect("pressed", self, "_face_connect")
     toolbar.connect("set_face_surface", self, "_set_face_surface")
 
     toolbar.edge_select_loop.connect("pressed", self, "_edge_select_loop")
@@ -89,6 +91,11 @@ func _face_extrude():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:
         return
     Extrude.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo, 1)
+
+func _face_connect():
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 2:
+        return
+    Connect.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.selector.selection[1], _plugin.undo_redo)
 
 func _set_face_surface(s):
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:

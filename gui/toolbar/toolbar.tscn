@@ -179,6 +179,12 @@ shortcut = SubResource( 12 )
 text = "Extrude"
 icon = ExtResource( 7 )
 
+[node name="Connect" type="ToolButton" parent="FaceTools"]
+margin_top = 64.0
+margin_right = 12.0
+margin_bottom = 86.0
+text = "Connect"
+
 [node name="VSeparator3" type="HSeparator" parent="FaceTools"]
 margin_top = 100.0
 margin_right = 1024.0
