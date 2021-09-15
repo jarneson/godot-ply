@@ -129,15 +129,28 @@ static func faces(ply_mesh, faces, undo_redo=null, distance=1):
                 ply_mesh.set_edge_left_cw(new_edge_idx, edge_start+ordered_edges.size()+next)
 
     # fix winding of internal edges (eg map winding from old edge to new)
+    var vertexes_to_translate = {}
     for e in internal_edges:
         ply_mesh.face_edges[ply_mesh.edge_face_left(e)] = e
         ply_mesh.face_edges[ply_mesh.edge_face_right(e)] = e
-        ply_mesh.set_edge_origin_idx(e, old_to_new_vertex[ply_mesh.edge_origin_idx(e)])
-        ply_mesh.set_edge_destination_idx(e, old_to_new_vertex[ply_mesh.edge_destination_idx(e)])
+        if old_to_new_vertex.has(ply_mesh.edge_origin_idx(e)):
+            ply_mesh.set_edge_origin_idx(e, old_to_new_vertex[ply_mesh.edge_origin_idx(e)])
+        else:
+            vertexes_to_translate[ply_mesh.edge_origin_idx(e)] = true
+        if old_to_new_vertex.has(ply_mesh.edge_destination_idx(e)):
+            ply_mesh.set_edge_destination_idx(e, old_to_new_vertex[ply_mesh.edge_destination_idx(e)])
+        else:
+            vertexes_to_translate[ply_mesh.edge_destination_idx(e)] = true
         for side in [Side.LEFT, Side.RIGHT]:
             var ee = ply_mesh.edge_cw(e, side)
             var e_idx = external_edges.find(ee)
             if e_idx >= 0:
                 ply_mesh.set_edge_cw(e, side, old_to_new_edge[ee])
+
+    for v_idx in vertexes_to_translate:
+        ply_mesh.set_vertex_all(
+            v_idx,
+            ply_mesh.vertexes[v_idx] +extrude_direction,
+            ply_mesh.vertex_edges[v_idx])
     if undo_redo:
         ply_mesh.commit_edit("Extrude Faces", undo_redo, pre_edit)

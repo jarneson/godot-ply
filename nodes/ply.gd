@@ -9,6 +9,17 @@ var PlyMesh = preload("../resources/ply_mesh.gd")
 export(Resource) var ply_mesh = PlyMesh.new()
 export(Array, Material) var materials
 
+func _ready():
+    update_materials()
+
+func update_materials():
+    if self.mesh:
+        for i in range(self.mesh.get_surface_count()):
+            if materials and materials.size() > i and materials[i]:
+                set("material/%s" % [i], materials[i])
+            else:
+                set("material/%s" % [i], default_material)
+
 var mesh_instance = null
 func _enter_tree():
     set_notify_transform(true)
@@ -27,11 +38,7 @@ func _notification(what):
 func _on_mesh_updated():
     if ply_mesh is PlyMesh:
         self.mesh = ply_mesh.get_mesh()
-        for i in range(self.mesh.get_surface_count()):
-            if materials and materials.size() > i and materials[i]:
-                set("material/%s" % [i], materials[i])
-            else:
-                set("material/%s" % [i], default_material)
+        update_materials()
     else:
         print("not a PlyMesh: %s" % [ply_mesh])
 

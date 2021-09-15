@@ -58,7 +58,7 @@ func _generate_cube():
         return
     var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
     _generate_plane(false)
-    Extrude.face(_plugin.selector.editing.ply_mesh, 0)
+    Extrude.faces(_plugin.selector.editing.ply_mesh, [0])
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Cube", _plugin.undo_redo, pre_edit)
 
 func _generate_plane(undoable=true):
