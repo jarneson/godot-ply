@@ -32,18 +32,27 @@ func _ready():
 	is_selected = plugin.selector.selection.has(edge_idx)
 	_on_mesh_updated()
 
+var last_origin = null
+var last_destination = null
 func _on_mesh_updated():
 	if edge_idx >= ply_mesh.edge_count():
 		# about to be freed
 		return
 	var origin = ply_mesh.edge_origin(edge_idx)
 	var destination = ply_mesh.edge_destination(edge_idx)
+	if origin == last_origin and destination == last_destination:
+		return
+	last_origin = origin
+	last_destination = destination
 	transform.origin = (origin+destination)/2
 	var length = origin.distance_to(destination)
 
-	var new_mesh = CubeMesh.new()
-	new_mesh.size = Vector3(0.1, 0.1, length)
-	mesh_instance.mesh = new_mesh
+	if not mesh_instance.mesh:
+		var new_mesh = CubeMesh.new()
+		new_mesh.size = Vector3(0.1, 0.1, length)
+		mesh_instance.mesh = new_mesh
+	else:
+		mesh_instance.mesh.size = Vector3(0.1, 0.1, length)
 
 	var v_z = (destination - origin).normalized()
 	var up = Vector3.UP

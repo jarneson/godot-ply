@@ -41,14 +41,27 @@ func _ready():
 	is_selected = plugin.selector.selection.has(face_idx)
 	_on_mesh_updated()
 
+var prev_vertexes = null
 func _on_mesh_updated():
 	if face_idx >= ply_mesh.face_count():
 		# about to be freed
 		return
 	vertex_idxs = ply_mesh.face_vertex_indexes(face_idx)
 	vertexes.resize(0)
-	for idx in vertex_idxs:
-		vertexes.push_back(ply_mesh.vertexes[idx])
+	vertexes.resize(vertex_idxs.size())
+	for i in range(vertex_idxs.size()):
+		vertexes[i] = ply_mesh.vertexes[vertex_idxs[i]]
+
+	if prev_vertexes and prev_vertexes.size() == vertexes.size():
+		var skip = true
+		for idx in range(prev_vertexes.size()):
+			if prev_vertexes[idx] != vertexes[idx]:
+				skip = false
+				break
+		if skip:
+			return
+	prev_vertexes = vertexes
+
 	geometric_median = ply_mesh.geometric_median(vertexes)
 	face_normal = ply_mesh.average_vertex_normal(vertexes)
 	self.transform.origin = geometric_median + 0.0001 * face_normal
