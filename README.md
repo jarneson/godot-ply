@@ -32,6 +32,8 @@ There are tools for each selection mode:
     - ![loopicon1](./icons/face_loop.svg) Loop: a quad loop in one direction
     - ![loopicon2](./icons/face_loop_2.svg) Loop: a quad loop in the other direction
     - ![extrudeicon](./icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
+    - Connect: Remove the two selected faces, creating a new face between edges. Tries to select an edge pairing that works.. but not always.
+    - Set Face Texture: Moves the selected face to the selected surface, allowing multiple materials per Ply Instance.
 - Edge
     - ![loopicon](./icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
     - ![loopcuticon](./icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
