@@ -1,21 +1,25 @@
 const Side = preload("../utils/direction.gd")
 
 static func faces(ply_mesh, f1, f2, undo_redo=null):
-    print("connect faces: %s-> %s" % [f1, f2])
     var f1_edges = ply_mesh.get_face_edges(f1)
     var f2_edges = ply_mesh.get_face_edges(f2)
 
     if f1_edges.size() != f2_edges.size():
         print("faces have different number of edges")
         return
-    print(f1_edges)
-    print(f2_edges)
 
+    var seen_verts = {}
+    for e in f1_edges:
+        seen_verts[ply_mesh.edge_origin_idx(e)] = true
+        seen_verts[ply_mesh.edge_destination_idx(e)] = true
+    for e in f2_edges:
+        if seen_verts.has(ply_mesh.edge_origin_idx(e)) or seen_verts.has(ply_mesh.edge_destination_idx(e)):
+            print("faces share a vertex")
+            return
 
+    # there must be a better way to do this
     var min_dist = null
     var min_pair = null
-    var f1_normal = ply_mesh.face_normal(f1)
-    var p = Plane(f1_normal, f1_normal.dot(ply_mesh.edge_origin(f1_edges[0])))
     # we should project f2 onto the plane for e1_0
     for e1 in f1_edges:
         var e1_origin = ply_mesh.edge_origin(e1)
@@ -24,7 +28,7 @@ static func faces(ply_mesh, f1, f2, undo_redo=null):
         if e1_side == Side.RIGHT:
             var tmp = e1_origin
             e1_origin = e1_destination
-            e1_destination = e1_origin
+            e1_destination = tmp
         for e2 in f2_edges:
             var e2_origin = ply_mesh.edge_origin(e2)
             var e2_destination = ply_mesh.edge_destination(e2)
@@ -32,22 +36,18 @@ static func faces(ply_mesh, f1, f2, undo_redo=null):
             if e2_side == Side.RIGHT:
                 var tmp = e2_origin
                 e2_origin = e2_destination
-                e2_destination = e2_origin
-            var p_origin = p.project(e2_origin)
-            var p_destination = p.project(e2_destination)
+                e2_destination = tmp
             var dist = (e2_destination-e1_origin).length() + (e2_origin-e1_destination).length()
+            print("%s: %s %s->%s and %s->%s" % [[e1, e2], dist, e1_origin, e2_destination, e1_destination, e2_origin])
             if not min_dist or dist < min_dist:
                 min_dist = dist
                 min_pair = [e1, e2]
-
     print(min_pair, ": ", min_dist)
+
     f1_edges = ply_mesh.get_face_edges_starting_at(min_pair[0], ply_mesh.edge_side(min_pair[0], f1))
     f2_edges = ply_mesh.get_face_edges_starting_at(min_pair[1], ply_mesh.edge_side(min_pair[1], f2))
     f2_edges.invert()
     f2_edges.push_front(f2_edges.pop_back())
-
-    print(f1_edges)
-    print(f2_edges)
 
     var pre_edit = ply_mesh.begin_edit()
     # insert faces between edge maps
