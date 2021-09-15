@@ -11,34 +11,40 @@ static func faces(ply_mesh, f1, f2, undo_redo=null):
     print(f1_edges)
     print(f2_edges)
 
-    var f10_origin = ply_mesh.edge_origin(f1_edges[0])
-    var f10_destination = ply_mesh.edge_destination(f1_edges[0])
-    var f10_side = ply_mesh.edge_side(f1_edges[0], f1)
-    if f10_side == Side.RIGHT:
-        var tmp = f10_origin
-        f10_origin = f10_destination
-        f10_destination = f10_origin
 
     var min_dist = null
-    var min_e = null
-    for e in f2_edges:
-        var e_origin = ply_mesh.edge_origin(e)
-        var e_destination = ply_mesh.edge_destination(e)
-        var e_side = ply_mesh.edge_side(e, f2)
-        if e_side == Side.RIGHT:
-            var tmp = e_origin
-            e_origin = e_destination
-            e_destination = e_origin
-        var dist = (e_destination-f10_origin).length() + (e_origin-f10_destination).length()
-        if not min_dist or dist < min_dist:
-            min_dist = dist
-            min_e = e
+    var min_pair = null
+    var f1_normal = ply_mesh.face_normal(f1)
+    var p = Plane(f1_normal, f1_normal.dot(ply_mesh.edge_origin(f1_edges[0])))
+    # we should project f2 onto the plane for e1_0
+    for e1 in f1_edges:
+        var e1_origin = ply_mesh.edge_origin(e1)
+        var e1_destination = ply_mesh.edge_destination(e1)
+        var e1_side = ply_mesh.edge_side(e1, f1)
+        if e1_side == Side.RIGHT:
+            var tmp = e1_origin
+            e1_origin = e1_destination
+            e1_destination = e1_origin
+        for e2 in f2_edges:
+            var e2_origin = ply_mesh.edge_origin(e2)
+            var e2_destination = ply_mesh.edge_destination(e2)
+            var e2_side = ply_mesh.edge_side(e2, f2)
+            if e2_side == Side.RIGHT:
+                var tmp = e2_origin
+                e2_origin = e2_destination
+                e2_destination = e2_origin
+            var p_origin = p.project(e2_origin)
+            var p_destination = p.project(e2_destination)
+            var dist = (e2_destination-e1_origin).length() + (e2_origin-e1_destination).length()
+            if not min_dist or dist < min_dist:
+                min_dist = dist
+                min_pair = [e1, e2]
 
-    print(min_e, ": ", min_dist)
-    f2_edges = ply_mesh.get_face_edges_starting_at(min_e, ply_mesh.edge_side(min_e, f2))
-    var tmp = f2_edges.pop_front()
+    print(min_pair, ": ", min_dist)
+    f1_edges = ply_mesh.get_face_edges_starting_at(min_pair[0], ply_mesh.edge_side(min_pair[0], f1))
+    f2_edges = ply_mesh.get_face_edges_starting_at(min_pair[1], ply_mesh.edge_side(min_pair[1], f2))
     f2_edges.invert()
-    f2_edges.push_front(tmp)
+    f2_edges.push_front(f2_edges.pop_back())
 
     print(f1_edges)
     print(f2_edges)
@@ -91,6 +97,12 @@ static func faces(ply_mesh, f1, f2, undo_redo=null):
 
     # remove old faces
     ply_mesh.evict_faces([f1, f2])
+
+    var manifold_err = ply_mesh.is_manifold()
+    if manifold_err:
+        ply_mesh.reject_edit(pre_edit)
+        print("Collapse would result in non-manifold mesh: ", manifold_err)
+        return false
 
     if undo_redo:
         ply_mesh.commit_edit("Connect Faces", undo_redo, pre_edit)
