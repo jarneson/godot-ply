@@ -20,6 +20,8 @@ const Edge = preload("./gui/edge.gd")
 const Editor = preload("./gui/editor.gd")
 const Handle = preload("./plugin/handle.gd")
 
+const Interop = preload("./interop.gd")
+
 func get_plugin_name():
     return "Ply"
 
@@ -37,7 +39,11 @@ var undo_redo = null
 ███████║   ██║   ██║  ██║██║  ██║   ██║   ╚██████╔╝██║   ██╔╝      ██║   ███████╗██║  ██║██║  ██║██████╔╝╚██████╔╝╚███╔███╔╝██║ ╚████║
 ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝   ╚═╝       ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝
 """
+var interop = null
+
 func _enter_tree() -> void:
+    interop = Interop.get_instance(self)
+    interop.register("ply", self)
     add_custom_type("PlyInstance", "MeshInstance", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
     undo_redo = get_undo_redo()
 
@@ -52,6 +58,7 @@ func _enter_tree() -> void:
     set_input_event_forwarding_always_enabled()
 
 func _exit_tree() -> void:
+    interop.deregister("ply", self)
     remove_custom_type("PlyInstance")
 
     toolbar.teardown()
