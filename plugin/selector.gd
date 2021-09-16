@@ -103,6 +103,15 @@ func _set_selection(new_mode, new_editing, new_selection):
     ur.add_undo_property(self, "_in_work", expected_undo_work)
     ur.commit_action()
 
+const _scene_sentry_node_name = "__ply__scene_sentry"
+func _scene_startup_check(root):
+    if root.get_node_or_null(_scene_sentry_node_name):
+        return true
+    var s = Node.new()
+    s.name = _scene_sentry_node_name
+    root.add_child(s)
+    return false
+
 func get_state():
     var editing_path = null
     var handle_path = null
@@ -128,22 +137,21 @@ func get_state():
 
 func set_state(d):
     var root = _plugin.get_tree().get_edited_scene_root()
-    if d and root:
+    if d and root and _scene_startup_check(root):
         mode = d["mode"]
         selection = d["selection"]
-        if root:
-            if d["editing"]:
-                editing = root.get_node_or_null(d["editing"])
-            else:
-                editing = null
-            if d["handle"]:
-                handle = root.get_node_or_null(d["handle"])
-            else:
-                handle = null
-            if d["cursor"]:
-                cursor = root.get_node_or_null(d["cursor"])
-            else:
-                cursor = null
+        if d["editing"]:
+            editing = root.get_node_or_null(d["editing"])
+        else:
+            editing = null
+        if d["handle"]:
+            handle = root.get_node_or_null(d["handle"])
+        else:
+            handle = null
+        if d["cursor"]:
+            cursor = root.get_node_or_null(d["cursor"])
+        else:
+            cursor = null
     else:
         editing = null
         selection = []
