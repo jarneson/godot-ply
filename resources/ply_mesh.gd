@@ -455,7 +455,7 @@ func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
 
 	return verts.size()
 
-func get_mesh():
+func get_mesh(mesh=null):
 	var max_surface = 0
 	var surface_map = {}
 	for f_idx in range(face_surfaces.size()):
@@ -468,7 +468,10 @@ func get_mesh():
 			surface_map[s] = [f_idx]
 	var surfaces = []
 	surfaces.resize(max_surface+1)
-	var mesh = ArrayMesh.new()
+	if not mesh:
+		mesh = ArrayMesh.new()
+	while mesh.get_surface_count() > 0:
+		mesh.surface_remove(0)
 	for s_idx in range(surfaces.size()):
 		var st = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)

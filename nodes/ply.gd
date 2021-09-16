@@ -37,7 +37,7 @@ func _notification(what):
 
 func _on_mesh_updated():
     if ply_mesh is PlyMesh:
-        self.mesh = ply_mesh.get_mesh()
+        self.mesh = ply_mesh.get_mesh(self.mesh)
         update_materials()
     else:
         print("not a PlyMesh: %s" % [ply_mesh])
