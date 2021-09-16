@@ -246,12 +246,13 @@ func toggle_selected(idx):
 func is_selecting():
     return editing and not _plugin.toolbar.in_transform_mode() and mode != SelectionMode.MESH
 
-func handle_click(camera, event):
-    if event.pressed and is_selecting():
-        var gsr = _plugin.interop.get_plugin_or_null("gsr")
-        if gsr and gsr.state != gsr.GSRState.NONE:
-            return
+var _mouse_input_enabled = true
 
+func toggle_mouse_input(enabled):
+    _mouse_input_enabled = enabled
+
+func handle_click(camera, event):
+    if event.pressed and is_selecting() and _mouse_input_enabled:
         var ray = camera.project_ray_normal(event.position) # todo: viewport scale
         var ray_pos = camera.project_ray_origin(event.position) # todo: viewport scale
         var root = _plugin.get_tree().get_edited_scene_root()

@@ -42,7 +42,7 @@ var undo_redo = null
 var interop = null
 
 func _enter_tree() -> void:
-    interop = Interop.get_instance(self)
+    interop = Interop.get_instance(self, "res://addons/ply/interop_node.gd")
     interop.register("ply", self)
     add_custom_type("PlyInstance", "MeshInstance", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
     undo_redo = get_undo_redo()
@@ -74,6 +74,19 @@ func get_state():
 func set_state(state):
     selector.set_state(state.get("selector"))
     spatial_editor.set_state(state.get("spatial_editor"))
+
+func _interop_notification(what, args):
+    match what:
+        interop.NOTIFY_CODE_WORK_STARTED:
+            match args:
+                "gsr_transform":
+                    toolbar.toggle_gsr_buttons(false)
+                    selector.toggle_mouse_input(false)
+        interop.NOTIFY_CODE_WORK_ENDED:
+            match args:
+                "gsr_transform":
+                    toolbar.toggle_gsr_buttons(true)
+                    selector.toggle_mouse_input(true)
 
 """
 ███████╗███████╗██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗

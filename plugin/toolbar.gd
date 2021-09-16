@@ -47,6 +47,12 @@ func teardown():
     _plugin.selector.disconnect("selection_changed", self, "_on_selection_changed")
     toolbar.queue_free()
 
+func toggle_gsr_buttons(enabled):
+    toolbar.selection_mesh.disabled = not enabled
+    toolbar.selection_face.disabled = not enabled
+    toolbar.selection_edge.disabled = not enabled
+    toolbar.selection_vertex.disabled = not enabled
+
 func in_transform_mode():
     return toolbar.transform_toggle.pressed
 
