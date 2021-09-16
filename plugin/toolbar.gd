@@ -7,6 +7,7 @@ const Subdivide = preload("../resources/subdivide.gd")
 const Loop = preload("../resources/loop.gd")
 const Collapse = preload("../resources/collapse.gd")
 const Connect = preload("../resources/connect.gd")
+const Generate = preload("../resources/generate.gd")
 
 var toolbar = preload("../gui/toolbar/toolbar.tscn").instance()
 
@@ -59,27 +60,17 @@ func _generate_cube():
     if not _plugin.selector.editing:
         return
     var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
-    _generate_plane(false)
+    var vertexes = [Vector3(-0.5,-0.5,-0.5), Vector3(0.5,-0.5,-0.5), Vector3(0.5,-0.5,0.5), Vector3(-0.5,-0.5,0.5)]
+    Generate.nGon(_plugin.selector.editing.ply_mesh, vertexes)
     Extrude.faces(_plugin.selector.editing.ply_mesh, [0])
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Cube", _plugin.undo_redo, pre_edit)
 
-func _generate_plane(undoable=true):
+func _generate_plane():
     if not _plugin.selector.editing:
         return
 
-    var vertexes = [Vector3(0,0,0), Vector3(1,0,0), Vector3(0,0,1), Vector3(1,0,1)]
-    var vertex_edges = [0, 1, 2, 1]
-    var edge_vertexes = [ 0, 1, 1, 3, 3, 2, 2, 0 ]
-    var face_edges = [0, 0]
-    var face_surfaces = [0, 0]
-    var edge_faces = [ 1 , 0, 1 , 0, 1 , 0, 1 , 0 ]
-    var edge_edges = [ 3 , 1, 0 , 2, 1 , 3, 2 , 0 ]
-    var pre_edit = null
-    if undoable:
-        pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
-    _plugin.selector.editing.ply_mesh.set_mesh(vertexes, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, edge_edges)
-    if undoable:
-        _plugin.selector.editing.ply_mesh.commit_edit("Generate Plane", _plugin.undo_redo, pre_edit)
+    var vertexes = [Vector3(-0.5,0,-0.5), Vector3(0.5,0,-0.5), Vector3(0.5,0,0.5), Vector3(-0.5,0,0.5)]
+    Generate.nGon(_plugin.selector.editing.ply_mesh, vertexes, _plugin.undo_redo, "Generate Plane")
 
 func _face_select_loop(offset):
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 1:
