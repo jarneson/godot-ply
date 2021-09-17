@@ -42,7 +42,7 @@ var undo_redo = null
 var interop = null
 
 func _enter_tree() -> void:
-	interop = Interop.get_instance(self, "res://addons/ply/interop_node.gd")
+    interop = Interop.get_instance(self, "res://addons/ply/interop_node.gd")
     interop.register("ply", self)
     add_custom_type("PlyInstance", "MeshInstance", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
     undo_redo = get_undo_redo()
