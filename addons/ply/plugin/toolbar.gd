@@ -125,6 +125,13 @@ func _export_to_obj():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.MESH:
         return
     print("export to obj")
+    var fd = FileDialog.new()
+    fd.set_filters(PoolStringArray(["*.obj ; OBJ Files"]))
+    var base_control = _plugin.get_editor_interface().get_base_control()
+    base_control.add_child(fd)
+    fd.popup_centered(Vector2(480, 600))
+    var file_name = yield(fd, "file_selected")
+    print("export to: ", file_name)
     var obj_file = File.new()
-    obj_file.open("user://ply.obj", File.WRITE)
+    obj_file.open(file_name, File.WRITE)
     ExportMesh.export_to_obj(_plugin.selector.editing.ply_mesh, obj_file)
