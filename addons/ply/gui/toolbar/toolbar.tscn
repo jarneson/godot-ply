@@ -201,13 +201,13 @@ align = 2
 [node name="Spacer" type="CenterContainer" parent="."]
 margin_top = 238.0
 margin_right = 1024.0
-margin_bottom = 535.0
+margin_bottom = 509.0
 size_flags_vertical = 3
 
 [node name="ToolsLabel" type="MarginContainer" parent="."]
-margin_top = 539.0
+margin_top = 513.0
 margin_right = 1024.0
-margin_bottom = 576.0
+margin_bottom = 550.0
 
 [node name="ColorRect" type="ColorRect" parent="ToolsLabel"]
 margin_right = 1024.0
@@ -239,13 +239,20 @@ __meta__ = {
 }
 
 [node name="MeshTools" type="VBoxContainer" parent="."]
-margin_top = 580.0
+margin_top = 554.0
 margin_right = 1024.0
 margin_bottom = 600.0
 
-[node name="Generators" type="MenuButton" parent="MeshTools"]
+[node name="ExportOBJ" type="ToolButton" parent="MeshTools"]
 margin_right = 1024.0
-margin_bottom = 20.0
+margin_bottom = 22.0
+text = "Export to OBJ"
+align = 2
+
+[node name="Generators" type="MenuButton" parent="MeshTools"]
+margin_top = 26.0
+margin_right = 1024.0
+margin_bottom = 46.0
 text = "Generators"
 items = [ "Plane", null, 0, false, false, 0, 0, null, "", false, "Cube", null, 0, false, false, 1, 0, null, "", false ]
 

@@ -18,6 +18,7 @@ onready var selection_edge   = $Edge
 onready var selection_vertex = $Vertex
 
 onready var mesh_tools = $MeshTools
+onready var mesh_export_to_obj = $MeshTools/ExportOBJ
 onready var mesh_generators = $MeshTools/Generators
 
 onready var face_tools = $FaceTools

@@ -8,6 +8,7 @@ const Loop = preload("../resources/loop.gd")
 const Collapse = preload("../resources/collapse.gd")
 const Connect = preload("../resources/connect.gd")
 const Generate = preload("../resources/generate.gd")
+const ExportMesh = preload("../resources/export.gd")
 
 var toolbar = preload("../gui/toolbar/toolbar.tscn").instance()
 
@@ -19,6 +20,8 @@ func _init(plugin):
 func _connect_toolbar_handlers():
     if toolbar.face_select_loop_1.is_connected("pressed", self, "_generate_cube"):
         return
+
+    toolbar.mesh_export_to_obj.connect("pressed", self, "_export_to_obj")
 
     toolbar.connect("generate_plane", self, "_generate_plane")
     toolbar.connect("generate_cube", self, "_generate_cube")
@@ -117,3 +120,11 @@ func _edge_collapse():
         return
     if Collapse.edges(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo):
         _plugin.selector.set_selection([])
+
+func _export_to_obj():
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.MESH:
+        return
+    print("export to obj")
+    var obj_file = File.new()
+    obj_file.open("user://ply.obj", File.WRITE)
+    ExportMesh.export_to_obj(_plugin.selector.editing.ply_mesh, obj_file)

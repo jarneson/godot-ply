@@ -25,6 +25,7 @@ There are two editor modes are toggled by the ![transformicon](./addons/ply/icon
 
 There are tools for each selection mode:
 - Mesh
+    - Export to OBJ: Exports a ply.obj file to the user:// directory
     - Generators
         - Plane: Generate a two-sided unit plane
         - Cube: Generate a unit cube
