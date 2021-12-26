@@ -1,4 +1,4 @@
-# ![icon](./icons/plugin.svg) godot-ply ![icon](./icons/plugin.svg)
+# ![icon](./addons/ply/icons/plugin.svg) godot-ply ![icon](./addons/ply/icons/plugin.svg)
 Godot plugin for in-editor box modeling.
 
 Only tested in Godot 3.3.3. Icons are only good for dark mode.
@@ -10,16 +10,16 @@ See demos [on youtube](https://www.youtube.com/channel/UCf1IV6ABf3a4nW1wEyPwmMQ)
 - Activate the plugin in your project settings.
 
 ## Usage
-Create a ![nodeicon](./icons/plugin.svg) PlyInstance node in your scene, and select it.
+Create a ![nodeicon](./addons/ply/icons/plugin.svg) PlyInstance node in your scene, and select it.
 
 ### Editing Meshes
 There are four selection modes:
-- ![meshicon](./icons/select_mesh.svg) ` 1 ` Mesh
-- ![faceicon](./icons/select_face.svg) ` 2 ` Face
-- ![edgeicon](./icons/select_edge.svg) ` 3 ` Edge
-- ![vertexicon](./icons/select_vertex.svg) ` 4 ` Vertex
+- ![meshicon](./addons/ply/icons/select_mesh.svg) ` 1 ` Mesh
+- ![faceicon](./addons/ply/icons/select_face.svg) ` 2 ` Face
+- ![edgeicon](./addons/ply/icons/select_edge.svg) ` 3 ` Edge
+- ![vertexicon](./addons/ply/icons/select_vertex.svg) ` 4 ` Vertex
 
-There are two editor modes are toggled by the ![transformicon](./icons/icon_tool_move.svg) `` ` `` Transform toggle in the menu.
+There are two editor modes are toggled by the ![transformicon](./addons/ply/icons/icon_tool_move.svg) `` ` `` Transform toggle in the menu.
 - Selection mode: select faces, edges, and vertices with the mouse
 - Transform mode: use the gizmo to translate, rotate and scale
 
@@ -29,16 +29,16 @@ There are tools for each selection mode:
         - Plane: Generate a two-sided unit plane
         - Cube: Generate a unit cube
 - Face
-    - ![loopicon1](./icons/face_loop.svg) Loop: a quad loop in one direction
-    - ![loopicon2](./icons/face_loop_2.svg) Loop: a quad loop in the other direction
-    - ![extrudeicon](./icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
+    - ![loopicon1](./addons/ply/icons/face_loop.svg) Loop: a quad loop in one direction
+    - ![loopicon2](./addons/ply/icons/face_loop_2.svg) Loop: a quad loop in the other direction
+    - ![extrudeicon](./addons/ply/icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
     - Connect: Remove the two selected faces, creating a new face between edges. Tries to select an edge pairing that works.. but not always.
     - Set Face Texture: Moves the selected face to the selected surface, allowing multiple materials per Ply Instance.
 - Edge
-    - ![loopicon](./icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
-    - ![loopcuticon](./icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
-    - ![subdivideicon](./icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
-    - ![collapseicon](./icons/edge_collapse.svg) Collapse: Collapses an edge into a single vertex at its midpoint
+    - ![loopicon](./addons/ply/icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
+    - ![loopcuticon](./addons/ply/icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
+    - ![subdivideicon](./addons/ply/icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
+    - ![collapseicon](./addons/ply/icons/edge_collapse.svg) Collapse: Collapses an edge into a single vertex at its midpoint
 - Vertex
     - None, yet!
 
