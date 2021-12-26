@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/extrude_face.svg-134615a5821bf74ab186ac905ccf57dc.stex"
+path="res://.import/plugin.svg-871b74bda4ef6736cac7febd127704cd.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/ply/icons/extrude_face.svg"
-dest_files=[ "res://.import/extrude_face.svg-134615a5821bf74ab186ac905ccf57dc.stex" ]
+source_file="res://addons/ply/icons/plugin.svg"
+dest_files=[ "res://.import/plugin.svg-871b74bda4ef6736cac7febd127704cd.stex" ]
 
 [params]
 
@@ -28,6 +28,7 @@ process/fix_alpha_border=true
 process/premult_alpha=false
 process/HDR_as_SRGB=false
 process/invert_color=false
+process/normal_map_invert_y=false
 stream=false
 size_limit=0
 detect_3d=true

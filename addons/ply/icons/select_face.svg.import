@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/edge_select_loop.svg-d273d292101030cb0c29f57b677673c8.stex"
+path="res://.import/select_face.svg-c62a3226a17f4355889302bae3ddd461.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/ply/icons/edge_select_loop.svg"
-dest_files=[ "res://.import/edge_select_loop.svg-d273d292101030cb0c29f57b677673c8.stex" ]
+source_file="res://addons/ply/icons/select_face.svg"
+dest_files=[ "res://.import/select_face.svg-c62a3226a17f4355889302bae3ddd461.stex" ]
 
 [params]
 
@@ -28,6 +28,7 @@ process/fix_alpha_border=true
 process/premult_alpha=false
 process/HDR_as_SRGB=false
 process/invert_color=false
+process/normal_map_invert_y=false
 stream=false
 size_limit=0
 detect_3d=true

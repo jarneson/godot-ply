@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/icon_tool_move.svg-1bc57757ce48266f4d9cf29cc20c9723.stex"
+path="res://.import/loop_cut.svg-3e7d9517fd3957b557e72b57c5e1f714.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/ply/icons/icon_tool_move.svg"
-dest_files=[ "res://.import/icon_tool_move.svg-1bc57757ce48266f4d9cf29cc20c9723.stex" ]
+source_file="res://addons/ply/icons/loop_cut.svg"
+dest_files=[ "res://.import/loop_cut.svg-3e7d9517fd3957b557e72b57c5e1f714.stex" ]
 
 [params]
 
@@ -28,6 +28,7 @@ process/fix_alpha_border=true
 process/premult_alpha=false
 process/HDR_as_SRGB=false
 process/invert_color=false
+process/normal_map_invert_y=false
 stream=false
 size_limit=0
 detect_3d=true
