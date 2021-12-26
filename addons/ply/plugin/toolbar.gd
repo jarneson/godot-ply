@@ -25,6 +25,7 @@ func _connect_toolbar_handlers():
 
     toolbar.connect("generate_plane", self, "_generate_plane")
     toolbar.connect("generate_cube", self, "_generate_cube")
+    toolbar.connect("generate_mesh", self, "_generate_mesh")
 
     toolbar.face_select_loop_1.connect("pressed", self, "_face_select_loop", [0])
     toolbar.face_select_loop_2.connect("pressed", self, "_face_select_loop", [1])
@@ -59,7 +60,7 @@ func _on_selection_changed(mode, editing, _selection):
     else:
         toolbar.visible = false
 
-func _generate_cube():
+func _generate_cube(params = null):
     if not _plugin.selector.editing:
         return
     var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
@@ -68,12 +69,58 @@ func _generate_cube():
     Extrude.faces(_plugin.selector.editing.ply_mesh, [0])
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Cube", _plugin.undo_redo, pre_edit)
 
-func _generate_plane():
+func _generate_plane(params = null):
     if not _plugin.selector.editing:
         return
 
     var vertexes = [Vector3(-0.5,0,-0.5), Vector3(0.5,0,-0.5), Vector3(0.5,0,0.5), Vector3(-0.5,0,0.5)]
     Generate.nGon(_plugin.selector.editing.ply_mesh, vertexes, _plugin.undo_redo, "Generate Plane")
+
+func _generate_cylinder(params = null):
+    if not _plugin.selector.editing:
+        return
+
+    var radius = 1
+    var depth = 1
+    var num_points = 8
+    var num_segments = 1
+    if params:
+        radius = params[0]
+        depth = params[1]
+        num_points = params[2]
+        num_segments = params[3]
+
+    var vertexes = []
+    for i in range(num_points):
+        print(float(i)/float(num_points)*2*PI)
+        vertexes.push_back(Vector3(
+            radius*cos(float(i)/num_points*2*PI),
+            -depth/2,
+            radius*sin(float(i)/num_points*2*PI)
+        ))
+
+    print(vertexes)
+
+    var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
+    Generate.nGon(_plugin.selector.editing.ply_mesh, vertexes)
+    for i in range(num_segments):
+        Extrude.faces(_plugin.selector.editing.ply_mesh, [0], null, depth / num_segments)
+    _plugin.selector.editing.ply_mesh.commit_edit("Generate Cylinder", _plugin.undo_redo, pre_edit)
+
+func _generate_mesh(arr):
+    var shape = arr[0]
+    var params = arr[1]
+    print("Generate shape ", shape, ": ", params)
+    match shape:
+        "Plane":
+            _generate_plane(params)
+        "Cube":
+            _generate_cube(params)
+        "Icosphere":
+            print("Not yet implemented")
+        "Cylinder":
+            _generate_cylinder(params)
+
 
 func _face_select_loop(offset):
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 1:

@@ -5,6 +5,7 @@ const SelectionMode = preload("../../utils/selection_mode.gd")
 
 signal generate_plane
 signal generate_cube
+signal generate_mesh(arr)
 signal set_face_surface(s)
 
 signal selection_mode_changed(mode)
@@ -19,7 +20,9 @@ onready var selection_vertex = $Vertex
 
 onready var mesh_tools = $MeshTools
 onready var mesh_export_to_obj = $MeshTools/ExportOBJ
+onready var mesh_quick_generators = $MeshTools/QuickGenerators
 onready var mesh_generators = $MeshTools/Generators
+onready var generators_modal = $GeneratorsModal
 
 onready var face_tools = $FaceTools
 onready var face_select_loop_1 = $FaceTools/FaceLoop1
@@ -62,7 +65,9 @@ func _ready():
 	face_set_shape_8.connect("pressed", self, "_set_face_surface", [7])
 	face_set_shape_9.connect("pressed", self, "_set_face_surface", [8])
 
-	mesh_generators.get_popup().connect("id_pressed", self, "_on_generators_id_pressed")
+	mesh_quick_generators.get_popup().connect("id_pressed", self, "_on_generators_id_pressed")
+	mesh_generators.connect("pressed", self, "_open_generators_modal")
+	generators_modal.connect("confirmed", self, "_on_generators_modal_confirmed")
 
 func _process(_delta):
 	_update_tool_visibility()
@@ -97,6 +102,12 @@ func _on_generators_id_pressed(idx):
 			emit_signal("generate_plane")
 		"Cube":
 			emit_signal("generate_cube")
+
+func _open_generators_modal():
+	generators_modal.popup_centered_minsize(Vector2(800, 600))
+
+func _on_generators_modal_confirmed():
+	emit_signal("generate_mesh", generators_modal.get_selection())
 
 func _set_face_surface(idx):
 	emit_signal("set_face_surface", idx)

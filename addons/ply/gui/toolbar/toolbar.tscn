@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=31 format=2]
 
 [ext_resource path="res://addons/ply/icons/select_edge.svg" type="Texture" id=1]
 [ext_resource path="res://addons/ply/icons/select_face.svg" type="Texture" id=2]
@@ -15,6 +15,7 @@
 [ext_resource path="res://addons/ply/icons/edge_select_loop.svg" type="Texture" id=13]
 [ext_resource path="res://addons/ply/icons/edge_collapse.svg" type="Texture" id=14]
 [ext_resource path="res://addons/ply/icons/plugin.svg" type="Texture" id=15]
+[ext_resource path="res://addons/ply/gui/toolbar/generators.tscn" type="PackedScene" id=16]
 
 [sub_resource type="InputEventKey" id=1]
 scancode = 96
@@ -201,13 +202,13 @@ align = 2
 [node name="Spacer" type="CenterContainer" parent="."]
 margin_top = 238.0
 margin_right = 1024.0
-margin_bottom = 509.0
+margin_bottom = 483.0
 size_flags_vertical = 3
 
 [node name="ToolsLabel" type="MarginContainer" parent="."]
-margin_top = 513.0
+margin_top = 487.0
 margin_right = 1024.0
-margin_bottom = 550.0
+margin_bottom = 524.0
 
 [node name="ColorRect" type="ColorRect" parent="ToolsLabel"]
 margin_right = 1024.0
@@ -239,7 +240,7 @@ __meta__ = {
 }
 
 [node name="MeshTools" type="VBoxContainer" parent="."]
-margin_top = 554.0
+margin_top = 528.0
 margin_right = 1024.0
 margin_bottom = 600.0
 
@@ -249,12 +250,20 @@ margin_bottom = 22.0
 text = "Export to OBJ"
 align = 2
 
-[node name="Generators" type="MenuButton" parent="MeshTools"]
+[node name="QuickGenerators" type="MenuButton" parent="MeshTools"]
 margin_top = 26.0
 margin_right = 1024.0
 margin_bottom = 46.0
-text = "Generators"
+text = "Quick Generate..."
+align = 2
 items = [ "Plane", null, 0, false, false, 0, 0, null, "", false, "Cube", null, 0, false, false, 1, 0, null, "", false ]
+
+[node name="Generators" type="ToolButton" parent="MeshTools"]
+margin_top = 50.0
+margin_right = 1024.0
+margin_bottom = 72.0
+text = "Generate"
+align = 2
 
 [node name="FaceTools" type="VBoxContainer" parent="."]
 visible = false
@@ -449,3 +458,11 @@ margin_left = 956.0
 margin_top = 68.0
 margin_right = 960.0
 margin_bottom = 668.0
+
+[node name="GeneratorsModal" parent="." instance=ExtResource( 16 )]
+visible = false
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 434.0
+margin_right = 1024.0
+margin_bottom = 600.0
