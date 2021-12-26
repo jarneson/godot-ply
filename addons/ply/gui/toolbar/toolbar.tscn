@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://addons/ply/icons/select_edge.svg" type="Texture" id=1]
 [ext_resource path="res://addons/ply/icons/select_face.svg" type="Texture" id=2]
@@ -14,6 +14,7 @@
 [ext_resource path="res://addons/ply/gui/toolbar/toolbar.gd" type="Script" id=12]
 [ext_resource path="res://addons/ply/icons/edge_select_loop.svg" type="Texture" id=13]
 [ext_resource path="res://addons/ply/icons/edge_collapse.svg" type="Texture" id=14]
+[ext_resource path="res://addons/ply/icons/plugin.svg" type="Texture" id=15]
 
 [sub_resource type="InputEventKey" id=1]
 scancode = 96
@@ -67,90 +68,192 @@ anchor_bottom = 1.0
 margin_top = 0.89093
 margin_bottom = 0.89093
 script = ExtResource( 12 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="VSeparator" type="HSeparator" parent="."]
+[node name="TitleLabel" type="MarginContainer" parent="."]
 margin_right = 1024.0
-margin_bottom = 4.0
+margin_bottom = 37.0
+
+[node name="ColorRect" type="ColorRect" parent="TitleLabel"]
+margin_right = 1024.0
+margin_bottom = 37.0
+color = Color( 0, 0, 0, 0.392157 )
+
+[node name="MarginContainer" type="MarginContainer" parent="TitleLabel"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TitleLabel/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Title" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
+margin_right = 994.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Ply"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="TitleLabel/MarginContainer/HBoxContainer"]
+margin_left = 998.0
+margin_right = 1014.0
+margin_bottom = 32.0
+texture = ExtResource( 15 )
+stretch_mode = 4
 
 [node name="TransformToggle" type="CheckButton" parent="."]
-margin_top = 8.0
+margin_top = 41.0
 margin_right = 1024.0
-margin_bottom = 48.0
+margin_bottom = 81.0
 shortcut = SubResource( 2 )
 text = "Transform"
 icon = ExtResource( 8 )
 
-[node name="VSeparator2" type="VSeparator" parent="."]
-margin_top = 52.0
+[node name="ModeLabel" type="MarginContainer" parent="."]
+margin_top = 85.0
 margin_right = 1024.0
-margin_bottom = 55.0
+margin_bottom = 122.0
+
+[node name="ColorRect" type="ColorRect" parent="ModeLabel"]
+margin_right = 1024.0
+margin_bottom = 37.0
+color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
+
+[node name="MarginContainer" type="MarginContainer" parent="ModeLabel"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeLabel/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Mode" type="Label" parent="ModeLabel/MarginContainer/CenterContainer"]
+margin_left = 489.0
+margin_right = 525.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Mode"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Mesh" type="ToolButton" parent="."]
-margin_top = 59.0
+margin_top = 126.0
 margin_right = 1024.0
-margin_bottom = 83.0
+margin_bottom = 150.0
 toggle_mode = true
 pressed = true
 shortcut = SubResource( 4 )
 group = ExtResource( 11 )
 text = "Mesh"
 icon = ExtResource( 3 )
+align = 2
 
 [node name="Face" type="ToolButton" parent="."]
-margin_top = 87.0
+margin_top = 154.0
 margin_right = 1024.0
-margin_bottom = 111.0
+margin_bottom = 178.0
 toggle_mode = true
 shortcut = SubResource( 6 )
 group = ExtResource( 11 )
 text = "Face"
 icon = ExtResource( 2 )
+align = 2
 
 [node name="Edge" type="ToolButton" parent="."]
-margin_top = 115.0
+margin_top = 182.0
 margin_right = 1024.0
-margin_bottom = 139.0
+margin_bottom = 206.0
 toggle_mode = true
 shortcut = SubResource( 8 )
 group = ExtResource( 11 )
 text = "Edge"
 icon = ExtResource( 1 )
+align = 2
 
 [node name="Vertex" type="ToolButton" parent="."]
-margin_top = 143.0
+margin_top = 210.0
 margin_right = 1024.0
-margin_bottom = 167.0
+margin_bottom = 234.0
 toggle_mode = true
 shortcut = SubResource( 10 )
 group = ExtResource( 11 )
 text = "Vertex"
 icon = ExtResource( 4 )
+align = 2
+
+[node name="Spacer" type="CenterContainer" parent="."]
+margin_top = 238.0
+margin_right = 1024.0
+margin_bottom = 535.0
+size_flags_vertical = 3
+
+[node name="ToolsLabel" type="MarginContainer" parent="."]
+margin_top = 539.0
+margin_right = 1024.0
+margin_bottom = 576.0
+
+[node name="ColorRect" type="ColorRect" parent="ToolsLabel"]
+margin_right = 1024.0
+margin_bottom = 37.0
+color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
+
+[node name="MarginContainer" type="MarginContainer" parent="ToolsLabel"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="ToolsLabel/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Tools" type="Label" parent="ToolsLabel/MarginContainer/CenterContainer"]
+margin_left = 490.0
+margin_right = 524.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Tools"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="MeshTools" type="VBoxContainer" parent="."]
-margin_top = 171.0
+margin_top = 580.0
 margin_right = 1024.0
-margin_bottom = 199.0
-
-[node name="VSeparator" type="HSeparator" parent="MeshTools"]
-margin_right = 1024.0
-margin_bottom = 4.0
+margin_bottom = 600.0
 
 [node name="Generators" type="MenuButton" parent="MeshTools"]
-margin_top = 8.0
 margin_right = 1024.0
-margin_bottom = 28.0
+margin_bottom = 20.0
 text = "Generators"
 items = [ "Plane", null, 0, false, false, 0, 0, null, "", false, "Cube", null, 0, false, false, 1, 0, null, "", false ]
 
 [node name="FaceTools" type="VBoxContainer" parent="."]
 visible = false
-margin_top = 171.0
+margin_top = 239.0
 margin_right = 1024.0
-margin_bottom = 365.0
-
-[node name="VSeparator" type="HSeparator" parent="FaceTools"]
-margin_right = 1024.0
-margin_bottom = 4.0
+margin_bottom = 451.0
 
 [node name="FaceLoop1" type="ToolButton" parent="FaceTools"]
 margin_top = 8.0
@@ -158,6 +261,7 @@ margin_right = 1024.0
 margin_bottom = 32.0
 text = "Loop"
 icon = ExtResource( 5 )
+align = 2
 
 [node name="FaceLoop2" type="ToolButton" parent="FaceTools"]
 margin_top = 36.0
@@ -165,6 +269,7 @@ margin_right = 1024.0
 margin_bottom = 60.0
 text = "Loop"
 icon = ExtResource( 6 )
+align = 2
 
 [node name="VSeparator2" type="HSeparator" parent="FaceTools"]
 margin_top = 64.0
@@ -178,12 +283,14 @@ margin_bottom = 96.0
 shortcut = SubResource( 12 )
 text = "Extrude"
 icon = ExtResource( 7 )
+align = 2
 
 [node name="Connect" type="ToolButton" parent="FaceTools"]
 margin_top = 64.0
 margin_right = 12.0
 margin_bottom = 86.0
 text = "Connect"
+align = 2
 
 [node name="VSeparator3" type="HSeparator" parent="FaceTools"]
 margin_top = 100.0
@@ -273,13 +380,9 @@ text = "9"
 
 [node name="EdgeTools" type="VBoxContainer" parent="."]
 visible = false
-margin_top = 303.0
+margin_top = 371.0
 margin_right = 1024.0
-margin_bottom = 435.0
-
-[node name="VSeparator" type="HSeparator" parent="EdgeTools"]
-margin_right = 1024.0
-margin_bottom = 4.0
+margin_bottom = 503.0
 
 [node name="SelectLoop" type="ToolButton" parent="EdgeTools"]
 margin_top = 8.0
@@ -287,6 +390,7 @@ margin_right = 1024.0
 margin_bottom = 32.0
 text = "Loop"
 icon = ExtResource( 13 )
+align = 2
 
 [node name="VSeparator2" type="HSeparator" parent="EdgeTools"]
 margin_top = 36.0
@@ -300,6 +404,7 @@ margin_bottom = 68.0
 shortcut = SubResource( 14 )
 text = "Cut Loop"
 icon = ExtResource( 9 )
+align = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -310,6 +415,7 @@ margin_right = 1024.0
 margin_bottom = 96.0
 text = "Subdivide"
 icon = ExtResource( 10 )
+align = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -325,6 +431,7 @@ margin_right = 1024.0
 margin_bottom = 132.0
 text = "Collapse"
 icon = ExtResource( 14 )
+align = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -332,9 +439,6 @@ __meta__ = {
 [node name="VertexTools" type="VBoxContainer" parent="."]
 visible = false
 margin_left = 956.0
+margin_top = 68.0
 margin_right = 960.0
-margin_bottom = 600.0
-
-[node name="VSeparator" type="HSeparator" parent="VertexTools"]
-margin_right = 4.0
-margin_bottom = 600.0
+margin_bottom = 668.0
