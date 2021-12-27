@@ -121,7 +121,6 @@ func _generate_cylinder(params = null):
 
     var vertexes = []
     for i in range(num_points):
-        print(float(i)/float(num_points)*2*PI)
         vertexes.push_back(Vector3(
             radius*cos(float(i)/num_points*2*PI),
             -depth/2,
@@ -151,7 +150,6 @@ func _generate_icosphere(params = null):
 func _generate_mesh(arr):
     var shape = arr[0]
     var params = arr[1]
-    print("Generate shape ", shape, ": ", params)
     match shape:
         "Plane":
             _generate_plane(params)
@@ -217,14 +215,12 @@ func _edge_collapse():
 func _export_to_obj():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.MESH:
         return
-    print("export to obj")
     var fd = FileDialog.new()
     fd.set_filters(PoolStringArray(["*.obj ; OBJ Files"]))
     var base_control = _plugin.get_editor_interface().get_base_control()
     base_control.add_child(fd)
     fd.popup_centered(Vector2(480, 600))
     var file_name = yield(fd, "file_selected")
-    print("export to: ", file_name)
     var obj_file = File.new()
     obj_file.open(file_name, File.WRITE)
     ExportMesh.export_to_obj(_plugin.selector.editing.ply_mesh, obj_file)

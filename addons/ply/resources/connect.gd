@@ -38,11 +38,9 @@ static func faces(ply_mesh, f1, f2, undo_redo=null):
                 e2_origin = e2_destination
                 e2_destination = tmp
             var dist = (e2_destination-e1_origin).length() + (e2_origin-e1_destination).length()
-            print("%s: %s %s->%s and %s->%s" % [[e1, e2], dist, e1_origin, e2_destination, e1_destination, e2_origin])
             if not min_dist or dist < min_dist:
                 min_dist = dist
                 min_pair = [e1, e2]
-    print(min_pair, ": ", min_dist)
 
     f1_edges = ply_mesh.get_face_edges_starting_at(min_pair[0], ply_mesh.edge_side(min_pair[0], f1))
     f2_edges = ply_mesh.get_face_edges_starting_at(min_pair[1], ply_mesh.edge_side(min_pair[1], f2))

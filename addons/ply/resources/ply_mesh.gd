@@ -473,7 +473,6 @@ func get_mesh(mesh=null):
 	while mesh.get_surface_count() > 0:
 		mesh.surface_remove(0)
 	for s_idx in range(surfaces.size()):
-		print("surface %s" % [s_idx])
 		var st = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
 

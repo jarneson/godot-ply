@@ -131,14 +131,7 @@ static func edge_cut(ply_mesh, e_idx, undo_redo=null):
 
     # sfme on each face
     for f in faces:
-        print(faces)
-        print(faces[f])
-        print(faces[f][0])
-        print(edges[faces[f][0]])
-        print(edges[faces[f][0]][0])
-        Euler.sfme(ply_mesh, f,
-            edges[faces[f][0]][0],
-            edges[faces[f][2]][0])
+        Euler.sfme(ply_mesh, f, edges[faces[f][0]][0], edges[faces[f][2]][0])
 
     if undo_redo:
         ply_mesh.commit_edit("Edge Loop Cut", undo_redo, pre_edit)
