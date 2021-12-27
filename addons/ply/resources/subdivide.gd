@@ -1,52 +1,42 @@
+const Euler = preload("./euler.gd")
 const Side = preload("../utils/direction.gd")
 
-static func faces(ply_mesh, face_idxs, undo_redo=null):
+static func face(ply_mesh, face_idx, undo_redo=null):
+    var pre_edit = null
     if undo_redo:
         pre_edit = ply_mesh.begin_edit()
 
-    var median = ply_mesh.face_median(face_idx)
-    var median_vertex_index = ply_mesh.vertex_count()
+    var edges = ply_mesh.get_face_edges(face_idx)
+    if edges.size() == 4:
+        var v1 = Euler.semv(ply_mesh, edges[0])
+        var v2 = Euler.semv(ply_mesh, edges[2])
+        var res = Euler.sfme(ply_mesh, face_idx, v1[0], v2[0])
+        var ne = res[0]
+        var nf = res[1]
+
+        var e1 = ply_mesh.get_face_edges_starting_at(ne, ply_mesh.edge_side(ne, face_idx))[2]
+        var e2 = ply_mesh.get_face_edges_starting_at(ne, ply_mesh.edge_side(ne, nf))[2]
+        var v3 = Euler.semv(ply_mesh, ne)
+        var v4 = Euler.semv(ply_mesh, e1)
+        var v5 = Euler.semv(ply_mesh, e2)
+        Euler.sfme(ply_mesh, face_idx, v3[0], v4[0])
+        Euler.sfme(ply_mesh, nf, v3[0], v5[0])
+    elif edges.size() == 3:
+        return
+    else:
+        return
 
     if undo_redo:
         ply_mesh.commit_edit("Subdivide Edge", undo_redo, pre_edit)
 
 # returns [new_edge_idx, new_vertex_idx]
 static func edge(ply_mesh, edge_idx, undo_redo=null):
-    var origin = ply_mesh.edge_origin(edge_idx)
-    var destination = ply_mesh.edge_destination(edge_idx)
-    var midpoint = (origin+destination)/2
-
-    var left_edge = ply_mesh.get_face_edges_starting_at(edge_idx, Side.LEFT).back()
-
-    var new_vertex_idx = ply_mesh.vertex_count()
-    var new_edge_idx = ply_mesh.edge_count()
-
     var pre_edit = null
     if undo_redo:
         pre_edit = ply_mesh.begin_edit()
-    ply_mesh.expand_edges(1)
-    ply_mesh.expand_vertexes(1)
-
-    ply_mesh.set_vertex_all(new_vertex_idx, midpoint, edge_idx)
-
-    ply_mesh.set_edge_face_left(new_edge_idx, ply_mesh.edge_face_left(edge_idx))
-    ply_mesh.set_edge_face_right(new_edge_idx, ply_mesh.edge_face_right(edge_idx))
-    ply_mesh.set_edge_origin_idx(new_edge_idx, new_vertex_idx)
-    ply_mesh.set_edge_destination_idx(new_edge_idx, ply_mesh.edge_destination_idx(edge_idx))
-    ply_mesh.set_edge_left_cw(new_edge_idx, edge_idx)
-    ply_mesh.set_edge_right_cw(new_edge_idx, ply_mesh.edge_right_cw(edge_idx))
-
-    ply_mesh.set_edge_destination_idx(edge_idx, new_vertex_idx)
-    ply_mesh.set_edge_right_cw(edge_idx, new_edge_idx)
-
-    # todo: fix vertex->edge
-    if left_edge != null:
-        match ply_mesh.edge_side(left_edge, ply_mesh.edge_face_left(edge_idx)):
-            Side.LEFT:
-                ply_mesh.set_edge_left_cw(left_edge, new_edge_idx)
-            Side.RIGHT:
-                ply_mesh.set_edge_right_cw(left_edge, new_edge_idx)
     
+    var res = Euler.semv(ply_mesh, edge_idx)
+
     if undo_redo:
         ply_mesh.commit_edit("Subdivide Edge", undo_redo, pre_edit)
-    return [new_edge_idx, new_vertex_idx]
+    return res
