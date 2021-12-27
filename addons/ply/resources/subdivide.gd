@@ -22,7 +22,12 @@ static func face(ply_mesh, face_idx, undo_redo=null):
         Euler.sfme(ply_mesh, face_idx, v3[0], v4[0])
         Euler.sfme(ply_mesh, nf, v3[0], v5[0])
     elif edges.size() == 3:
-        return
+        var v0 = Euler.semv(ply_mesh, edges[0])[0]
+        var v1 = Euler.semv(ply_mesh, edges[1])[0]
+        var v2 = Euler.semv(ply_mesh, edges[2])[0]
+        Euler.sfme(ply_mesh, face_idx, v0, v1)
+        Euler.sfme(ply_mesh, ply_mesh.face_count()-1, v1, v2)
+        Euler.sfme(ply_mesh, ply_mesh.face_count()-1, v0, v2)
     else:
         return
 

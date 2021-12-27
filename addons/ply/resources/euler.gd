@@ -113,7 +113,7 @@ static func sfme(m, f, v1, v2):
         iters += 1
     return [ne, nf]
 
-# Split-Face-Make-Edge
+# Join-Face-Kill-Edge
 # >
 # x ------------- x
 # |               |

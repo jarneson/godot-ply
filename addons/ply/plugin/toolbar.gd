@@ -100,13 +100,25 @@ func _generate_cylinder(params = null):
             radius*sin(float(i)/num_points*2*PI)
         ))
 
-    print(vertexes)
-
     var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
     Generate.nGon(_plugin.selector.editing.ply_mesh, vertexes)
     for i in range(num_segments):
         Extrude.faces(_plugin.selector.editing.ply_mesh, [0], null, depth / num_segments)
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Cylinder", _plugin.undo_redo, pre_edit)
+
+func _generate_icosphere(params = null):
+    if not _plugin.selector.editing:
+        return
+    
+    var radius = 1.0
+    var subdivides = 0
+    if params:
+        radius = params[0]
+        subdivides = params[1]
+    
+    var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
+    Generate.icosphere(_plugin.selector.editing.ply_mesh, radius, subdivides)
+    _plugin.selector.editing.ply_mesh.commit_edit("Generate Icosphere", _plugin.undo_redo, pre_edit)
 
 func _generate_mesh(arr):
     var shape = arr[0]
@@ -118,7 +130,7 @@ func _generate_mesh(arr):
         "Cube":
             _generate_cube(params)
         "Icosphere":
-            print("Not yet implemented")
+            _generate_icosphere(params)
         "Cylinder":
             _generate_cylinder(params)
 
