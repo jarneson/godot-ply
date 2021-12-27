@@ -64,18 +64,46 @@ func _on_selection_changed(mode, editing, _selection):
 func _generate_cube(params = null):
     if not _plugin.selector.editing:
         return
+    var size = 1
+    var subdivisions = 0
+    if params != null:
+        size = params[0]
+        subdivisions = params[1]
     var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
-    var vertexes = [Vector3(-0.5,-0.5,-0.5), Vector3(0.5,-0.5,-0.5), Vector3(0.5,-0.5,0.5), Vector3(-0.5,-0.5,0.5)]
+    var vertexes = [
+        size*Vector3(-0.5,0,-0.5),
+        size*Vector3(0.5,0,-0.5),
+        size*Vector3(0.5,0,0.5),
+        size*Vector3(-0.5,0,0.5)
+    ]
     Generate.nGon(_plugin.selector.editing.ply_mesh, vertexes)
-    Extrude.faces(_plugin.selector.editing.ply_mesh, [0])
+    Extrude.faces(_plugin.selector.editing.ply_mesh, [0], null, size)
+    for i in range(subdivisions):
+        Subdivide.object(_plugin.selector.editing.ply_mesh)
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Cube", _plugin.undo_redo, pre_edit)
 
 func _generate_plane(params = null):
     if not _plugin.selector.editing:
         return
 
-    var vertexes = [Vector3(-0.5,0,-0.5), Vector3(0.5,0,-0.5), Vector3(0.5,0,0.5), Vector3(-0.5,0,0.5)]
-    Generate.nGon(_plugin.selector.editing.ply_mesh, vertexes, _plugin.undo_redo, "Generate Plane")
+    var size = 1
+    var subdivisions = 0
+    if params != null:
+        size = params[0]
+        subdivisions = params[1]
+
+    var vertexes = [
+        size*Vector3(-0.5,0,-0.5),
+        size*Vector3(0.5,0,-0.5),
+        size*Vector3(0.5,0,0.5),
+        size*Vector3(-0.5,0,0.5)
+    ]
+
+    var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
+    Generate.nGon(_plugin.selector.editing.ply_mesh, vertexes)
+    for i in range(subdivisions):
+        Subdivide.object(_plugin.selector.editing.ply_mesh)
+    _plugin.selector.editing.ply_mesh.commit_edit("Generate Plane", _plugin.undo_redo, pre_edit)
 
 func _generate_cylinder(params = null):
     if not _plugin.selector.editing:
