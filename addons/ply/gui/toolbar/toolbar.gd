@@ -29,6 +29,7 @@ onready var face_select_loop_1 = $FaceTools/FaceLoop1
 onready var face_select_loop_2 = $FaceTools/FaceLoop2
 onready var face_extrude       = $FaceTools/Extrude
 onready var face_connect       = $FaceTools/Connect
+onready var face_subdivide     = $FaceTools/Subdivide
 
 onready var face_set_shape_1 = $"FaceTools/Surfaces/1"
 onready var face_set_shape_2 = $"FaceTools/Surfaces/2"

@@ -31,6 +31,7 @@ func _connect_toolbar_handlers():
     toolbar.face_select_loop_2.connect("pressed", self, "_face_select_loop", [1])
     toolbar.face_extrude.connect("pressed", self, "_face_extrude")
     toolbar.face_connect.connect("pressed", self, "_face_connect")
+    toolbar.face_subdivide.connect("pressed", self, "_face_subdivide")
     toolbar.connect("set_face_surface", self, "_set_face_surface")
 
     toolbar.edge_select_loop.connect("pressed", self, "_edge_select_loop")
@@ -137,6 +138,11 @@ func _face_connect():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 2:
         return
     Connect.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.selector.selection[1], _plugin.undo_redo)
+
+func _face_subdivide():
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 2:
+        return
+    Subdivide.face(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.selector.selection[1], _plugin.undo_redo)
 
 func _set_face_surface(s):
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:

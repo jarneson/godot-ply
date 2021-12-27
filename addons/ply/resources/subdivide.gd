@@ -1,5 +1,15 @@
 const Side = preload("../utils/direction.gd")
 
+static func faces(ply_mesh, face_idxs, undo_redo=null):
+    if undo_redo:
+        pre_edit = ply_mesh.begin_edit()
+
+    var median = ply_mesh.face_median(face_idx)
+    var median_vertex_index = ply_mesh.vertex_count()
+
+    if undo_redo:
+        ply_mesh.commit_edit("Subdivide Edge", undo_redo, pre_edit)
+
 # returns [new_edge_idx, new_vertex_idx]
 static func edge(ply_mesh, edge_idx, undo_redo=null):
     var origin = ply_mesh.edge_origin(edge_idx)

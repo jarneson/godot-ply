@@ -308,6 +308,13 @@ margin_bottom = 86.0
 text = "Connect"
 align = 2
 
+[node name="Subdivide" type="ToolButton" parent="FaceTools"]
+margin_top = 64.0
+margin_right = 12.0
+margin_bottom = 86.0
+text = "Subdivide"
+align = 2
+
 [node name="VSeparator3" type="HSeparator" parent="FaceTools"]
 margin_top = 100.0
 margin_right = 1024.0
