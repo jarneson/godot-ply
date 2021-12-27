@@ -98,7 +98,7 @@ func set_selection_mode(mode):
 			selection_vertex.pressed = true
 
 func _on_generators_id_pressed(idx):
-	match mesh_generators.get_popup().get_item_text(idx):
+	match mesh_quick_generators.get_popup().get_item_text(idx):
 		"Plane":
 			emit_signal("generate_plane")
 		"Cube":
