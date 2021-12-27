@@ -170,3 +170,10 @@ static func icosphere(ply_mesh, radius, subdivides):
     for idx in range(20):
         face_surfaces[idx] = 0
     ply_mesh.set_mesh(vertices, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, edge_edges)
+
+    for i in range(subdivides):
+        Subdivide.object(ply_mesh)
+        for v_idx in ply_mesh.vertex_count():
+            ply_mesh.set_vertex_all(v_idx, 
+                ply_mesh.vertexes[v_idx].normalized()*radius,
+                ply_mesh.vertex_edges[v_idx])

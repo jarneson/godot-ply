@@ -152,9 +152,9 @@ func _face_connect():
     Connect.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.selector.selection[1], _plugin.undo_redo)
 
 func _face_subdivide():
-    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 1:
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE:
         return
-    Subdivide.face(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.undo_redo)
+    Subdivide.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo)
 
 func _set_face_surface(s):
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:

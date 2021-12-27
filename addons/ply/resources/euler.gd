@@ -101,15 +101,11 @@ static func sfme(m, f, v1, v2):
     while true:
         if iters > 100:
             assert(false, "exhausted iters")
-        print("[%s] %s -> %s -> %s" % [iters, u, f, nf])
         var s = m.edge_side(u, f)
-        print("[%s] %s" % [iters, s])
         m.set_edge_face(u, s, nf)
-        print("[%s] edge face updated" % [iters])
         if u == v1e[0]:
             break
         u = m.edge_cw(u, s)
-        print("[%s] next: %s" % [iters, u])
         iters += 1
     return [ne, nf]
 
