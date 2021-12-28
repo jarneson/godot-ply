@@ -1,5 +1,5 @@
 # ![icon](./addons/ply/icons/plugin.svg) godot-ply ![icon](./addons/ply/icons/plugin.svg)
-Godot plugin for in-editor box modeling.
+Godot plugin for in-editor box modeling for grayboxing or prototyping 3d levels.
 
 Only tested in Godot 3.4. Icons are only good for dark mode.
 
