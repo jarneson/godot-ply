@@ -4,6 +4,7 @@ extends Object
 const SelectionMode = preload("../utils/selection_mode.gd")
 const Extrude = preload("../resources/extrude.gd")
 const Subdivide = preload("../resources/subdivide.gd")
+const Triangulate = preload("../resources/triangulate.gd")
 const Loop = preload("../resources/loop.gd")
 const Collapse = preload("../resources/collapse.gd")
 const Connect = preload("../resources/connect.gd")
@@ -32,6 +33,7 @@ func _connect_toolbar_handlers():
     toolbar.face_extrude.connect("pressed", self, "_face_extrude")
     toolbar.face_connect.connect("pressed", self, "_face_connect")
     toolbar.face_subdivide.connect("pressed", self, "_face_subdivide")
+    toolbar.face_triangulate.connect("pressed", self, "_face_triangulate")
     toolbar.connect("set_face_surface", self, "_set_face_surface")
 
     toolbar.edge_select_loop.connect("pressed", self, "_edge_select_loop")
@@ -181,6 +183,14 @@ func _face_subdivide():
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE:
         return
     Subdivide.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo)
+
+func _face_triangulate():
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE:
+        return
+    var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
+    Triangulate.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection)
+    _plugin.selector.editing.ply_mesh.commit_edit("Triangulate Faces", _plugin.undo_redo, pre_edit)
+
 
 func _set_face_surface(s):
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:

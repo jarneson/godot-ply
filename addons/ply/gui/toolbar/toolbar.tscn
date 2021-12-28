@@ -315,6 +315,13 @@ margin_bottom = 86.0
 text = "Subdivide"
 align = 2
 
+[node name="Triangulate" type="ToolButton" parent="FaceTools"]
+margin_top = 64.0
+margin_right = 12.0
+margin_bottom = 86.0
+text = "Triangulate"
+align = 2
+
 [node name="VSeparator3" type="HSeparator" parent="FaceTools"]
 margin_top = 100.0
 margin_right = 1024.0
@@ -467,7 +474,6 @@ margin_right = 960.0
 margin_bottom = 668.0
 
 [node name="GeneratorsModal" parent="." instance=ExtResource( 16 )]
-visible = false
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 434.0
