@@ -19,6 +19,8 @@ onready var selection_edge   = $Edge
 onready var selection_vertex = $Vertex
 
 onready var mesh_tools = $MeshTools
+onready var mesh_subdivide = $MeshTools/Subdivide
+onready var mesh_triangulate = $MeshTools/Triangulate
 onready var mesh_export_to_obj = $MeshTools/ExportOBJ
 onready var mesh_quick_generators = $MeshTools/QuickGenerators
 onready var mesh_generators = $MeshTools/Generators

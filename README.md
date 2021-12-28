@@ -27,16 +27,20 @@ For an even smoother transformation experience, we recommend the excellent [Grab
 
 There are tools for each selection mode:
 - Mesh
-    - Export to OBJ: Exports the selected mesh to an OBJ file
-        - Currently just exports basic geometry, excluding normals, materials, etc
-    - Quick Generators
-        - Plane: Generate a two-sided unit plane
-        - Cube: Generate a unit cube
-    - Generate: Opens a modal for more advanced generation
-        - Plane: Generate a plane with specified size and subdivisions
-        - Cube: Generate a cube with specified size and subdivisions
-        - Isosphere: Generate a isosphere with specified radius and subdivisions
-        - Cylinder: Generate a cylinder with specified radius, depth, circle vertex count, and 
+    - Mesh Tools
+        - Subdivide: Subdivide all quads/tris into four quads/tris
+        - Triangulate: Triangulate all faces using an ear clipping algorithm
+    - Mesh Utilities
+        - Export to OBJ: Exports the selected mesh to an OBJ file
+            - Currently just exports basic geometry, excluding normals, materials, etc
+        - Quick Generators
+            - Plane: Generate a two-sided unit plane
+            - Cube: Generate a unit cube
+        - Generate: Opens a modal for more advanced generation
+            - Plane: Generate a plane with specified size and subdivisions
+            - Cube: Generate a cube with specified size and subdivisions
+            - Isosphere: Generate a isosphere with specified radius and subdivisions
+            - Cylinder: Generate a cylinder with specified radius, depth, circle vertex count, and 
 
 - Face
     - Select Faces

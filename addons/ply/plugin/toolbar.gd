@@ -23,6 +23,8 @@ func _connect_toolbar_handlers():
         return
 
     toolbar.mesh_export_to_obj.connect("pressed", self, "_export_to_obj")
+    toolbar.mesh_subdivide.connect("pressed", self, "_mesh_subdivide")
+    toolbar.mesh_triangulate.connect("pressed", self, "_mesh_triangulate")
 
     toolbar.connect("generate_plane", self, "_generate_plane")
     toolbar.connect("generate_cube", self, "_generate_cube")
@@ -265,3 +267,21 @@ func _export_to_obj():
     var obj_file = File.new()
     obj_file.open(file_name, File.WRITE)
     ExportMesh.export_to_obj(_plugin.selector.editing.ply_mesh, obj_file)
+
+func _mesh_subdivide():
+    if _plugin.ignore_inputs:
+        return
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.MESH:
+        return
+    var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
+    Subdivide.object(_plugin.selector.editing.ply_mesh)
+    _plugin.selector.editing.ply_mesh.commit_edit("Subdivide Mesh", _plugin.undo_redo, pre_edit)
+
+func _mesh_triangulate():
+    if _plugin.ignore_inputs:
+        return
+    if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.MESH:
+        return
+    var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
+    Triangulate.object(_plugin.selector.editing.ply_mesh)
+    _plugin.selector.editing.ply_mesh.commit_edit("Subdivide Mesh", _plugin.undo_redo, pre_edit)

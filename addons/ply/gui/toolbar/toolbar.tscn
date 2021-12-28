@@ -229,11 +229,11 @@ align = 2
 [node name="Spacer" type="CenterContainer" parent="."]
 margin_top = 251.0
 margin_right = 1024.0
-margin_bottom = 483.0
+margin_bottom = 390.0
 size_flags_vertical = 3
 
 [node name="MeshTools" type="VBoxContainer" parent="."]
-margin_top = 487.0
+margin_top = 394.0
 margin_right = 1024.0
 margin_bottom = 600.0
 
@@ -270,25 +270,73 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ExportOBJ" type="ToolButton" parent="MeshTools"]
+[node name="Subdivide" type="ToolButton" parent="MeshTools"]
 margin_top = 41.0
 margin_right = 1024.0
 margin_bottom = 63.0
+text = "Subdivide"
+align = 2
+
+[node name="Triangulate" type="ToolButton" parent="MeshTools"]
+margin_top = 67.0
+margin_right = 1024.0
+margin_bottom = 89.0
+text = "Triangulate"
+align = 2
+
+[node name="Utils" type="MarginContainer" parent="MeshTools"]
+margin_top = 93.0
+margin_right = 1024.0
+margin_bottom = 130.0
+
+[node name="ColorRect" type="ColorRect" parent="MeshTools/Utils"]
+margin_right = 1024.0
+margin_bottom = 37.0
+color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MeshTools/Utils"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="MeshTools/Utils/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Tools" type="Label" parent="MeshTools/Utils/MarginContainer/CenterContainer"]
+margin_left = 462.0
+margin_right = 552.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Mesh Utilities"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExportOBJ" type="ToolButton" parent="MeshTools"]
+margin_top = 134.0
+margin_right = 1024.0
+margin_bottom = 156.0
 text = "Export to OBJ"
 align = 2
 
 [node name="QuickGenerators" type="MenuButton" parent="MeshTools"]
-margin_top = 67.0
+margin_top = 160.0
 margin_right = 1024.0
-margin_bottom = 87.0
+margin_bottom = 180.0
 text = "Quick Generate..."
 align = 2
 items = [ "Plane", null, 0, false, false, 0, 0, null, "", false, "Cube", null, 0, false, false, 1, 0, null, "", false ]
 
 [node name="Generators" type="ToolButton" parent="MeshTools"]
-margin_top = 91.0
+margin_top = 184.0
 margin_right = 1024.0
-margin_bottom = 113.0
+margin_bottom = 206.0
 text = "Generate"
 align = 2
 
@@ -548,7 +596,7 @@ margin_bottom = 32.0
 
 [node name="Tools" type="Label" parent="EdgeTools/SelectTools/MarginContainer/CenterContainer"]
 margin_left = 467.0
-margin_right = 546.0
+margin_right = 547.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 0, 32 )
 size_flags_horizontal = 3
