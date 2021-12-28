@@ -23,24 +23,38 @@ There are two editor modes are toggled by the ![transformicon](./addons/ply/icon
 - Selection mode: select faces, edges, and vertices with the mouse
 - Transform mode: use the gizmo to translate, rotate and scale
 
+For an even smoother transformation experience, we recommend the excellent [Grab-Scale-Rotate for Godot](https://github.com/z1dev/gsr_for_godot) plugin. With this plugin, you will never have to enter Transform mode! Thanks to [Plugin Interop](https://github.com/jarneson/godot-plugin-interop) these two plugins are nicely integrated. Although the depth select feature of GSR conflicts with Ply's geometry selection tools.
+
 There are tools for each selection mode:
 - Mesh
     - Export to OBJ: Exports the selected mesh to an OBJ file
         - Currently just exports basic geometry, excluding normals, materials, etc
-    - Generators
+    - Quick Generators
         - Plane: Generate a two-sided unit plane
         - Cube: Generate a unit cube
+    - Generate: Opens a modal for more advanced generation
+        - Plane: Generate a plane with specified size and subdivisions
+        - Cube: Generate a cube with specified size and subdivisions
+        - Isosphere: Generate a isosphere with specified radius and subdivisions
+        - Cylinder: Generate a cylinder with specified radius, depth, circle vertex count, and 
+
 - Face
-    - ![loopicon1](./addons/ply/icons/face_loop.svg) Loop: a quad loop in one direction
-    - ![loopicon2](./addons/ply/icons/face_loop_2.svg) Loop: a quad loop in the other direction
-    - ![extrudeicon](./addons/ply/icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
-    - Connect: Remove the two selected faces, creating a new face between edges. Tries to select an edge pairing that works.. but not always.
-    - Set Face Texture: Moves the selected face to the selected surface, allowing multiple materials per Ply Instance.
+    - Select Faces
+        - ![loopicon1](./addons/ply/icons/face_loop.svg) Loop: a quad loop in one direction
+        - ![loopicon2](./addons/ply/icons/face_loop_2.svg) Loop: a quad loop in the other direction
+    - Face Tools
+        - ![extrudeicon](./addons/ply/icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
+        - Connect: Remove the two selected faces, creating a new face between edges. Tries to select an edge pairing that works.. but not always.
+        - Subdivide: Subdivide a quad or a tri into 4 quads or 4 tris
+        - Triangulate: Triangulates a face using an ear clipping algorithm
+    - Paint Faces: Moves the selected face to the selected surface, allowing multiple materials per Ply Instance.
 - Edge
-    - ![loopicon](./addons/ply/icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
-    - ![loopcuticon](./addons/ply/icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
-    - ![subdivideicon](./addons/ply/icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
-    - ![collapseicon](./addons/ply/icons/edge_collapse.svg) Collapse: Collapses an edge into a single vertex at its midpoint
+    - Select Edges
+        - ![loopicon](./addons/ply/icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
+    - Edge Tools
+        - ![loopcuticon](./addons/ply/icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
+        - ![subdivideicon](./addons/ply/icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
+        - ![collapseicon](./addons/ply/icons/edge_collapse.svg) Collapse: Collapses an edge into a single vertex at its midpoint
 - Vertex
     - None, yet!
 

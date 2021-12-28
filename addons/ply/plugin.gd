@@ -39,11 +39,9 @@ var undo_redo = null
 ███████║   ██║   ██║  ██║██║  ██║   ██║   ╚██████╔╝██║   ██╔╝      ██║   ███████╗██║  ██║██║  ██║██████╔╝╚██████╔╝╚███╔███╔╝██║ ╚████║
 ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝   ╚═╝       ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝
 """
-var interop = null
 
 func _enter_tree() -> void:
-    interop = Interop.get_instance(self, "res://addons/ply/interop_node.gd")
-    interop.register("ply", self)
+    Interop.register(self, "ply")
     add_custom_type("PlyInstance", "MeshInstance", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
     undo_redo = get_undo_redo()
 
@@ -58,12 +56,12 @@ func _enter_tree() -> void:
     set_input_event_forwarding_always_enabled()
 
 func _exit_tree() -> void:
-    interop.deregister("ply", self)
     remove_custom_type("PlyInstance")
 
     toolbar.teardown()
     spatial_editor.teardown()
     selector.teardown()
+    Interop.deregister(self)
 
 func get_state():
     return { 
@@ -74,6 +72,16 @@ func get_state():
 func set_state(state):
     selector.set_state(state.get("selector"))
     spatial_editor.set_state(state.get("spatial_editor"))
+
+var ignore_inputs = false
+
+func _interop_notification(caller_plugin_id, code, _id, _args):
+    if caller_plugin_id == "gsr":
+        match code:
+            Interop.NOTIFY_CODE_WORK_STARTED:
+                ignore_inputs = true
+            Interop.NOTIFY_CODE_WORK_ENDED:
+                ignore_inputs = false
 
 """
 ███████╗███████╗██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗

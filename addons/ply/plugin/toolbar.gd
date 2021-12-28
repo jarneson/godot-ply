@@ -64,6 +64,8 @@ func _on_selection_changed(mode, editing, _selection):
         toolbar.visible = false
 
 func _generate_cube(params = null):
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing:
         return
     var size = 1
@@ -85,6 +87,8 @@ func _generate_cube(params = null):
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Cube", _plugin.undo_redo, pre_edit)
 
 func _generate_plane(params = null):
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing:
         return
 
@@ -108,6 +112,8 @@ func _generate_plane(params = null):
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Plane", _plugin.undo_redo, pre_edit)
 
 func _generate_cylinder(params = null):
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing:
         return
 
@@ -136,6 +142,8 @@ func _generate_cylinder(params = null):
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Cylinder", _plugin.undo_redo, pre_edit)
 
 func _generate_icosphere(params = null):
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing:
         return
     
@@ -150,6 +158,8 @@ func _generate_icosphere(params = null):
     _plugin.selector.editing.ply_mesh.commit_edit("Generate Icosphere", _plugin.undo_redo, pre_edit)
 
 func _generate_mesh(arr):
+    if _plugin.ignore_inputs:
+        return
     var shape = arr[0]
     var params = arr[1]
     match shape:
@@ -164,35 +174,46 @@ func _generate_mesh(arr):
 
 
 func _face_select_loop(offset):
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 1:
         return
     var loop = Loop.get_face_loop(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], offset)[0]
     _plugin.selector.set_selection(loop)
 
 func _face_extrude():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:
         return
     Extrude.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo, 1)
 
 func _face_connect():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() != 2:
         return
     Connect.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.selector.selection[1], _plugin.undo_redo)
 
 func _face_subdivide():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE:
         return
     Subdivide.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo)
 
 func _face_triangulate():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE:
         return
     var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
     Triangulate.faces(_plugin.selector.editing.ply_mesh, _plugin.selector.selection)
     _plugin.selector.editing.ply_mesh.commit_edit("Triangulate Faces", _plugin.undo_redo, pre_edit)
 
-
 func _set_face_surface(s):
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.FACE or _plugin.selector.selection.size() == 0:
         return
     var pre_edit = _plugin.selector.editing.ply_mesh.begin_edit()
@@ -201,28 +222,38 @@ func _set_face_surface(s):
     _plugin.selector.editing.ply_mesh.commit_edit("Paint Face", _plugin.undo_redo, pre_edit)
 
 func _edge_select_loop():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() != 1:
         return
     var loop = Loop.get_edge_loop(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0])
     _plugin.selector.set_selection(loop)
 
 func _edge_cut_loop():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() != 1:
         return
     Loop.edge_cut(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.undo_redo)
 
 func _edge_subdivide():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() != 1:
         return
     Subdivide.edge(_plugin.selector.editing.ply_mesh, _plugin.selector.selection[0], _plugin.undo_redo)
 
 func _edge_collapse():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.EDGE or _plugin.selector.selection.size() == 0:
         return
     if Collapse.edges(_plugin.selector.editing.ply_mesh, _plugin.selector.selection, _plugin.undo_redo):
         _plugin.selector.set_selection([])
 
 func _export_to_obj():
+    if _plugin.ignore_inputs:
+        return
     if not _plugin.selector.editing or _plugin.selector.mode != SelectionMode.MESH:
         return
     var fd = FileDialog.new()

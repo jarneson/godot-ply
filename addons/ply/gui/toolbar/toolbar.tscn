@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=2]
+[gd_scene load_steps=33 format=2]
 
 [ext_resource path="res://addons/ply/icons/select_edge.svg" type="Texture" id=1]
 [ext_resource path="res://addons/ply/icons/select_face.svg" type="Texture" id=2]
@@ -16,6 +16,8 @@
 [ext_resource path="res://addons/ply/icons/edge_collapse.svg" type="Texture" id=14]
 [ext_resource path="res://addons/ply/icons/plugin.svg" type="Texture" id=15]
 [ext_resource path="res://addons/ply/gui/toolbar/generators.tscn" type="PackedScene" id=16]
+[ext_resource path="res://addons/ply/icons/GitHub-Mark-Light-32px.png" type="Texture" id=17]
+[ext_resource path="res://addons/ply/gui/toolbar/GithubLink.gd" type="Script" id=18]
 
 [sub_resource type="InputEventKey" id=1]
 scancode = 96
@@ -75,32 +77,57 @@ __meta__ = {
 
 [node name="TitleLabel" type="MarginContainer" parent="."]
 margin_right = 1024.0
-margin_bottom = 37.0
+margin_bottom = 50.0
 
 [node name="ColorRect" type="ColorRect" parent="TitleLabel"]
 margin_right = 1024.0
-margin_bottom = 37.0
+margin_bottom = 50.0
 color = Color( 0, 0, 0, 0.392157 )
 
 [node name="MarginContainer" type="MarginContainer" parent="TitleLabel"]
 margin_right = 1024.0
-margin_bottom = 37.0
+margin_bottom = 50.0
 custom_constants/margin_right = 5
+custom_constants/margin_top = 5
 custom_constants/margin_left = 5
 custom_constants/margin_bottom = 5
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TitleLabel/MarginContainer"]
 margin_left = 5.0
+margin_top = 5.0
 margin_right = 1019.0
-margin_bottom = 32.0
+margin_bottom = 45.0
 
 [node name="Title" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
-margin_right = 994.0
-margin_bottom = 32.0
+margin_top = 4.0
+margin_right = 888.0
+margin_bottom = 36.0
 rect_min_size = Vector2( 0, 32 )
 size_flags_horizontal = 3
 text = "Ply"
-valign = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Version" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
+margin_left = 892.0
+margin_top = 4.0
+margin_right = 946.0
+margin_bottom = 36.0
+rect_min_size = Vector2( 0, 32 )
+text = "1.0.0_RC"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GithubLink" type="ToolButton" parent="TitleLabel/MarginContainer/HBoxContainer"]
+margin_left = 950.0
+margin_right = 994.0
+margin_bottom = 40.0
+icon = ExtResource( 17 )
+script = ExtResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -108,22 +135,22 @@ __meta__ = {
 [node name="TextureRect" type="TextureRect" parent="TitleLabel/MarginContainer/HBoxContainer"]
 margin_left = 998.0
 margin_right = 1014.0
-margin_bottom = 32.0
+margin_bottom = 40.0
 texture = ExtResource( 15 )
 stretch_mode = 4
 
 [node name="TransformToggle" type="CheckButton" parent="."]
-margin_top = 41.0
+margin_top = 54.0
 margin_right = 1024.0
-margin_bottom = 81.0
+margin_bottom = 94.0
 shortcut = SubResource( 2 )
 text = "Transform"
 icon = ExtResource( 8 )
 
 [node name="ModeLabel" type="MarginContainer" parent="."]
-margin_top = 85.0
+margin_top = 98.0
 margin_right = 1024.0
-margin_bottom = 122.0
+margin_bottom = 135.0
 
 [node name="ColorRect" type="ColorRect" parent="ModeLabel"]
 margin_right = 1024.0
@@ -155,9 +182,9 @@ __meta__ = {
 }
 
 [node name="Mesh" type="ToolButton" parent="."]
-margin_top = 126.0
+margin_top = 139.0
 margin_right = 1024.0
-margin_bottom = 150.0
+margin_bottom = 163.0
 toggle_mode = true
 pressed = true
 shortcut = SubResource( 4 )
@@ -167,9 +194,9 @@ icon = ExtResource( 3 )
 align = 2
 
 [node name="Face" type="ToolButton" parent="."]
-margin_top = 154.0
+margin_top = 167.0
 margin_right = 1024.0
-margin_bottom = 178.0
+margin_bottom = 191.0
 toggle_mode = true
 shortcut = SubResource( 6 )
 group = ExtResource( 11 )
@@ -178,9 +205,9 @@ icon = ExtResource( 2 )
 align = 2
 
 [node name="Edge" type="ToolButton" parent="."]
-margin_top = 182.0
+margin_top = 195.0
 margin_right = 1024.0
-margin_bottom = 206.0
+margin_bottom = 219.0
 toggle_mode = true
 shortcut = SubResource( 8 )
 group = ExtResource( 11 )
@@ -189,9 +216,9 @@ icon = ExtResource( 1 )
 align = 2
 
 [node name="Vertex" type="ToolButton" parent="."]
-margin_top = 210.0
+margin_top = 223.0
 margin_right = 1024.0
-margin_bottom = 234.0
+margin_bottom = 247.0
 toggle_mode = true
 shortcut = SubResource( 10 )
 group = ExtResource( 11 )
@@ -200,68 +227,68 @@ icon = ExtResource( 4 )
 align = 2
 
 [node name="Spacer" type="CenterContainer" parent="."]
-margin_top = 238.0
+margin_top = 251.0
 margin_right = 1024.0
 margin_bottom = 483.0
 size_flags_vertical = 3
 
-[node name="ToolsLabel" type="MarginContainer" parent="."]
+[node name="MeshTools" type="VBoxContainer" parent="."]
 margin_top = 487.0
 margin_right = 1024.0
-margin_bottom = 524.0
+margin_bottom = 600.0
 
-[node name="ColorRect" type="ColorRect" parent="ToolsLabel"]
+[node name="Tools" type="MarginContainer" parent="MeshTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+
+[node name="ColorRect" type="ColorRect" parent="MeshTools/Tools"]
 margin_right = 1024.0
 margin_bottom = 37.0
 color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
 
-[node name="MarginContainer" type="MarginContainer" parent="ToolsLabel"]
+[node name="MarginContainer" type="MarginContainer" parent="MeshTools/Tools"]
 margin_right = 1024.0
 margin_bottom = 37.0
 custom_constants/margin_right = 5
 custom_constants/margin_left = 5
 custom_constants/margin_bottom = 5
 
-[node name="CenterContainer" type="CenterContainer" parent="ToolsLabel/MarginContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="MeshTools/Tools/MarginContainer"]
 margin_left = 5.0
 margin_right = 1019.0
 margin_bottom = 32.0
 
-[node name="Tools" type="Label" parent="ToolsLabel/MarginContainer/CenterContainer"]
-margin_left = 490.0
-margin_right = 524.0
+[node name="Tools" type="Label" parent="MeshTools/Tools/MarginContainer/CenterContainer"]
+margin_left = 470.0
+margin_right = 543.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 0, 32 )
 size_flags_horizontal = 3
-text = "Tools"
+text = "Mesh Tools"
 valign = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MeshTools" type="VBoxContainer" parent="."]
-margin_top = 528.0
-margin_right = 1024.0
-margin_bottom = 600.0
-
 [node name="ExportOBJ" type="ToolButton" parent="MeshTools"]
+margin_top = 41.0
 margin_right = 1024.0
-margin_bottom = 22.0
+margin_bottom = 63.0
 text = "Export to OBJ"
 align = 2
 
 [node name="QuickGenerators" type="MenuButton" parent="MeshTools"]
-margin_top = 26.0
+margin_top = 67.0
 margin_right = 1024.0
-margin_bottom = 46.0
+margin_bottom = 87.0
 text = "Quick Generate..."
 align = 2
 items = [ "Plane", null, 0, false, false, 0, 0, null, "", false, "Cube", null, 0, false, false, 1, 0, null, "", false ]
 
 [node name="Generators" type="ToolButton" parent="MeshTools"]
-margin_top = 50.0
+margin_top = 91.0
 margin_right = 1024.0
-margin_bottom = 72.0
+margin_bottom = 113.0
 text = "Generate"
 align = 2
 
@@ -270,6 +297,40 @@ visible = false
 margin_top = 239.0
 margin_right = 1024.0
 margin_bottom = 451.0
+
+[node name="SelectTools" type="MarginContainer" parent="FaceTools"]
+margin_top = 248.0
+margin_right = 1024.0
+margin_bottom = 285.0
+
+[node name="ColorRect" type="ColorRect" parent="FaceTools/SelectTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
+
+[node name="MarginContainer" type="MarginContainer" parent="FaceTools/SelectTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="FaceTools/SelectTools/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Tools" type="Label" parent="FaceTools/SelectTools/MarginContainer/CenterContainer"]
+margin_left = 467.0
+margin_right = 546.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Select Faces"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="FaceLoop1" type="ToolButton" parent="FaceTools"]
 margin_top = 8.0
@@ -287,10 +348,39 @@ text = "Loop"
 icon = ExtResource( 6 )
 align = 2
 
-[node name="VSeparator2" type="HSeparator" parent="FaceTools"]
-margin_top = 64.0
+[node name="FaceTools" type="MarginContainer" parent="FaceTools"]
+margin_top = 248.0
 margin_right = 1024.0
-margin_bottom = 68.0
+margin_bottom = 285.0
+
+[node name="ColorRect" type="ColorRect" parent="FaceTools/FaceTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
+
+[node name="MarginContainer" type="MarginContainer" parent="FaceTools/FaceTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="FaceTools/FaceTools/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Tools" type="Label" parent="FaceTools/FaceTools/MarginContainer/CenterContainer"]
+margin_left = 473.0
+margin_right = 540.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Face Tools"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Extrude" type="ToolButton" parent="FaceTools"]
 margin_top = 72.0
@@ -322,16 +412,36 @@ margin_bottom = 86.0
 text = "Triangulate"
 align = 2
 
-[node name="VSeparator3" type="HSeparator" parent="FaceTools"]
-margin_top = 100.0
+[node name="PaintSurfaces" type="MarginContainer" parent="FaceTools"]
+margin_top = 248.0
 margin_right = 1024.0
-margin_bottom = 104.0
+margin_bottom = 285.0
 
-[node name="Label" type="Label" parent="FaceTools"]
-margin_top = 108.0
+[node name="ColorRect" type="ColorRect" parent="FaceTools/PaintSurfaces"]
 margin_right = 1024.0
-margin_bottom = 122.0
-text = "Set Face Texture"
+margin_bottom = 37.0
+color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
+
+[node name="MarginContainer" type="MarginContainer" parent="FaceTools/PaintSurfaces"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="FaceTools/PaintSurfaces/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Tools" type="Label" parent="FaceTools/PaintSurfaces/MarginContainer/CenterContainer"]
+margin_left = 471.0
+margin_right = 543.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Paint Faces"
+valign = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -414,6 +524,40 @@ margin_top = 371.0
 margin_right = 1024.0
 margin_bottom = 503.0
 
+[node name="SelectTools" type="MarginContainer" parent="EdgeTools"]
+margin_top = 116.0
+margin_right = 1024.0
+margin_bottom = 153.0
+
+[node name="ColorRect" type="ColorRect" parent="EdgeTools/SelectTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
+
+[node name="MarginContainer" type="MarginContainer" parent="EdgeTools/SelectTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="EdgeTools/SelectTools/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Tools" type="Label" parent="EdgeTools/SelectTools/MarginContainer/CenterContainer"]
+margin_left = 467.0
+margin_right = 546.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Select Edges"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="SelectLoop" type="ToolButton" parent="EdgeTools"]
 margin_top = 8.0
 margin_right = 1024.0
@@ -422,10 +566,39 @@ text = "Loop"
 icon = ExtResource( 13 )
 align = 2
 
-[node name="VSeparator2" type="HSeparator" parent="EdgeTools"]
-margin_top = 36.0
+[node name="EdgeTools" type="MarginContainer" parent="EdgeTools"]
+margin_top = 116.0
 margin_right = 1024.0
-margin_bottom = 40.0
+margin_bottom = 153.0
+
+[node name="ColorRect" type="ColorRect" parent="EdgeTools/EdgeTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+color = Color( 0.537255, 0.537255, 0.537255, 0.294118 )
+
+[node name="MarginContainer" type="MarginContainer" parent="EdgeTools/EdgeTools"]
+margin_right = 1024.0
+margin_bottom = 37.0
+custom_constants/margin_right = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="EdgeTools/EdgeTools/MarginContainer"]
+margin_left = 5.0
+margin_right = 1019.0
+margin_bottom = 32.0
+
+[node name="Tools" type="Label" parent="EdgeTools/EdgeTools/MarginContainer/CenterContainer"]
+margin_left = 473.0
+margin_right = 541.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+size_flags_horizontal = 3
+text = "Edge Tools"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="CutLoop" type="ToolButton" parent="EdgeTools"]
 margin_top = 44.0
@@ -449,11 +622,6 @@ align = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="VSeparator3" type="HSeparator" parent="EdgeTools"]
-margin_top = 100.0
-margin_right = 1024.0
-margin_bottom = 104.0
 
 [node name="Collapse" type="ToolButton" parent="EdgeTools"]
 margin_top = 108.0
