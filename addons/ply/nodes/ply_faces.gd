@@ -20,11 +20,18 @@ func _ready():
 func _process(_delta):
     global_transform = copy_transform.global_transform
     clear()
-    begin(Mesh.PRIMITIVE_POINTS)
-    for v in range(ply_mesh.vertex_count()):
-        if editor.selected_vertices.has(v):
-            set_color(Color.green)
-        else:
-            set_color(Color.blue)
-        add_vertex(ply_mesh.vertexes[v])
+    begin(Mesh.PRIMITIVE_TRIANGLES)
+    set_color(Color.green)
+    for f in range(ply_mesh.face_count()):
+        if not editor.selected_faces.has(f):
+            continue
+        var ft = ply_mesh.face_tris(f)
+        var verts = ft[0]
+        var tris = ft[1]
+        if verts.size() == 0:
+            continue
+        for tri in tris:
+            add_vertex(verts[tri[0]][0])
+            add_vertex(verts[tri[1]][0])
+            add_vertex(verts[tri[2]][0])
     end()

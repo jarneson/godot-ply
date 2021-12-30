@@ -13,6 +13,7 @@ const Selector = preload("./plugin/selector.gd")
 const Selector2 = preload("./plugin/selector2.gd")
 const SpatialEditor = preload("./plugin/spatial_editor.gd")
 const Toolbar = preload("./plugin/toolbar.gd")
+const Toolbar2 = preload("./plugin/toolbar2.gd")
 
 const SelectionMode = preload("./utils/selection_mode.gd")
 const PlyNode = preload("./nodes/ply.gd")
@@ -23,6 +24,8 @@ const Handle = preload("./plugin/handle.gd")
 
 const Interop = preload("./interop.gd")
 
+const PlyEditor = preload("./nodes/ply2.gd")
+
 func get_plugin_name():
     return "Ply"
 
@@ -30,6 +33,7 @@ var spatial_editor = null
 var selector = null
 var selector2: Selector2 
 var toolbar = null
+var toolbar2: Toolbar2
 
 var undo_redo = null
 
@@ -52,12 +56,15 @@ func _enter_tree() -> void:
     selector2 = Selector2.new(self)
     spatial_editor = SpatialEditor.new(self)
     toolbar = Toolbar.new(self)
+    toolbar2 = Toolbar2.new(self)
 
     selector2.startup()
     selector.startup()
     spatial_editor.startup()
     toolbar.startup()
+    toolbar2.startup()
 
+    set_force_draw_over_forwarding_enabled()
     set_input_event_forwarding_always_enabled()
 
 func _exit_tree() -> void:
@@ -65,6 +72,8 @@ func _exit_tree() -> void:
     remove_custom_type("PlyEditor")
 
     toolbar.teardown()
+    toolbar2.teardown()
+    toolbar2.free()
     spatial_editor.teardown()
     selector.teardown()
     selector2.teardown()
@@ -105,3 +114,6 @@ func forward_spatial_gui_input(camera: Camera, event: InputEvent):
         if event.button_index == BUTTON_LEFT:
             return selector2.handle_click(camera, event) || selector.handle_click(camera, event)
     return false
+
+func forward_spatial_force_draw_over_viewport(overlay: Control):
+    pass

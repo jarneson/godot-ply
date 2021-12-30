@@ -79,8 +79,11 @@ func _process(_delta):
 func _update_transform_toggle(selected):
 	emit_signal("transform_mode_changed", selected)
 
+var selection_mode: int = SelectionMode.MESH
+
 func _update_selection_mode(selected, mode):
 	if selected:
+		selection_mode = mode
 		emit_signal("selection_mode_changed", mode)
 
 func _update_tool_visibility():

@@ -5,6 +5,8 @@ const PlyMesh = preload("../resources/ply_mesh.gd")
 var ply_mesh: PlyMesh
 var copy_transform: Spatial
 
+onready var editor = get_parent()
+
 func _ready():
     var m = SpatialMaterial.new()
     m.albedo_color = Color.white
@@ -20,8 +22,11 @@ func _process(_delta):
     global_transform = copy_transform.global_transform
     clear()
     begin(Mesh.PRIMITIVE_LINES)
-    set_color(Color.blue)
     for e in range(ply_mesh.edge_count()):
+        if editor.selected_edges.has(e):
+            set_color(Color.green)
+        else:
+            set_color(Color.blue)
         add_vertex(ply_mesh.edge_origin(e))
         add_vertex(ply_mesh.edge_destination(e))
     end()
