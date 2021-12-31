@@ -16,7 +16,6 @@ func _ready():
     m.params_point_size = 10
     m.vertex_color_use_as_albedo = true
     set_material_override(m)
-    print("material: ", m)
 
 func _process(_delta):
     global_transform = copy_transform.global_transform

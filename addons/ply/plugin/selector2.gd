@@ -24,6 +24,7 @@ func teardown():
     pass
 
 func _on_selection_change():
+    _plugin.transform_gizmo.transform = null
     var new_selection = null
     var selected_nodes = _editor_selection.get_selected_nodes()
     if selected_nodes.size() != 1:
@@ -48,19 +49,21 @@ const fuzziness = {
     SelectionMode.VERTEX: 0.007,
 }
 
-func handle_click(camera: Camera, event: InputEventMouseButton):
-    if !event.pressed or !selection or _plugin.ignore_inputs:
-        return false
-    var ray = camera.project_ray_normal(event.position) # todo: viewport scale
-    var ray_pos = camera.project_ray_origin(event.position) # todo: viewport scale
-    var selection_mode = _plugin.toolbar2.toolbar.selection_mode
+func handle_input(camera: Camera, event: InputEventMouseButton):
+    var handled = false
+    if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed and selection and not _plugin.ignore_inputs:
+        handled = true
+        var ray = camera.project_ray_normal(event.position) # todo: viewport scale
+        var ray_pos = camera.project_ray_origin(event.position) # todo: viewport scale
+        var selection_mode = _plugin.toolbar2.toolbar.selection_mode
 
-    var hits = selection.get_ray_intersection(ray_pos, ray, selection_mode)
-    var deselect = true
-    if hits.size() > 0:
-        if hits[0][2]/hits[0][3] < fuzziness[selection_mode]:
-            deselect = false
-            selection.select_geometry([hits[0]], event.shift)
-    if deselect and not event.shift:
-        selection.select_geometry([], false)
-    return true
+        var hits = selection.get_ray_intersection(ray_pos, ray, selection_mode)
+        var deselect = true
+        if hits.size() > 0:
+            if hits[0][2]/hits[0][3] < fuzziness[selection_mode]:
+                deselect = false
+                selection.select_geometry([hits[0]], event.shift)
+        if deselect and not event.shift:
+            selection.select_geometry([], false)
+        _plugin.transform_gizmo.transform = selection.get_selection_transform()
+    return handled

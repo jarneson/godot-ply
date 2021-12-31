@@ -16,11 +16,9 @@ func _ready():
     m.vertex_color_use_as_albedo = true
     m.params_grow = true
     m.params_grow_amount = 1.0
-    m.render_priority = -1000
     # m.flags_no_depth_test = true # enable for xray
     # m.params_cull_mode = SpatialMaterial.CULL_DISABLED # enable for xray
     set_material_override(m)
-    print("material: ", m)
 
 func _process(_delta):
     global_transform = copy_transform.global_transform

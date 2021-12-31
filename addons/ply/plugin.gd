@@ -21,6 +21,7 @@ const Face = preload("./gui/face.gd")
 const Edge = preload("./gui/edge.gd")
 const Editor = preload("./gui/editor.gd")
 const Handle = preload("./plugin/handle.gd")
+const TransformGizmo = preload("./plugin/transform_gizmo.gd")
 
 const Interop = preload("./interop.gd")
 
@@ -34,6 +35,7 @@ var selector = null
 var selector2: Selector2 
 var toolbar = null
 var toolbar2: Toolbar2
+var transform_gizmo: TransformGizmo
 
 var undo_redo = null
 
@@ -57,7 +59,9 @@ func _enter_tree() -> void:
     spatial_editor = SpatialEditor.new(self)
     toolbar = Toolbar.new(self)
     toolbar2 = Toolbar2.new(self)
+    transform_gizmo = TransformGizmo.new(self)
 
+    transform_gizmo.startup()
     selector2.startup()
     selector.startup()
     spatial_editor.startup()
@@ -109,11 +113,15 @@ func _interop_notification(caller_plugin_id, code, _id, _args):
 ╚══════╝╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
 """
 
+var last_camera: Camera
+
 func forward_spatial_gui_input(camera: Camera, event: InputEvent):
-    if event is InputEventMouseButton:
-        if event.button_index == BUTTON_LEFT:
-            return selector2.handle_click(camera, event) || selector.handle_click(camera, event)
-    return false
+    last_camera = camera
+    return selector2.handle_input(camera, event) 
 
 func forward_spatial_force_draw_over_viewport(overlay: Control):
     pass
+
+func _process(_delta):
+    if last_camera:
+        transform_gizmo.process()

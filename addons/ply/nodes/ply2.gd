@@ -33,7 +33,7 @@ func set_ply_mesh(v: Resource):
 onready var parent = get_parent()
 
 func _ready():
-    print(parent.get(parent_property))
+    pass
 
 func _enter_tree():
     if not Engine.editor_hint:
@@ -144,7 +144,6 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
         var ai_direction = ai.basis.xform(direction).normalized()
         for f in range(_ply_mesh.face_count()):
             var dist = _ply_mesh.face_intersect_ray_distance(f, ai_origin, ai_direction)
-            print("face %s: %s" %[f, dist])
             if dist != null:
                 scan_results.push_back(["F", f, 0, dist])
 
@@ -186,3 +185,21 @@ func select_geometry(hits: Array, toggle: bool):
                         selected_faces.push_back(h[1])
                 else:
                     selected_faces.push_back(h[1])
+
+func get_selection_transform():
+    if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
+        return null
+
+    var verts = {}
+    for v in selected_vertices:
+        verts[_ply_mesh.vertexes[v]] = true
+    for e in selected_edges:
+        verts[_ply_mesh.edge_origin(e)] = true
+        verts[_ply_mesh.edge_destination(e)] = true
+    for f in selected_faces:
+        for v in _ply_mesh.face_vertices(f):
+            verts[v] = true
+
+    var pos = _ply_mesh.geometric_median(verts.keys())
+
+    return Transform(Basis.IDENTITY, pos + parent.global_transform.origin)
