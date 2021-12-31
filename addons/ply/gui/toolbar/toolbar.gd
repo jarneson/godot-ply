@@ -1,15 +1,19 @@
 tool
 extends Control
 
+signal selection_mode_changed(mode)
 const SelectionMode = preload("../../utils/selection_mode.gd")
 
-signal generate_plane
-signal generate_cube
-signal generate_mesh(arr)
-signal set_face_surface(s)
+const Extrude = preload("../../resources/extrude.gd")
+const Subdivide = preload("../../resources/subdivide.gd")
+const Triangulate = preload("../../resources/triangulate.gd")
+const Loop = preload("../../resources/loop.gd")
+const Collapse = preload("../../resources/collapse.gd")
+const Connect = preload("../../resources/connect.gd")
+const Generate = preload("../../resources/generate.gd")
+const ExportMesh = preload("../../resources/export.gd")
 
-signal selection_mode_changed(mode)
-signal transform_mode_changed(mode)
+var plugin: EditorPlugin
 
 onready var transform_toggle = $TransformToggle
 
@@ -29,9 +33,9 @@ onready var generators_modal = $GeneratorsModal
 onready var face_tools = $FaceTools
 onready var face_select_loop_1 = $FaceTools/FaceLoop1
 onready var face_select_loop_2 = $FaceTools/FaceLoop2
-onready var face_extrude       = $FaceTools/Extrude
-onready var face_connect       = $FaceTools/Connect
-onready var face_subdivide     = $FaceTools/Subdivide
+onready var face_extrude	   = $FaceTools/Extrude
+onready var face_connect	   = $FaceTools/Connect
+onready var face_subdivide	 = $FaceTools/Subdivide
 onready var face_triangulate   = $FaceTools/Triangulate
 
 onready var face_set_shape_1 = $"FaceTools/Surfaces/1"
@@ -59,6 +63,13 @@ func _ready():
 	selection_edge.connect("toggled", self, "_update_selection_mode", [SelectionMode.EDGE])
 	selection_vertex.connect("toggled", self, "_update_selection_mode", [SelectionMode.VERTEX])
 
+	mesh_export_to_obj.connect("pressed", self, "_export_to_obj")
+	mesh_subdivide.connect("pressed", self, "_mesh_subdivide")
+	mesh_triangulate.connect("pressed", self, "_mesh_triangulate")
+	mesh_quick_generators.get_popup().connect("id_pressed", self, "_on_generators_id_pressed")
+	mesh_generators.connect("pressed", self, "_open_generators_modal")
+	generators_modal.connect("confirmed", self, "_on_generators_modal_confirmed")
+
 	face_set_shape_1.connect("pressed", self, "_set_face_surface", [0])
 	face_set_shape_2.connect("pressed", self, "_set_face_surface", [1])
 	face_set_shape_3.connect("pressed", self, "_set_face_surface", [2])
@@ -69,9 +80,18 @@ func _ready():
 	face_set_shape_8.connect("pressed", self, "_set_face_surface", [7])
 	face_set_shape_9.connect("pressed", self, "_set_face_surface", [8])
 
-	mesh_quick_generators.get_popup().connect("id_pressed", self, "_on_generators_id_pressed")
-	mesh_generators.connect("pressed", self, "_open_generators_modal")
-	generators_modal.connect("confirmed", self, "_on_generators_modal_confirmed")
+	face_select_loop_1.connect("pressed", self, "_face_select_loop", [0])
+	face_select_loop_2.connect("pressed", self, "_face_select_loop", [1])
+	face_extrude.connect("pressed", self, "_face_extrude")
+	face_connect.connect("pressed", self, "_face_connect")
+	face_subdivide.connect("pressed", self, "_face_subdivide")
+	face_triangulate.connect("pressed", self, "_face_triangulate")
+
+	edge_select_loop.connect("pressed", self, "_edge_select_loop")
+	edge_cut_loop.connect("pressed", self, "_edge_cut_loop")
+	edge_subdivide.connect("pressed", self, "_edge_subdivide")
+	edge_collapse.connect("pressed", self, "_edge_collapse")
+
 
 func _process(_delta):
 	_update_tool_visibility()
@@ -106,15 +126,233 @@ func set_selection_mode(mode):
 func _on_generators_id_pressed(idx):
 	match mesh_quick_generators.get_popup().get_item_text(idx):
 		"Plane":
-			emit_signal("generate_plane")
+			_generate_plane()
 		"Cube":
-			emit_signal("generate_cube")
+			_generate_cube()
 
 func _open_generators_modal():
 	generators_modal.popup_centered_minsize(Vector2(800, 600))
 
 func _on_generators_modal_confirmed():
-	emit_signal("generate_mesh", generators_modal.get_selection())
+	var arr = generators_modal.get_selection()
+	var shape = arr[0]
+	var params = arr[1]
+	match shape:
+		"Plane":
+			_generate_plane(params)
+		"Cube":
+			_generate_cube(params)
+		"Icosphere":
+			_generate_icosphere(params)
+		"Cylinder":
+			_generate_cylinder(params)
 
-func _set_face_surface(idx):
-	emit_signal("set_face_surface", idx)
+func _generate_cube(params = null):
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection:
+		return
+	var size = 1
+	var subdivisions = 0
+	if params != null:
+		size = params[0]
+		subdivisions = params[1]
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	var vertexes = [
+		size*Vector3(-0.5,0,-0.5),
+		size*Vector3(0.5,0,-0.5),
+		size*Vector3(0.5,0,0.5),
+		size*Vector3(-0.5,0,0.5)
+	]
+	Generate.nGon(plugin.selection.ply_mesh, vertexes)
+	Extrude.faces(plugin.selection.ply_mesh, [0], null, size)
+	for i in range(subdivisions):
+		Subdivide.object(plugin.selection.ply_mesh)
+	plugin.selection.ply_mesh.commit_edit("Generate Cube", plugin.get_undo_redo(), pre_edit)
+
+func _generate_plane(params = null):
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection:
+		return
+
+	var size = 1
+	var subdivisions = 0
+	if params != null:
+		size = params[0]
+		subdivisions = params[1]
+
+	var vertexes = [
+		size*Vector3(-0.5,0,-0.5),
+		size*Vector3(0.5,0,-0.5),
+		size*Vector3(0.5,0,0.5),
+		size*Vector3(-0.5,0,0.5)
+	]
+
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	Generate.nGon(plugin.selection.ply_mesh, vertexes)
+	for i in range(subdivisions):
+		Subdivide.object(plugin.selection.ply_mesh)
+	plugin.selection.ply_mesh.commit_edit("Generate Plane", plugin.get_undo_redo(), pre_edit)
+
+func _generate_cylinder(params = null):
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection:
+		return
+
+	var radius = 1
+	var depth = 1
+	var num_points = 8
+	var num_segments = 1
+	if params:
+		radius = params[0]
+		depth = params[1]
+		num_points = params[2]
+		num_segments = params[3]
+
+	var vertexes = []
+	for i in range(num_points):
+		vertexes.push_back(Vector3(
+			radius*cos(float(i)/num_points*2*PI),
+			-depth/2,
+			radius*sin(float(i)/num_points*2*PI)
+		))
+
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	Generate.nGon(plugin.selection.ply_mesh, vertexes)
+	for i in range(num_segments):
+		Extrude.faces(plugin.selection.ply_mesh, [0], null, depth / num_segments)
+	plugin.selection.ply_mesh.commit_edit("Generate Cylinder", plugin.get_undo_redo(), pre_edit)
+
+func _generate_icosphere(params = null):
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection:
+		return
+	
+	var radius = 1.0
+	var subdivides = 0
+	if params:
+		radius = params[0]
+		subdivides = params[1]
+	
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	Generate.icosphere(plugin.selection.ply_mesh, radius, subdivides)
+	plugin.selection.ply_mesh.commit_edit("Generate Icosphere", plugin.get_undo_redo(), pre_edit)
+
+func _generate_mesh(arr):
+	if plugin.ignore_inputs:
+		return
+
+
+func _face_select_loop(offset):
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.FACE or plugin.selection.selected_faces.size() != 1:
+		return
+	var loop = Loop.get_face_loop(plugin.selection.ply_mesh, plugin.selection.selected_faces[0], offset)[0]
+	plugin.selection.selected_faces = loop
+
+func _face_extrude():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.FACE or plugin.selection.selected_faces.size() == 0:
+		return
+	Extrude.faces(plugin.selection.ply_mesh, plugin.selection.selected_faces, plugin.get_undo_redo(), 1)
+
+func _face_connect():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.FACE or plugin.selection.selected_faces.size() != 2:
+		return
+	Connect.faces(plugin.selection.ply_mesh, plugin.selection.selected_faces[0], plugin.selection.selected_faces[1], plugin.get_undo_redo())
+
+func _face_subdivide():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.FACE:
+		return
+	Subdivide.faces(plugin.selection.ply_mesh, plugin.selection.selected_faces, plugin.get_undo_redo())
+
+func _face_triangulate():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.FACE:
+		return
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	Triangulate.faces(plugin.selection.ply_mesh, plugin.selection.selected_faces)
+	plugin.selection.ply_mesh.commit_edit("Triangulate Faces", plugin.get_undo_redo(), pre_edit)
+
+func _set_face_surface(s):
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.FACE or plugin.selection.selected_faces.size() == 0:
+		return
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	for f_idx in plugin.selection.selected_faces:
+		plugin.selection.ply_mesh.set_face_surface(f_idx, s)
+	plugin.selection.ply_mesh.commit_edit("Paint Face", plugin.get_undo_redo(), pre_edit)
+
+func _edge_select_loop():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.EDGE or plugin.selection.selected_edges.size() != 1:
+		return
+	var loop = Loop.get_edge_loop(plugin.selection.ply_mesh, plugin.selection.selected_edges[0])
+	plugin.selection.selected_edges = loop
+
+func _edge_cut_loop():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.EDGE or plugin.selection.selected_edges.size() != 1:
+		return
+	Loop.edge_cut(plugin.selection.ply_mesh, plugin.selection.selected_edges[0], plugin.get_undo_redo())
+
+func _edge_subdivide():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.EDGE or plugin.selection.selected_edges.size() != 1:
+		return
+	Subdivide.edge(plugin.selection.ply_mesh, plugin.selection.selected_edges[0], plugin.get_undo_redo())
+
+func _edge_collapse():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.EDGE or plugin.selection.selected_edges.size() == 0:
+		return
+	if Collapse.edges(plugin.selection.ply_mesh, plugin.selection.selected_edges, plugin.get_undo_redo()):
+		plugin.selection.selected_edges = []
+
+func _export_to_obj():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.MESH:
+		return
+	var fd = FileDialog.new()
+	fd.set_filters(PoolStringArray(["*.obj ; OBJ Files"]))
+	var base_control = plugin.get_editor_interface().get_base_control()
+	base_control.add_child(fd)
+	fd.popup_centered(Vector2(480, 600))
+	var file_name = yield(fd, "file_selected")
+	var obj_file = File.new()
+	obj_file.open(file_name, File.WRITE)
+	ExportMesh.export_to_obj(plugin.selection.ply_mesh, obj_file)
+
+func _mesh_subdivide():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.MESH:
+		return
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	Subdivide.object(plugin.selection.ply_mesh)
+	plugin.selection.ply_mesh.commit_edit("Subdivide Mesh", plugin.get_undo_redo(), pre_edit)
+
+func _mesh_triangulate():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.MESH:
+		return
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	Triangulate.object(plugin.selection.ply_mesh)
+	plugin.selection.ply_mesh.commit_edit("Subdivide Mesh", plugin.get_undo_redo(), pre_edit)

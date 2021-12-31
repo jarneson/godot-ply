@@ -9,8 +9,7 @@ extends EditorPlugin
 ██║     ██║  ██║███████╗███████╗╚██████╔╝██║  ██║██████╔╝███████║
 ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝
 """
-const Selector = preload("./plugin/selector2.gd")
-const Toolbar = preload("./plugin/toolbar2.gd")
+const Selector = preload("./plugin/selector.gd")
 
 const SelectionMode = preload("./utils/selection_mode.gd")
 const TransformGizmo = preload("./plugin/transform_gizmo.gd")
@@ -23,31 +22,30 @@ func get_plugin_name():
     return "Ply"
 
 var selector: Selector
-var selector2: Selector
-var toolbar: Toolbar
-var toolbar2: Toolbar
 var transform_gizmo: TransformGizmo
+
+var toolbar = preload("./gui/toolbar/toolbar.tscn").instance()
 
 func _enter_tree() -> void:
     Interop.register(self, "ply")
     add_custom_type("PlyEditor", "Node", preload("./nodes/ply2.gd"), preload("./icons/plugin.svg"))
 
     selector = Selector.new(self)
-    selector2 = selector
-    toolbar = Toolbar.new(self)
-    toolbar2 = toolbar
     transform_gizmo = TransformGizmo.new(self)
 
     transform_gizmo.startup()
     selector.startup()
-    toolbar.startup()
+
+    toolbar.plugin = self
+    toolbar.visible = false
+    add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , toolbar)
 
 func _exit_tree() -> void:
     remove_custom_type("PlyInstance")
     remove_custom_type("PlyEditor")
 
-    toolbar.teardown()
-    toolbar.free()
+    remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , toolbar)
+    toolbar.queue_free()
     selector.teardown()
     selector.free()
     Interop.deregister(self)
@@ -65,7 +63,7 @@ func edit(o: Object):
     selection = o
 
 func make_visible(vis: bool):
-    toolbar.toolbar.visible = vis
+    toolbar.visible = vis
     if selection:
         selection.selected = vis
     if vis:
@@ -88,7 +86,7 @@ var last_camera: Camera
 
 func forward_spatial_gui_input(camera: Camera, event: InputEvent):
     last_camera = camera
-    return selector2.handle_input(camera, event) 
+    return selector.handle_input(camera, event) 
 
 func _process(_delta):
     if not selection:

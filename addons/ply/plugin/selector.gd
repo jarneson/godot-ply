@@ -12,10 +12,10 @@ func _init(p: EditorPlugin):
     _plugin = p
 
 func startup():
-    _plugin.toolbar.toolbar.connect("selection_mode_changed", self, "_on_selection_mode_changed")
+    _plugin.toolbar.connect("selection_mode_changed", self, "_on_selection_mode_changed")
 
 func teardown():
-    _plugin.toolbar.toolbar.disconnect("selection_mode_changed", self, "_on_selection_mode_changed")
+    _plugin.toolbar.disconnect("selection_mode_changed", self, "_on_selection_mode_changed")
 
 func _on_selection_mode_changed(_mode):
     _plugin.selection.select_geometry([], false)
@@ -30,7 +30,7 @@ const fuzziness = {
 func _scan_selection(camera: Camera, event: InputEventMouseButton):
     var ray = camera.project_ray_normal(event.position) 
     var ray_pos = camera.project_ray_origin(event.position) 
-    var selection_mode = _plugin.toolbar2.toolbar.selection_mode
+    var selection_mode = _plugin.toolbar.selection_mode
 
     var hits = _plugin.selection.get_ray_intersection(ray_pos, ray, selection_mode)
     var deselect = true
