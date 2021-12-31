@@ -10,10 +10,20 @@ var _plugin: EditorPlugin
 func _init(p: EditorPlugin):
     _plugin = p
 
+var started: bool = false
 func startup():
     _init_materials()
     _init_meshes()
     _init_instance()
+    started = true
+
+func teardown():
+    if not started:
+        return
+    for i in range(3):
+        VisualServer.free_rid(move_gizmo_instances[i])
+    started = false
+
 
 # 0: x, 1: y, 2: z
 var move_gizmo = [ArrayMesh.new(), ArrayMesh.new(), ArrayMesh.new()]
@@ -161,7 +171,7 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
                 edit_axis = col_axis
                 compute_edit(camera, screen_position)
                 in_edit = true
-                _plugin.selector2.selection.begin_edit()
+                _plugin.selection.begin_edit()
             return true
     return false
 
@@ -201,7 +211,7 @@ func compute_edit(camera: Camera, screen_position: Vector2):
         var motion = intersection - last_intersect
         if motion_mask != Vector3.ZERO:
             motion = motion_mask.dot(motion) * motion_mask
-        _plugin.selector2.selection.translate_selection(motion)
+        _plugin.selection.translate_selection(motion)
     last_intersect = intersection
 
 func end_edit():
@@ -216,9 +226,10 @@ func end_edit():
             name = "Ply: Translate"
         TransformMode.ROTATE:
             name = "Ply: Rotate"
-    _plugin.selector2.selection.commit_edit(name, _plugin.get_undo_redo())
+    _plugin.selection.commit_edit(name, _plugin.get_undo_redo())
 
 func process():
-    if _plugin.selector2.selection:
-        transform = _plugin.selector2.selection.get_selection_transform()
+    if not started:
+        return
+    transform = _plugin.selection.get_selection_transform()
     _update_view()
