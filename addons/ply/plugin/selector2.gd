@@ -66,6 +66,8 @@ func _scan_selection(camera: Camera, event: InputEventMouseButton):
 func handle_input(camera: Camera, event: InputEvent):
     if _plugin.ignore_inputs:
         return false
+    if not selection:
+        return false
     if event is InputEventMouseButton:
         match event.button_index:
             BUTTON_LEFT:

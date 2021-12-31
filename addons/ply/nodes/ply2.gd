@@ -186,6 +186,14 @@ func select_geometry(hits: Array, toggle: bool):
                 else:
                     selected_faces.push_back(h[1])
 
+var _current_edit
+func begin_edit():
+    _current_edit = _ply_mesh.begin_edit()
+
+func commit_edit(name: String, undo_redo: UndoRedo):
+    _ply_mesh.commit_edit(name, undo_redo, _current_edit)
+    _current_edit = null
+
 func get_selection_transform():
     if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
         return null

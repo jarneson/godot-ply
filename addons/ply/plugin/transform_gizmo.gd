@@ -161,6 +161,7 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
                 edit_axis = col_axis
                 compute_edit(camera, screen_position)
                 in_edit = true
+                _plugin.selector2.selection.begin_edit()
             return true
     return false
 
@@ -173,27 +174,27 @@ var in_edit: bool = false
 
 var last_intersect # nullable vector3
 func compute_edit(camera: Camera, screen_position: Vector2):
+    if not transform:
+        return
     var ray_pos = camera.project_ray_origin(screen_position)
     var ray = camera.project_ray_normal(screen_position)
     var p = Plane(ray, ray.dot(transform.origin))
     var motion_mask = Vector3.ZERO
-    var normal: Vector3
     match edit_axis:
         TransformAxis.X:
             motion_mask = transform.basis.x
-            normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+            var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
             p = Plane(normal, normal.dot(transform.origin))
         TransformAxis.Y:
             motion_mask = transform.basis.y
-            normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+            var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
             p = Plane(normal, normal.dot(transform.origin))
         TransformAxis.Z:
             motion_mask = transform.basis.z
-            normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+            var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
             p = Plane(normal, normal.dot(transform.origin))
     var intersection = p.intersects_ray(ray_pos, ray)
     if not intersection:
-        print("no intersection %s/%s -> %s" % [ray_pos, ray, p])
         return
     
     if last_intersect:
@@ -201,11 +202,21 @@ func compute_edit(camera: Camera, screen_position: Vector2):
         if motion_mask != Vector3.ZERO:
             motion = motion_mask.dot(motion) * motion_mask
         _plugin.selector2.selection.translate_selection(motion)
-        print(motion)
     last_intersect = intersection
 
 func end_edit():
+    if not in_edit:
+        return
+
+    in_edit = false
     last_intersect = null
+    var name = "Ply: Transform"
+    match edit_mode:
+        TransformMode.TRANSLATE:
+            name = "Ply: Translate"
+        TransformMode.ROTATE:
+            name = "Ply: Rotate"
+    _plugin.selector2.selection.commit_edit(name, _plugin.get_undo_redo())
 
 func process():
     if _plugin.selector2.selection:
