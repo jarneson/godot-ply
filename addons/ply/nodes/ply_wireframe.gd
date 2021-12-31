@@ -11,7 +11,7 @@ func _ready():
     var m = SpatialMaterial.new()
     m.albedo_color = Color.white
     m.flags_use_point_size = true
-    # m.flags_no_depth_test = true
+    # m.flags_no_depth_test = true # enable for xray
     m.flags_unshaded = true
     m.params_point_size = 10
     m.vertex_color_use_as_albedo = true
