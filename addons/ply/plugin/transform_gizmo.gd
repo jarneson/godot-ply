@@ -11,6 +11,7 @@ func _init(p: EditorPlugin):
     _plugin = p
 
 func startup():
+    _init_materials()
     _init_meshes()
     _init_instance()
 
@@ -18,25 +19,34 @@ func startup():
 var move_gizmo = [ArrayMesh.new(), ArrayMesh.new(), ArrayMesh.new()]
 var move_gizmo_instances = [0, 0, 0]
 
-func _init_meshes():
-    for i in range(3):
-        var col: Color
-        match i:
-            0:
-                col = Color.red
-            1:
-                col = Color.green    
-            2:
-                col = Color.blue
+var axis_colors          = [Color(1.0,0.2,0.2), Color(0.2, 1.0, 0.2), Color(0.2, 0.2, 1.0)]
+var axis_colors_selected = [Color(1.0,0.8,0.8), Color(0.8, 1.0, 0.8), Color(0.8, 0.8, 1.0)]
 
+var axis_materials          = [null, null, null]
+var axis_materials_selected = [null, null, null]
+
+func _init_materials():
+    for i in range(3):
         var mat = SpatialMaterial.new()
         mat.flags_unshaded = true
         mat.flags_transparent = true
         mat.flags_no_depth_test = true
         mat.params_cull_mode = SpatialMaterial.CULL_DISABLED
         mat.render_priority = 127
-        mat.albedo_color = col
-        
+        mat.albedo_color = axis_colors[i]
+        axis_materials[i] = mat
+
+        mat = SpatialMaterial.new()
+        mat.flags_unshaded = true
+        mat.flags_transparent = true
+        mat.flags_no_depth_test = true
+        mat.params_cull_mode = SpatialMaterial.CULL_DISABLED
+        mat.render_priority = 127
+        mat.albedo_color = axis_colors_selected[i]
+        axis_materials_selected[i] = mat
+
+func _init_meshes():
+    for i in range(3):
         var ivec = Vector3.ZERO
         ivec[i] = 1
         var nivec = Vector3.ZERO
@@ -76,7 +86,7 @@ func _init_meshes():
                     st.add_vertex(points[0])
                     st.add_vertex(points[2])
                     st.add_vertex(points[3])
-            st.set_material(mat)
+            st.set_material(axis_materials[i])
             st.commit(move_gizmo[i])
 
 func _init_instance():
@@ -88,20 +98,10 @@ func _init_instance():
         VisualServer.instance_geometry_set_cast_shadows_setting(move_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF) 
         VisualServer.instance_set_layer_mask(move_gizmo_instances[i], 100)
 
-var transform setget set_transform
-var transform_ok: bool = false
+var transform # Nullable Transform
+var gizmo_scale: float
 
-func set_transform(v):
-    transform = v
-    _update_view()
-
-func _update_view():
-    if not transform:
-        for i in range(3):
-            VisualServer.instance_set_visible(move_gizmo_instances[i], false)
-        return
-
-    var camera = _plugin.last_camera
+func _get_transform(camera: Camera) -> Transform:
     var cam_xform = camera.global_transform
     var xform = transform
     var camz = -cam_xform.basis.z.normalized()
@@ -114,13 +114,100 @@ func _update_view():
     if dd == 0:
         dd = 0.0001
     var gizmo_size = 80
-    var gizmo_scale = gizmo_size/abs(dd)
+    gizmo_scale = gizmo_size/abs(dd)
     var scale = Vector3(1,1,1) * gizmo_scale
     xform.basis = xform.basis.scaled(scale)
+    return xform
+
+func _update_view():
+    if not transform:
+        for i in range(3):
+            VisualServer.instance_set_visible(move_gizmo_instances[i], false)
+        return
+
+    var xform  = _get_transform(_plugin.last_camera)
 
     for i in range(3):
         VisualServer.instance_set_transform(move_gizmo_instances[i], xform)
         VisualServer.instance_set_visible(move_gizmo_instances[i], true)
 
+func select(camera: Camera, screen_position: Vector2, only_highlight: bool = false) -> bool:
+    if not transform:
+        return false
+    
+    var ray_pos = camera.project_ray_origin(screen_position)
+    var ray = camera.project_ray_normal(screen_position)
+    var gt = _get_transform(camera)
+    var gs = gizmo_scale
+
+    if true: # translate
+        var col_axis = -1
+        var col_d = 100000
+        for i in range(3):
+            var grabber_pos = gt.origin + gt.basis[i] * (GIZMO_ARROW_OFFSET + (GIZMO_ARROW_SIZE * 0.5))
+            var grabber_radius = gs * GIZMO_ARROW_SIZE
+            var r: Vector3
+
+            var res = Geometry.segment_intersects_sphere(ray_pos, ray_pos + ray * 1000, grabber_pos, grabber_radius)
+            if res.size() > 0:
+                var d = res[0].distance_to(ray_pos)
+                if d < col_d:
+                    col_d = d
+                    col_axis = i
+        if col_axis != -1:
+            if not only_highlight:
+                edit_mode = TransformMode.TRANSLATE
+                edit_direction = gt.basis[col_axis].normalized()
+                edit_axis = col_axis
+                compute_edit(camera, screen_position)
+                in_edit = true
+            return true
+    return false
+
+enum TransformAxis { X, Y, Z, XY, XZ, YZ, MAX }
+enum TransformMode { NONE, TRANSLATE, ROTATE, MAX }
+var edit_mode: int = TransformMode.NONE
+var edit_direction: Vector3 = Vector3.ZERO
+var edit_axis: int = TransformAxis.X
+var in_edit: bool = false
+
+var last_intersect # nullable vector3
+func compute_edit(camera: Camera, screen_position: Vector2):
+    var ray_pos = camera.project_ray_origin(screen_position)
+    var ray = camera.project_ray_normal(screen_position)
+    var p = Plane(ray, ray.dot(transform.origin))
+    var motion_mask = Vector3.ZERO
+    var normal: Vector3
+    match edit_axis:
+        TransformAxis.X:
+            motion_mask = transform.basis.x
+            normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+            p = Plane(normal, normal.dot(transform.origin))
+        TransformAxis.Y:
+            motion_mask = transform.basis.y
+            normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+            p = Plane(normal, normal.dot(transform.origin))
+        TransformAxis.Z:
+            motion_mask = transform.basis.z
+            normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+            p = Plane(normal, normal.dot(transform.origin))
+    var intersection = p.intersects_ray(ray_pos, ray)
+    if not intersection:
+        print("no intersection %s/%s -> %s" % [ray_pos, ray, p])
+        return
+    
+    if last_intersect:
+        var motion = intersection - last_intersect
+        if motion_mask != Vector3.ZERO:
+            motion = motion_mask.dot(motion) * motion_mask
+        _plugin.selector2.selection.translate_selection(motion)
+        print(motion)
+    last_intersect = intersection
+
+func end_edit():
+    last_intersect = null
+
 func process():
+    if _plugin.selector2.selection:
+        transform = _plugin.selector2.selection.get_selection_transform()
     _update_view()

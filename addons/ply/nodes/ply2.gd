@@ -203,3 +203,8 @@ func get_selection_transform():
     var pos = _ply_mesh.geometric_median(verts.keys())
 
     return Transform(Basis.IDENTITY, pos + parent.global_transform.origin)
+
+func translate_selection(dir: Vector3):
+    _ply_mesh.transform_faces(selected_faces, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
+    _ply_mesh.transform_edges(selected_edges, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
+    _ply_mesh.transform_vertexes(selected_vertices, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))

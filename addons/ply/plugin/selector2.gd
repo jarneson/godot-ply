@@ -49,21 +49,36 @@ const fuzziness = {
     SelectionMode.VERTEX: 0.007,
 }
 
-func handle_input(camera: Camera, event: InputEventMouseButton):
-    var handled = false
-    if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed and selection and not _plugin.ignore_inputs:
-        handled = true
-        var ray = camera.project_ray_normal(event.position) # todo: viewport scale
-        var ray_pos = camera.project_ray_origin(event.position) # todo: viewport scale
-        var selection_mode = _plugin.toolbar2.toolbar.selection_mode
+func _scan_selection(camera: Camera, event: InputEventMouseButton):
+    var ray = camera.project_ray_normal(event.position) 
+    var ray_pos = camera.project_ray_origin(event.position) 
+    var selection_mode = _plugin.toolbar2.toolbar.selection_mode
 
-        var hits = selection.get_ray_intersection(ray_pos, ray, selection_mode)
-        var deselect = true
-        if hits.size() > 0:
-            if hits[0][2]/hits[0][3] < fuzziness[selection_mode]:
-                deselect = false
-                selection.select_geometry([hits[0]], event.shift)
-        if deselect and not event.shift:
-            selection.select_geometry([], false)
-        _plugin.transform_gizmo.transform = selection.get_selection_transform()
-    return handled
+    var hits = selection.get_ray_intersection(ray_pos, ray, selection_mode)
+    var deselect = true
+    if hits.size() > 0:
+        if hits[0][2]/hits[0][3] < fuzziness[selection_mode]:
+            deselect = false
+            selection.select_geometry([hits[0]], event.shift)
+    if deselect and not event.shift:
+        selection.select_geometry([], false)
+
+func handle_input(camera: Camera, event: InputEvent):
+    if _plugin.ignore_inputs:
+        return false
+    if event is InputEventMouseButton:
+        match event.button_index:
+            BUTTON_LEFT:
+                if event.pressed:
+                    if _plugin.transform_gizmo.select(camera, event.position):
+                        return true
+                    if selection:
+                        _scan_selection(camera, event)
+                        return true
+                else:
+                    _plugin.transform_gizmo.end_edit()
+    if event is InputEventMouseMotion:
+        _plugin.transform_gizmo.select(camera, event.position, true)
+        if event.button_mask & BUTTON_MASK_LEFT:
+            _plugin.transform_gizmo.compute_edit(camera, event.position)
+    return false
