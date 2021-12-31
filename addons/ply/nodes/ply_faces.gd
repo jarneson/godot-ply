@@ -1,10 +1,6 @@
 extends ImmediateGeometry
 
-const PlyMesh = preload("../resources/ply_mesh.gd")
-
 onready var editor = get_parent()
-var ply_mesh: PlyMesh
-var copy_transform: Spatial
 
 func _ready():
     var m = SpatialMaterial.new()
@@ -21,15 +17,15 @@ func _ready():
     set_material_override(m)
 
 func _process(_delta):
-    global_transform = copy_transform.global_transform
+    global_transform = editor.parent.global_transform
     clear()
     begin(Mesh.PRIMITIVE_TRIANGLES)
     set_color(Color(0,1,0,0.5))
-    for f in range(ply_mesh.face_count()):
+    for f in range(editor.ply_mesh.face_count()):
         if not editor.selected_faces.has(f):
             continue
-        var normal = ply_mesh.face_normal(f)
-        var ft = ply_mesh.face_tris(f)
+        var normal = editor.ply_mesh.face_normal(f)
+        var ft = editor.ply_mesh.face_tris(f)
         var verts = ft[0]
         var tris = ft[1]
         if verts.size() == 0:

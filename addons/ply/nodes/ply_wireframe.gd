@@ -1,10 +1,5 @@
 extends ImmediateGeometry
 
-const PlyMesh = preload("../resources/ply_mesh.gd")
-
-var ply_mesh: PlyMesh
-var copy_transform: Spatial
-
 onready var editor = get_parent()
 
 func _ready():
@@ -18,14 +13,14 @@ func _ready():
     set_material_override(m)
 
 func _process(_delta):
-    global_transform = copy_transform.global_transform
+    global_transform = editor.parent.global_transform
     clear()
     begin(Mesh.PRIMITIVE_LINES)
-    for e in range(ply_mesh.edge_count()):
+    for e in range(editor.ply_mesh.edge_count()):
         if editor.selected_edges.has(e):
             set_color(Color.green)
         else:
             set_color(Color.blue)
-        add_vertex(ply_mesh.edge_origin(e))
-        add_vertex(ply_mesh.edge_destination(e))
+        add_vertex(editor.ply_mesh.edge_origin(e))
+        add_vertex(editor.ply_mesh.edge_destination(e))
     end()

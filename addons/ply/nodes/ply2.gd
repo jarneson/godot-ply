@@ -55,6 +55,24 @@ func _clear_parent():
     parent.set(parent_property, ArrayMesh.new())
 
 func _on_mesh_updated():
+    var remove = []
+    for v in selected_vertices:
+        if v >= _ply_mesh.vertex_count():
+            remove.push_back(v)
+    for v in remove:
+        selected_vertices.erase(v)
+    remove = []
+    for e in selected_edges:
+        if e >= _ply_mesh.edge_count():
+            remove.push_back(e)
+    for e in remove:
+        selected_edges.erase(e)
+    remove = []
+    for f in selected_faces:
+        if f >= _ply_mesh.face_count():
+            remove.push_back(f)
+    for f in remove:
+        selected_faces.erase(f)
     if parent:
         parent.set(parent_property, _ply_mesh.get_mesh(parent.get(parent_property)))
 
@@ -73,16 +91,10 @@ func _set_selected(v: bool):
         _faces.queue_free()
     if selected:
         _vertices = Vertices.new()
-        _vertices.copy_transform = parent
-        _vertices.ply_mesh = _ply_mesh
         add_child(_vertices)
         _wireframe = Wireframe.new()
-        _wireframe.copy_transform = parent
-        _wireframe.ply_mesh = _ply_mesh
         add_child(_wireframe)
         _faces = Faces.new()
-        _faces.copy_transform = parent
-        _faces.ply_mesh = _ply_mesh
         add_child(_faces)
 
 func _get_selected() -> bool:
