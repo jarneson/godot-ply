@@ -31,6 +31,7 @@ const GIZMO_ARROW_SIZE = 0.35
 const GIZMO_SCALE_OFFSET = GIZMO_CIRCLE_SIZE + 0.3
 const GIZMO_PLANE_SIZE = 0.2
 const GIZMO_PLANE_DST = 0.3
+const GIZMO_RING_HALF_WIDTH = 0.1
 
 const ROTATE_SHADER_CODE = """
 shader_type spatial;
@@ -281,6 +282,7 @@ func _set_highlight(highlight_axis):
     for i in range(3):
         move_gizmo[i].surface_set_material(0, axis_materials_selected[i] if i == highlight_axis else axis_materials[i])
         move_plane_gizmo[i].surface_set_material(0, axis_materials_selected[i] if i+6 == highlight_axis else axis_materials[i])
+        rotate_gizmo[i].surface_set_material(0, rotation_materials_selected[i] if i+3 == highlight_axis else rotation_materials[i])
 
 func _update_view():
     if not transform:
@@ -346,10 +348,38 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
         if col_axis != -1:
             if only_highlight:
                 _set_highlight(col_axis + (6 if is_plane_translate else 0))
-            if not only_highlight:
+            else:
                 edit_mode = TransformMode.TRANSLATE
-                edit_direction = gt.basis[col_axis].normalized()
                 edit_axis = col_axis + (3 if is_plane_translate else 0)
+                in_edit = true
+                compute_edit(camera, screen_position)
+                _plugin.selection.begin_edit()
+            return true
+    if true: # rotation
+        var col_axis = -1
+        var col_d = 100000
+        for i in range(3):
+            var normal = gt.basis[i].normalized()
+            var plane = Plane(normal, normal.dot(gt.origin))
+            var r = plane.intersects_ray(ray_pos, ray)
+            if not r:
+                continue
+            var dist = r.distance_to(gt.origin)
+            var r_dir = (r - gt.origin).normalized()
+
+            var camera_normal = -camera.global_transform.basis.z
+            if camera_normal.dot(r_dir) <= 0.005:
+                if dist > gs * (GIZMO_CIRCLE_SIZE - GIZMO_RING_HALF_WIDTH) && dist < gs * (GIZMO_CIRCLE_SIZE + GIZMO_RING_HALF_WIDTH):
+                    var d = ray_pos.distance_to(r)
+                    if (d < col_d):
+                        col_d = d
+                        col_axis = i
+        if col_axis != -1:
+            if only_highlight:
+                _set_highlight(col_axis + 3)
+            else:
+                edit_mode = TransformMode.ROTATE
+                edit_axis = col_axis
                 in_edit = true
                 compute_edit(camera, screen_position)
                 _plugin.selection.begin_edit()
@@ -361,7 +391,6 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
 enum TransformAxis { X, Y, Z, YZ, XZ, XY, MAX }
 enum TransformMode { NONE, TRANSLATE, ROTATE, SCALE, MAX }
 var edit_mode: int = TransformMode.NONE
-var edit_direction: Vector3 = Vector3.ZERO
 var edit_plane: bool = false
 var edit_axis: int = TransformAxis.X
 var in_edit: bool = false
@@ -373,10 +402,10 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
         return
     if not in_edit:
         return
+    var ray_pos = camera.project_ray_origin(screen_position)
+    var ray = camera.project_ray_normal(screen_position)
     match edit_mode:
         TransformMode.TRANSLATE:
-            var ray_pos = camera.project_ray_origin(screen_position)
-            var ray = camera.project_ray_normal(screen_position)
             var p = Plane(ray, ray.dot(transform.origin))
             var motion_mask = Vector3.ZERO
             match edit_axis:
@@ -418,7 +447,41 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
             var delta = original_origin + motion - transform.origin
             _plugin.selection.translate_selection(delta)
         TransformMode.ROTATE:
-            pass
+            var plane = Plane()
+            var axis = Vector3()
+            match edit_axis:
+                TransformAxis.X:
+                    var normal = transform.basis.orthonormalized().x
+                    plane = Plane(normal, normal.dot(transform.origin))
+                    axis = transform.basis.x
+                TransformAxis.Y:
+                    var normal = transform.basis.orthonormalized().y
+                    plane = Plane(normal, normal.dot(transform.origin))
+                    axis = transform.basis.y
+                TransformAxis.Z:
+                    var normal = transform.basis.orthonormalized().z
+                    plane = Plane(normal, normal.dot(transform.origin))
+                    axis = transform.basis.z
+
+            var intersection = plane.intersects_ray(ray_pos, ray)
+            if not intersection:
+                return
+            if not original_intersect:
+                original_intersect = intersection
+
+            var y_axis = (original_intersect - transform.origin).normalized()
+            var x_axis = plane.normal.cross(y_axis).normalized()
+
+            var angle = atan2(x_axis.dot(intersection - transform.origin), y_axis.dot(intersection - transform.origin))
+            print(angle)
+
+            if snap:
+                angle = rad2deg(angle) + snap * 0.5
+                print(angle)
+                angle -= fmod(angle, snap)
+                angle = deg2rad(angle)
+                
+            _plugin.selection.rotate_selection(axis, angle)
         TransformMode.SCALE:
             pass
 

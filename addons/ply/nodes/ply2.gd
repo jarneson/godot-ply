@@ -206,6 +206,7 @@ func begin_edit():
 func commit_edit(name: String, undo_redo: UndoRedo):
     _ply_mesh.commit_edit(name, undo_redo, _current_edit)
     _current_edit = null
+    last_rotation = Basis.IDENTITY
 
 func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null):
     if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
@@ -258,3 +259,12 @@ func translate_selection(global_dir: Vector3):
     _ply_mesh.transform_faces(selected_faces, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
     _ply_mesh.transform_edges(selected_edges, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
     _ply_mesh.transform_vertexes(selected_vertices, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
+
+var last_rotation: Basis = Basis.IDENTITY 
+func rotate_selection(axis: Vector3, rad: float):
+    axis = parent.global_transform.basis.inverse().xform(axis)
+    var new_basis = Basis(axis, rad)
+    _ply_mesh.transform_faces(selected_faces, Transform(last_rotation, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
+    _ply_mesh.transform_edges(selected_edges, Transform(last_rotation, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
+    _ply_mesh.transform_vertexes(selected_vertices, Transform(last_rotation, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
+    last_rotation = new_basis
