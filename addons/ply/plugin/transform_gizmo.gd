@@ -220,10 +220,8 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
             if motion_mask != Vector3.ZERO:
                 motion = motion_mask.dot(motion) * motion_mask
             if snap:
-                motion = Vector3(
-                    stepify(motion.x, snap),
-                    stepify(motion.y, snap),
-                    stepify(motion.z, snap))
+                var adjust = stepify(motion.length(), snap)
+                motion = adjust*motion.normalized()
 
             var delta = original_origin + motion - transform.origin
             _plugin.selection.translate_selection(delta)
