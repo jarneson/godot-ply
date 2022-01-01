@@ -199,6 +199,7 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
     if true: # translate
         var col_axis = -1
         var col_d = 100000
+        var is_plane_translate = false
         for i in range(3):
             var grabber_pos = gt.origin + gt.basis[i] * (GIZMO_ARROW_OFFSET + (GIZMO_ARROW_SIZE * 0.5))
             var grabber_radius = gs * GIZMO_ARROW_SIZE
@@ -210,13 +211,32 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
                 if d < col_d:
                     col_d = d
                     col_axis = i
+        
+        if col_axis == -1: # plane select
+            col_d = 100000
+            for i in range(3):
+                var ivec2 = gt.basis[(i+1)%3].normalized()
+                var ivec3 = gt.basis[(i+2)%3].normalized()
+                var grabber_pos = gt.origin + (ivec2 + ivec3) * gs * (GIZMO_PLANE_SIZE + GIZMO_PLANE_DST * 0.6667)
+
+                var p_norm = gt.basis[i].normalized()
+                var plane = Plane(p_norm, p_norm.dot(gt.origin))
+                var intersection = plane.intersects_ray(ray_pos, ray)
+                if intersection:
+                    var dist = intersection.distance_to(grabber_pos)
+                    if dist < gs * GIZMO_PLANE_SIZE * 1.5:
+                        dist = ray_pos.distance_to(intersection)
+                        if dist < col_d:
+                            col_d = dist
+                            col_axis = i
+                            is_plane_translate = true
         if col_axis != -1:
             if only_highlight:
-                _set_highlight(col_axis)
+                _set_highlight(col_axis + (6 if is_plane_translate else 0))
             if not only_highlight:
                 edit_mode = TransformMode.TRANSLATE
                 edit_direction = gt.basis[col_axis].normalized()
-                edit_axis = col_axis
+                edit_axis = col_axis + (3 if is_plane_translate else 0)
                 in_edit = true
                 compute_edit(camera, screen_position)
                 _plugin.selection.begin_edit()
@@ -225,10 +245,11 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
         _set_highlight(-1)
     return false
 
-enum TransformAxis { X, Y, Z, XY, XZ, YZ, MAX }
+enum TransformAxis { X, Y, Z, YZ, XZ, XY, MAX }
 enum TransformMode { NONE, TRANSLATE, ROTATE, SCALE, MAX }
 var edit_mode: int = TransformMode.NONE
 var edit_direction: Vector3 = Vector3.ZERO
+var edit_plane: bool = false
 var edit_axis: int = TransformAxis.X
 var in_edit: bool = false
 
@@ -258,6 +279,15 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
                     motion_mask = transform.basis.orthonormalized().z
                     var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
                     p = Plane(normal, normal.dot(transform.origin))
+                TransformAxis.YZ:
+                    var normal = transform.basis.x
+                    p = Plane(normal, normal.dot(transform.origin))
+                TransformAxis.XZ:
+                    var normal = transform.basis.y
+                    p = Plane(normal, normal.dot(transform.origin))
+                TransformAxis.XY:
+                    var normal = transform.basis.z
+                    p = Plane(normal, normal.dot(transform.origin))
             var intersection = p.intersects_ray(ray_pos, ray)
             if not intersection:
                 return
@@ -270,8 +300,7 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
             if motion_mask != Vector3.ZERO:
                 motion = motion_mask.dot(motion) * motion_mask
             if snap:
-                var adjust = stepify(motion.length(), snap)
-                motion = adjust*motion.normalized()
+                motion = motion.snapped(Vector3(snap, snap, snap))
 
             var delta = original_origin + motion - transform.origin
             _plugin.selection.translate_selection(delta)
