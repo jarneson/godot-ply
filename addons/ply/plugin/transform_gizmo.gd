@@ -7,6 +7,34 @@ const GIZMO_SCALE_OFFSET = GIZMO_CIRCLE_SIZE + 0.3
 const GIZMO_PLANE_SIZE = 0.2
 const GIZMO_PLANE_DST = 0.3
 
+const ROTATE_SHADER_CODE = """
+shader_type spatial;
+render_mode unshaded, depth_test_disable; 
+uniform vec4 albedo; 
+
+mat3 orthonormalize(mat3 m) { 
+    vec3 x = normalize(m[0]); 
+    vec3 y = normalize(m[1] - x * dot(x, m[1])); 
+    vec3 z = m[2] - x * dot(x, m[2]); 
+    z = normalize(z - y * (dot(y,m[2]))); 
+    return mat3(x,y,z); 
+} 
+
+void vertex() { 
+    mat3 mv = orthonormalize(mat3(MODELVIEW_MATRIX)); 
+    vec3 n = mv * VERTEX; 
+    float orientation = dot(vec3(0,0,-1),n); 
+    if (orientation <= 0.005) { 
+        VERTEX += NORMAL*0.02; 
+    } 
+} 
+
+void fragment() { 
+    ALBEDO = albedo.rgb; 
+    ALPHA = albedo.a; 
+}
+"""
+
 var _plugin: EditorPlugin
 
 func _init(p: EditorPlugin):
@@ -32,14 +60,22 @@ var move_gizmo = [ArrayMesh.new(), ArrayMesh.new(), ArrayMesh.new()]
 var move_gizmo_instances = [0, 0, 0]
 var move_plane_gizmo = [ArrayMesh.new(), ArrayMesh.new(), ArrayMesh.new()]
 var move_plane_gizmo_instances = [0, 0, 0]
+var rotate_gizmo = [ArrayMesh.new(), ArrayMesh.new(), ArrayMesh.new()]
+var rotate_gizmo_instances = [0, 0, 0]
+var scale_gizmo = [ArrayMesh.new(), ArrayMesh.new(), ArrayMesh.new()]
+var scale_gizmo_instances = [0, 0, 0]
 
 var axis_colors          = [Color(1.0,0.2,0.2), Color(0.2, 1.0, 0.2), Color(0.2, 0.2, 1.0)]
 var axis_colors_selected = [Color(1.0,0.8,0.8), Color(0.8, 1.0, 0.8), Color(0.8, 0.8, 1.0)]
 
-var axis_materials          = [null, null, null]
-var axis_materials_selected = [null, null, null]
+var axis_materials              = [null, null, null]
+var axis_materials_selected     = [null, null, null]
+var rotation_materials          = [null, null, null]
+var rotation_materials_selected = [null, null, null]
 
 func _init_materials():
+    var rotate_shader = Shader.new()
+    rotate_shader.code = ROTATE_SHADER_CODE
     for i in range(3):
         var mat = SpatialMaterial.new()
         mat.flags_unshaded = true
@@ -58,6 +94,16 @@ func _init_materials():
         mat.render_priority = 127
         mat.albedo_color = axis_colors_selected[i]
         axis_materials_selected[i] = mat
+
+        var rotate_mat = ShaderMaterial.new()
+        rotate_mat.render_priority = 127
+        rotate_mat.shader = rotate_shader
+        rotate_mat.set_shader_param("albedo", axis_colors[i])
+        rotation_materials[i] = rotate_mat
+
+        var rotate_mat_hl = rotate_mat.duplicate()
+        rotate_mat_hl.set_shader_param("albedo", axis_colors_selected[i])
+        rotation_materials_selected[i] = rotate_mat_hl
 
 func _init_meshes():
     for i in range(3):
@@ -128,6 +174,38 @@ func _init_meshes():
             st.add_vertex(points[3])
             st.set_material(axis_materials[i])
             st.commit(move_plane_gizmo[i])
+        
+        if true: # rotation
+            var st = SurfaceTool.new()
+            st.begin(Mesh.PRIMITIVE_TRIANGLES)
+            var n = 128
+            var m = 3
+            for j in range(n):
+                var basis = Basis(ivec, (PI * 2 * j) / n)
+                var vertex = basis.xform(ivec2 * GIZMO_CIRCLE_SIZE)
+                for k in range(m):
+                    var ofs = Vector2(cos((PI*2*k)/m), sin((PI*2*k)/m))
+                    var normal = ivec * ofs.x + ivec2 * ofs.y
+                    st.add_normal(basis.xform(normal))
+                    st.add_vertex(vertex)
+            for j in range(n):
+                for k in range(m):
+                    var current_ring = j * m
+                    var next_ring = ((j + 1) % n)*m
+                    var current_segment = k
+                    var next_segment = (k+1) % m
+                    st.add_index(current_ring + next_segment)
+                    st.add_index(current_ring + current_segment)
+                    st.add_index(next_ring + current_segment)
+                    st.add_index(next_ring + current_segment)
+                    st.add_index(next_ring + next_segment)
+                    st.add_index(current_ring + next_segment)
+            var arrays = st.commit_to_arrays()
+            rotate_gizmo[i].add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+            rotate_gizmo[i].surface_set_material(0, rotation_materials[i])
+
+        if true: # scale
+            pass
 
 func _init_instance():
     print("init instances")
@@ -145,6 +223,13 @@ func _init_instance():
         VisualServer.instance_set_visible(move_plane_gizmo_instances[i], false)
         VisualServer.instance_geometry_set_cast_shadows_setting(move_plane_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF) 
         VisualServer.instance_set_layer_mask(move_plane_gizmo_instances[i], 100)
+
+        rotate_gizmo_instances[i] = VisualServer.instance_create()
+        VisualServer.instance_set_base(rotate_gizmo_instances[i], rotate_gizmo[i])
+        VisualServer.instance_set_scenario(rotate_gizmo_instances[i], _plugin.get_tree().root.world.scenario)
+        VisualServer.instance_set_visible(rotate_gizmo_instances[i], false)
+        VisualServer.instance_geometry_set_cast_shadows_setting(rotate_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF) 
+        VisualServer.instance_set_layer_mask(rotate_gizmo_instances[i], 100)
 
 var transform # Nullable Transform
 var gizmo_scale: float
@@ -177,6 +262,7 @@ func _update_view():
         for i in range(3):
             VisualServer.instance_set_visible(move_gizmo_instances[i], false)
             VisualServer.instance_set_visible(move_plane_gizmo_instances[i], false)
+            VisualServer.instance_set_visible(rotate_gizmo_instances[i], false)
         return
 
     var xform  = _get_transform(_plugin.last_camera)
@@ -186,6 +272,8 @@ func _update_view():
         VisualServer.instance_set_visible(move_gizmo_instances[i], true)
         VisualServer.instance_set_transform(move_plane_gizmo_instances[i], xform)
         VisualServer.instance_set_visible(move_plane_gizmo_instances[i], true)
+        VisualServer.instance_set_transform(rotate_gizmo_instances[i], xform)
+        VisualServer.instance_set_visible(rotate_gizmo_instances[i], true)
 
 func select(camera: Camera, screen_position: Vector2, only_highlight: bool = false) -> bool:
     if not transform:
