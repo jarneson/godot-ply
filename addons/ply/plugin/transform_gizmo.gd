@@ -326,6 +326,9 @@ func end_edit():
     _plugin.selection.commit_edit(name, _plugin.get_undo_redo())
 
 func abort_edit():
+    if not in_edit:
+        return
+
     match edit_mode:
         TransformMode.TRANSLATE:
             var delta = original_origin - transform.origin
