@@ -113,14 +113,14 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
     var scan_results = []
     if mode == SelectionMode.VERTEX:
         for v in range(_ply_mesh.vertex_count()):
-            var pos = _ply_mesh.vertexes[v] + parent.global_transform.origin
+            var pos = parent.global_transform.xform(_ply_mesh.vertexes[v])
             var dist = direction.cross(pos - origin).length()
             scan_results.push_back(["V", v, dist, (pos - origin).length()])
 
     if mode == SelectionMode.EDGE:
         for e in range(_ply_mesh.edge_count()):
-            var e_origin = _ply_mesh.edge_origin(e) + parent.global_transform.origin
-            var e_destination = _ply_mesh.edge_destination(e) + parent.global_transform.origin
+            var e_origin = parent.global_transform.xform(_ply_mesh.edge_origin(e))
+            var e_destination = parent.global_transform.xform(_ply_mesh.edge_destination(e))
 
             var p1 = e_origin
             var p2 = origin
