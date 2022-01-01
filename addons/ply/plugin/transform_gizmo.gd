@@ -169,64 +169,93 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
                 edit_mode = TransformMode.TRANSLATE
                 edit_direction = gt.basis[col_axis].normalized()
                 edit_axis = col_axis
-                compute_edit(camera, screen_position)
                 in_edit = true
+                compute_edit(camera, screen_position)
                 _plugin.selection.begin_edit()
             return true
     return false
 
 enum TransformAxis { X, Y, Z, XY, XZ, YZ, MAX }
-enum TransformMode { NONE, TRANSLATE, ROTATE, MAX }
+enum TransformMode { NONE, TRANSLATE, ROTATE, SCALE, MAX }
 var edit_mode: int = TransformMode.NONE
 var edit_direction: Vector3 = Vector3.ZERO
 var edit_axis: int = TransformAxis.X
 var in_edit: bool = false
 
-var last_intersect # nullable vector3
-func compute_edit(camera: Camera, screen_position: Vector2):
+var original_origin # nullable vector3
+var original_intersect # nullable vector3
+func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
     if not transform:
         return
-    var ray_pos = camera.project_ray_origin(screen_position)
-    var ray = camera.project_ray_normal(screen_position)
-    var p = Plane(ray, ray.dot(transform.origin))
-    var motion_mask = Vector3.ZERO
-    match edit_axis:
-        TransformAxis.X:
-            motion_mask = transform.basis.orthonormalized().x
-            var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
-            p = Plane(normal, normal.dot(transform.origin))
-        TransformAxis.Y:
-            motion_mask = transform.basis.orthonormalized().y
-            var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
-            p = Plane(normal, normal.dot(transform.origin))
-        TransformAxis.Z:
-            motion_mask = transform.basis.orthonormalized().z
-            var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
-            p = Plane(normal, normal.dot(transform.origin))
-    var intersection = p.intersects_ray(ray_pos, ray)
-    if not intersection:
+    if not in_edit:
         return
-    
-    if last_intersect:
-        var motion = intersection - last_intersect
-        if motion_mask != Vector3.ZERO:
-            motion = motion_mask.dot(motion) * motion_mask
-        _plugin.selection.translate_selection(motion)
-    last_intersect = intersection
+    match edit_mode:
+        TransformMode.TRANSLATE:
+            var ray_pos = camera.project_ray_origin(screen_position)
+            var ray = camera.project_ray_normal(screen_position)
+            var p = Plane(ray, ray.dot(transform.origin))
+            var motion_mask = Vector3.ZERO
+            match edit_axis:
+                TransformAxis.X:
+                    motion_mask = transform.basis.orthonormalized().x
+                    var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+                    p = Plane(normal, normal.dot(transform.origin))
+                TransformAxis.Y:
+                    motion_mask = transform.basis.orthonormalized().y
+                    var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+                    p = Plane(normal, normal.dot(transform.origin))
+                TransformAxis.Z:
+                    motion_mask = transform.basis.orthonormalized().z
+                    var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+                    p = Plane(normal, normal.dot(transform.origin))
+            var intersection = p.intersects_ray(ray_pos, ray)
+            if not intersection:
+                return
+            
+            if not original_intersect:
+                original_intersect = intersection
+                original_origin = transform.origin
+
+            var motion = intersection - original_intersect
+            if motion_mask != Vector3.ZERO:
+                motion = motion_mask.dot(motion) * motion_mask
+            if snap:
+                motion = Vector3(
+                    stepify(motion.x, snap),
+                    stepify(motion.y, snap),
+                    stepify(motion.z, snap))
+
+            var delta = original_origin + motion - transform.origin
+            _plugin.selection.translate_selection(delta)
+        TransformMode.ROTATE:
+            pass
+        TransformMode.SCALE:
+            pass
 
 func end_edit():
     if not in_edit:
         return
 
     in_edit = false
-    last_intersect = null
+    original_intersect = null
     var name = "Ply: Transform"
     match edit_mode:
         TransformMode.TRANSLATE:
             name = "Ply: Translate"
         TransformMode.ROTATE:
             name = "Ply: Rotate"
+        TransformMode.SCALE:
+            name = "Ply: Scale"
     _plugin.selection.commit_edit(name, _plugin.get_undo_redo())
+
+func abort_edit():
+    match edit_mode:
+        TransformMode.TRANSLATE:
+            var delta = original_origin - transform.origin
+            _plugin.selection.translate_selection(delta)
+
+    in_edit = false
+    original_intersect = null
 
 func process():
     if not started:
