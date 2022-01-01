@@ -126,7 +126,7 @@ func _get_transform(camera: Camera) -> Transform:
     var gizmo_size = 80
     gizmo_scale = gizmo_size/abs(dd)
     var scale = Vector3(1,1,1) * gizmo_scale
-    xform.basis = xform.basis.scaled(scale)
+    xform.basis = xform.basis.scaled(xform.basis.get_scale().inverse()).scaled(scale)
     return xform
 
 func _update_view():
@@ -192,15 +192,15 @@ func compute_edit(camera: Camera, screen_position: Vector2):
     var motion_mask = Vector3.ZERO
     match edit_axis:
         TransformAxis.X:
-            motion_mask = transform.basis.x
+            motion_mask = transform.basis.orthonormalized().x
             var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
             p = Plane(normal, normal.dot(transform.origin))
         TransformAxis.Y:
-            motion_mask = transform.basis.y
+            motion_mask = transform.basis.orthonormalized().y
             var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
             p = Plane(normal, normal.dot(transform.origin))
         TransformAxis.Z:
-            motion_mask = transform.basis.z
+            motion_mask = transform.basis.orthonormalized().z
             var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
             p = Plane(normal, normal.dot(transform.origin))
     var intersection = p.intersects_ray(ray_pos, ray)

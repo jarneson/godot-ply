@@ -222,9 +222,10 @@ func get_selection_transform():
 
     var pos = _ply_mesh.geometric_median(verts.keys())
 
-    return Transform(Basis.IDENTITY, pos + parent.global_transform.origin)
+    return Transform(parent.global_transform.basis, parent.global_transform.xform(pos))
 
-func translate_selection(dir: Vector3):
+func translate_selection(global_dir: Vector3):
+    var dir = parent.global_transform.basis.inverse().xform(global_dir)
     _ply_mesh.transform_faces(selected_faces, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
     _ply_mesh.transform_edges(selected_edges, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
     _ply_mesh.transform_vertexes(selected_vertices, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
