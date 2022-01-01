@@ -1,0 +1,1 @@
+enum { GLOBAL, LOCAL, NORMAL }

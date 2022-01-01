@@ -2,7 +2,10 @@ tool
 extends Control
 
 signal selection_mode_changed(mode)
+signal gizmo_mode_changed(mode)
+
 const SelectionMode = preload("../../utils/selection_mode.gd")
+const GizmoMode = preload("../../utils/gizmo_mode.gd")
 
 const Extrude = preload("../../resources/extrude.gd")
 const Subdivide = preload("../../resources/subdivide.gd")
@@ -15,12 +18,14 @@ const ExportMesh = preload("../../resources/export.gd")
 
 var plugin: EditorPlugin
 
-onready var transform_toggle = $TransformToggle
-
 onready var selection_mesh   = $Mesh
 onready var selection_face   = $Face
 onready var selection_edge   = $Edge
 onready var selection_vertex = $Vertex
+
+onready var gizmo_global = $Global
+onready var gizmo_local  = $Local
+onready var gizmo_normal = $Normal
 
 onready var mesh_tools = $MeshTools
 onready var mesh_subdivide = $MeshTools/Subdivide
@@ -57,11 +62,14 @@ onready var edge_collapse = $EdgeTools/Collapse
 onready var vertex_tools = $VertexTools
 
 func _ready():
-	transform_toggle.connect("toggled", self, "_update_transform_toggle")
 	selection_mesh.connect("toggled", self, "_update_selection_mode", [SelectionMode.MESH])
 	selection_face.connect("toggled", self, "_update_selection_mode", [SelectionMode.FACE])
 	selection_edge.connect("toggled", self, "_update_selection_mode", [SelectionMode.EDGE])
 	selection_vertex.connect("toggled", self, "_update_selection_mode", [SelectionMode.VERTEX])
+
+	gizmo_global.connect("toggled", self, "_update_gizmo_mode", [GizmoMode.GLOBAL])
+	gizmo_local.connect("toggled", self, "_update_gizmo_mode", [GizmoMode.LOCAL])
+	gizmo_normal.connect("toggled", self, "_update_gizmo_mode", [GizmoMode.NORMAL])
 
 	mesh_export_to_obj.connect("pressed", self, "_export_to_obj")
 	mesh_subdivide.connect("pressed", self, "_mesh_subdivide")
@@ -96,15 +104,18 @@ func _ready():
 func _process(_delta):
 	_update_tool_visibility()
 
-func _update_transform_toggle(selected):
-	emit_signal("transform_mode_changed", selected)
-
 var selection_mode: int = SelectionMode.MESH
 
 func _update_selection_mode(selected, mode):
 	if selected:
 		selection_mode = mode
 		emit_signal("selection_mode_changed", mode)
+
+var gizmo_mode: int = GizmoMode.LOCAL
+func _update_gizmo_mode(selected, mode):
+	if selected:
+		gizmo_mode = mode
+		emit_signal("gizmo_mode_changed", mode)
 
 func _update_tool_visibility():
 	mesh_tools.visible = selection_mesh.pressed
