@@ -272,7 +272,6 @@ align = 2
 margin_top = 300.0
 margin_right = 1024.0
 margin_bottom = 322.0
-disabled = true
 toggle_mode = true
 shortcut = SubResource( 4 )
 group = ExtResource( 8 )

@@ -231,5 +231,8 @@ func end_edit():
 func process():
     if not started:
         return
-    transform = _plugin.selection.get_selection_transform()
+    var basis_override = null
+    if in_edit:
+        basis_override = transform.basis 
+    transform = _plugin.selection.get_selection_transform(_plugin.toolbar.gizmo_mode, basis_override)
     _update_view()

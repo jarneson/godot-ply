@@ -2,6 +2,7 @@ tool
 extends Node
 
 const SelectionMode = preload("../utils/selection_mode.gd")
+const GizmoMode = preload("../utils/gizmo_mode.gd")
 
 const PlyMesh = preload("../resources/ply_mesh.gd")
 const Wireframe = preload("./ply_wireframe.gd")
@@ -206,23 +207,51 @@ func commit_edit(name: String, undo_redo: UndoRedo):
     _ply_mesh.commit_edit(name, undo_redo, _current_edit)
     _current_edit = null
 
-func get_selection_transform():
+func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null):
     if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
         return null
 
     var verts = {}
+    var normals = []
+    if gizmo_mode != GizmoMode.NORMAL:
+        normals = null
     for v in selected_vertices:
         verts[_ply_mesh.vertexes[v]] = true
+        if normals != null:
+            normals.push_back(_ply_mesh.vertex_normal(v))
     for e in selected_edges:
         verts[_ply_mesh.edge_origin(e)] = true
         verts[_ply_mesh.edge_destination(e)] = true
+        if normals != null:
+            normals.push_back(_ply_mesh.edge_normal(e))
     for f in selected_faces:
         for v in _ply_mesh.face_vertices(f):
             verts[v] = true
+        if normals != null:
+            normals.push_back(_ply_mesh.face_normal(f))
 
     var pos = _ply_mesh.geometric_median(verts.keys())
 
-    return Transform(parent.global_transform.basis, parent.global_transform.xform(pos))
+    var basis = parent.global_transform.basis
+    if normals != null:
+        var normal = Vector3.ZERO
+        for n in normals:
+            normal += n
+        normal /= normals.size()
+        normal = basis.xform(normal)
+        var v_y = normal
+        var v_x = basis.x
+        var v_z = basis.z
+        if v_y == v_x || v_y == -v_x:
+            v_x = v_y.cross(v_z)
+            v_z = v_y.cross(v_x)
+        else:
+            v_z = v_y.cross(v_x)
+            v_x = v_y.cross(v_z)
+        basis = Basis(v_x, v_y, v_z)
+    if basis_override:
+        basis = basis_override
+    return Transform(basis.orthonormalized(), parent.global_transform.xform(pos))
 
 func translate_selection(global_dir: Vector3):
     var dir = parent.global_transform.basis.inverse().xform(global_dir)

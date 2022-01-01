@@ -143,6 +143,22 @@ func get_vertex_edges(v_idx, start=null):
 
 	return out
 
+func get_vertex_faces(v_idx):
+	var edges = get_vertex_edges(v_idx)
+	var faces = {}
+	for e in edges:
+		faces[edge_face_left(e)] = true
+		faces[edge_face_right(e)] = true
+	return faces.keys()
+
+func vertex_normal(v_idx):
+	var faces = get_vertex_faces(v_idx)
+	var normal = Vector3.ZERO
+	for f in faces:
+		normal += face_normal(f)
+	normal /= faces.size()
+	return normal
+
 """
 ███████╗██████╗  ██████╗ ███████╗███████╗
 ██╔════╝██╔══██╗██╔════╝ ██╔════╝██╔════╝
@@ -299,6 +315,9 @@ func set_edge_destination(e, v):
 
 func edge_midpoint(e):
 	return (edge_origin(e) + edge_destination(e)) / 2
+
+func edge_normal(e):
+	return (face_normal(edge_face_left(e))+face_normal(edge_face_right(e)))/2
 
 """
 ███████╗ █████╗  ██████╗███████╗███████╗
