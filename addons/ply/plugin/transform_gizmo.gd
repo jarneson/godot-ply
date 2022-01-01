@@ -4,6 +4,8 @@ const GIZMO_CIRCLE_SIZE = 1.1
 const GIZMO_ARROW_OFFSET = GIZMO_CIRCLE_SIZE + 0.3
 const GIZMO_ARROW_SIZE = 0.35
 const GIZMO_SCALE_OFFSET = GIZMO_CIRCLE_SIZE + 0.3
+const GIZMO_PLANE_SIZE = 0.2
+const GIZMO_PLANE_DST = 0.3
 
 var _plugin: EditorPlugin
 
@@ -22,12 +24,14 @@ func teardown():
         return
     for i in range(3):
         VisualServer.free_rid(move_gizmo_instances[i])
+        VisualServer.free_rid(move_plane_gizmo_instances[i])
     started = false
-
 
 # 0: x, 1: y, 2: z
 var move_gizmo = [ArrayMesh.new(), ArrayMesh.new(), ArrayMesh.new()]
 var move_gizmo_instances = [0, 0, 0]
+var move_plane_gizmo = [ArrayMesh.new(), ArrayMesh.new(), ArrayMesh.new()]
+var move_plane_gizmo_instances = [0, 0, 0]
 
 var axis_colors          = [Color(1.0,0.2,0.2), Color(0.2, 1.0, 0.2), Color(0.2, 0.2, 1.0)]
 var axis_colors_selected = [Color(1.0,0.8,0.8), Color(0.8, 1.0, 0.8), Color(0.8, 0.8, 1.0)]
@@ -99,7 +103,34 @@ func _init_meshes():
             st.set_material(axis_materials[i])
             st.commit(move_gizmo[i])
 
+        if true: # translate plane
+            var st = SurfaceTool.new()
+            st.begin(Mesh.PRIMITIVE_TRIANGLES)
+            var vec = ivec2 - ivec3
+            var plane = [
+                vec * GIZMO_PLANE_DST,
+                vec * GIZMO_PLANE_DST + ivec2 * GIZMO_PLANE_SIZE,
+                vec * (GIZMO_PLANE_DST + GIZMO_PLANE_SIZE),
+                vec * GIZMO_PLANE_DST - ivec3 * GIZMO_PLANE_SIZE
+            ]
+            var ma = Basis(ivec, PI/2)
+            var points = [
+                ma.xform(plane[0]),
+                ma.xform(plane[1]),
+                ma.xform(plane[2]),
+                ma.xform(plane[3])
+            ]
+            st.add_vertex(points[0])
+            st.add_vertex(points[1])
+            st.add_vertex(points[2])
+            st.add_vertex(points[0])
+            st.add_vertex(points[2])
+            st.add_vertex(points[3])
+            st.set_material(axis_materials[i])
+            st.commit(move_plane_gizmo[i])
+
 func _init_instance():
+    print("init instances")
     for i in range(3):
         move_gizmo_instances[i] = VisualServer.instance_create()
         VisualServer.instance_set_base(move_gizmo_instances[i], move_gizmo[i])
@@ -107,6 +138,13 @@ func _init_instance():
         VisualServer.instance_set_visible(move_gizmo_instances[i], false)
         VisualServer.instance_geometry_set_cast_shadows_setting(move_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF) 
         VisualServer.instance_set_layer_mask(move_gizmo_instances[i], 100)
+
+        move_plane_gizmo_instances[i] = VisualServer.instance_create()
+        VisualServer.instance_set_base(move_plane_gizmo_instances[i], move_plane_gizmo[i])
+        VisualServer.instance_set_scenario(move_plane_gizmo_instances[i], _plugin.get_tree().root.world.scenario)
+        VisualServer.instance_set_visible(move_plane_gizmo_instances[i], false)
+        VisualServer.instance_geometry_set_cast_shadows_setting(move_plane_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF) 
+        VisualServer.instance_set_layer_mask(move_plane_gizmo_instances[i], 100)
 
 var transform # Nullable Transform
 var gizmo_scale: float
@@ -129,10 +167,16 @@ func _get_transform(camera: Camera) -> Transform:
     xform.basis = xform.basis.scaled(xform.basis.get_scale().inverse()).scaled(scale)
     return xform
 
+func _set_highlight(highlight_axis):
+    for i in range(3):
+        move_gizmo[i].surface_set_material(0, axis_materials_selected[i] if i == highlight_axis else axis_materials[i])
+        move_plane_gizmo[i].surface_set_material(0, axis_materials_selected[i] if i+6 == highlight_axis else axis_materials[i])
+
 func _update_view():
     if not transform:
         for i in range(3):
             VisualServer.instance_set_visible(move_gizmo_instances[i], false)
+            VisualServer.instance_set_visible(move_plane_gizmo_instances[i], false)
         return
 
     var xform  = _get_transform(_plugin.last_camera)
@@ -140,6 +184,8 @@ func _update_view():
     for i in range(3):
         VisualServer.instance_set_transform(move_gizmo_instances[i], xform)
         VisualServer.instance_set_visible(move_gizmo_instances[i], true)
+        VisualServer.instance_set_transform(move_plane_gizmo_instances[i], xform)
+        VisualServer.instance_set_visible(move_plane_gizmo_instances[i], true)
 
 func select(camera: Camera, screen_position: Vector2, only_highlight: bool = false) -> bool:
     if not transform:
@@ -165,6 +211,8 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
                     col_d = d
                     col_axis = i
         if col_axis != -1:
+            if only_highlight:
+                _set_highlight(col_axis)
             if not only_highlight:
                 edit_mode = TransformMode.TRANSLATE
                 edit_direction = gt.basis[col_axis].normalized()
@@ -173,6 +221,8 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
                 compute_edit(camera, screen_position)
                 _plugin.selection.begin_edit()
             return true
+    if only_highlight:
+        _set_highlight(-1)
     return false
 
 enum TransformAxis { X, Y, Z, XY, XZ, YZ, MAX }
@@ -261,5 +311,8 @@ func process():
     var basis_override = null
     if in_edit:
         basis_override = transform.basis 
-    transform = _plugin.selection.get_selection_transform(_plugin.toolbar.gizmo_mode, basis_override)
+    if _plugin.selection:
+        transform = _plugin.selection.get_selection_transform(_plugin.toolbar.gizmo_mode, basis_override)
+    else:
+        transform = null
     _update_view()

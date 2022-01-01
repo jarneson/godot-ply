@@ -45,6 +45,7 @@ func _exit_tree() -> void:
     remove_custom_type("PlyEditor")
 
     remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , toolbar)
+    transform_gizmo.teardown()
     toolbar.queue_free()
     selector.teardown()
     selector.free()
@@ -63,13 +64,11 @@ func edit(o: Object):
     selection = o
 
 func make_visible(vis: bool):
+    print("visible: ", vis)
     toolbar.visible = vis
     if selection:
         selection.selected = vis
-    if vis:
-        transform_gizmo.startup()
-    else:
-        transform_gizmo.teardown()
+    if not vis:
         selection = null
 
 var ignore_inputs = false
@@ -89,7 +88,5 @@ func forward_spatial_gui_input(camera: Camera, event: InputEvent):
     return selector.handle_input(camera, event) 
 
 func _process(_delta):
-    if not selection:
-        return
     if last_camera:
         transform_gizmo.process()

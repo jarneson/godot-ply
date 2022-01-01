@@ -58,7 +58,6 @@ func handle_input(camera: Camera, event: InputEvent):
             BUTTON_RIGHT:
                     _plugin.transform_gizmo.abort_edit()
     if event is InputEventMouseMotion:
-        _plugin.transform_gizmo.select(camera, event.position, true)
         if event.button_mask & BUTTON_MASK_LEFT:
             var snap = null
             if event.control:
@@ -70,4 +69,6 @@ func handle_input(camera: Camera, event: InputEvent):
                     3: # scale
                         snap = 0.1
             _plugin.transform_gizmo.compute_edit(camera, event.position, snap)
+        else:
+            _plugin.transform_gizmo.select(camera, event.position, true)
     return false
