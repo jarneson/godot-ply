@@ -95,12 +95,19 @@ func _on_selected_geometry_mutated():
 	translate_z.value = gizmo_transform.origin.z
 
 
+var in_edit: bool
 func _transform_axis_edit_started(s, mode, axis):
-	print("start: %s %s" % [mode, axis])
+	in_edit = true
+	current_selection.begin_edit()
 
 func _transform_axis_edit_committed(value, s, mode, axis):
-	print("comit: %s %s = %s" % [mode, axis, value])
+	current_selection.commit_edit("Ply: " + mode, plugin.get_undo_redo())
+	in_edit = false
 
 func _transform_axis_value_changed(val, s, mode, axis):
-	print("value: %s %s: %s" % [mode, axis, val])
+	match mode:
+		"Translate":
+			var v = Vector3(translate_x.value, translate_y.value, translate_z.value)
+			var o = current_selection.get_selection_transform().origin
+			current_selection.translate_selection(v-o)
 
