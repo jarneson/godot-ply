@@ -64,7 +64,6 @@ func edit(o: Object):
     selection = o
 
 func make_visible(vis: bool):
-    print("visible: ", vis)
     toolbar.visible = vis
     if selection:
         selection.selected = vis

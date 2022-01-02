@@ -573,6 +573,7 @@ func reject_edit(pre_edits):
 	edge_edges = pre_edits[4]
 	face_edges = pre_edits[5]
 	face_surfaces = pre_edits[6]
+	emit_change_signal()
 
 func emit_change_signal():
 	emit_signal("mesh_updated")
@@ -596,7 +597,7 @@ func commit_edit(name, undo_redo, pre_edits):
 	undo_redo.add_do_method(self, "emit_change_signal")
 	undo_redo.add_undo_method(self, "emit_change_signal")
 	undo_redo.commit_action()
-	emit_signal("mesh_updated")
+	emit_change_signal()
 
 """
 ███████╗██████╗ ██╗████████╗██╗███╗   ██╗ ██████╗ 

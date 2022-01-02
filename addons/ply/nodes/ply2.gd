@@ -207,6 +207,13 @@ func commit_edit(name: String, undo_redo: UndoRedo):
     _ply_mesh.commit_edit(name, undo_redo, _current_edit)
     _current_edit = null
     last_rotation = Basis.IDENTITY
+    last_scale = Basis.IDENTITY
+
+func abort_edit():
+    _ply_mesh.reject_edit(_current_edit)
+    _current_edit = null
+    last_rotation = Basis.IDENTITY
+    last_scale = Basis.IDENTITY
 
 func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null):
     if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
@@ -268,3 +275,17 @@ func rotate_selection(axis: Vector3, rad: float):
     _ply_mesh.transform_edges(selected_edges, Transform(last_rotation, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
     _ply_mesh.transform_vertexes(selected_vertices, Transform(last_rotation, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
     last_rotation = new_basis
+
+var last_scale: Basis = Basis.IDENTITY 
+func scale_selection(scale: Vector3):
+    if scale.x == 0:
+        scale.x = 0.001
+    if scale.y == 0:
+        scale.y = 0.001
+    if scale.z == 0:
+        scale.z = 0.001
+    var new_basis = Basis.IDENTITY.scaled(scale)
+    _ply_mesh.transform_faces(selected_faces, Transform(last_scale, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
+    _ply_mesh.transform_edges(selected_edges, Transform(last_scale, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
+    _ply_mesh.transform_vertexes(selected_vertices, Transform(last_scale, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
+    last_scale = new_basis
