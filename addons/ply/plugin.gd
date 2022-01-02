@@ -13,6 +13,7 @@ const Selector = preload("./plugin/selector.gd")
 
 const SelectionMode = preload("./utils/selection_mode.gd")
 const TransformGizmo = preload("./plugin/transform_gizmo.gd")
+const Inspector = preload("./plugin/inspector.gd")
 
 const Interop = preload("./interop.gd")
 
@@ -23,6 +24,7 @@ func get_plugin_name():
 
 var selector: Selector
 var transform_gizmo: TransformGizmo
+var inspector: Inspector
 
 var toolbar = preload("./gui/toolbar/toolbar.tscn").instance()
 
@@ -32,9 +34,11 @@ func _enter_tree() -> void:
 
     selector = Selector.new(self)
     transform_gizmo = TransformGizmo.new(self)
+    inspector = Inspector.new(self)
 
     transform_gizmo.startup()
     selector.startup()
+    add_inspector_plugin(inspector)
 
     toolbar.plugin = self
     toolbar.visible = false
@@ -45,6 +49,7 @@ func _exit_tree() -> void:
     remove_custom_type("PlyEditor")
 
     remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , toolbar)
+    remove_inspector_plugin(inspector)
     transform_gizmo.teardown()
     toolbar.queue_free()
     selector.teardown()

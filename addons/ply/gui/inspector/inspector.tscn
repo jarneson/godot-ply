@@ -1,0 +1,70 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/ply/gui/inspector/inspector.gd" type="Script" id=1]
+
+[node name="Inspector" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="G" type="GridContainer" parent="."]
+margin_right = 1024.0
+margin_bottom = 50.0
+columns = 2
+
+[node name="Translate" type="Label" parent="G"]
+margin_right = 58.0
+margin_bottom = 14.0
+text = "Translate"
+
+[node name="TranslateInputs" type="HBoxContainer" parent="G"]
+margin_left = 62.0
+margin_right = 1024.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Rotate" type="Label" parent="G"]
+margin_top = 18.0
+margin_right = 58.0
+margin_bottom = 32.0
+text = "Rotate"
+
+[node name="RotateInputs" type="HBoxContainer" parent="G"]
+margin_left = 62.0
+margin_top = 18.0
+margin_right = 1024.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Scale" type="Label" parent="G"]
+margin_top = 36.0
+margin_right = 58.0
+margin_bottom = 50.0
+text = "Scale"
+
+[node name="ScaleInputs" type="HBoxContainer" parent="G"]
+margin_left = 62.0
+margin_top = 36.0
+margin_right = 1024.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="."]
+margin_top = 54.0
+margin_right = 1024.0
+margin_bottom = 74.0
+text = "Apply"
