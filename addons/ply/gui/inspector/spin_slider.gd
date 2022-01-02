@@ -5,7 +5,12 @@ signal edit_started()
 signal value_changed(value)
 signal edit_committed(value)
 
-var value: float
+var value: float setget set_value
+
+func set_value(v):
+	value = v
+	update()
+
 var label: String
 var min_value: float
 var max_value: float

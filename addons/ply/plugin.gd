@@ -1,6 +1,8 @@
 tool
 extends EditorPlugin
 
+signal selection_changed(selection)
+
 """
 ██████╗ ██████╗ ███████╗██╗      ██████╗  █████╗ ██████╗ ███████╗
 ██╔══██╗██╔══██╗██╔════╝██║     ██╔═══██╗██╔══██╗██╔══██╗██╔════╝
@@ -67,6 +69,7 @@ var selection # nullable PlyEditor
 func edit(o: Object):
     assert(o is PlyEditor)
     selection = o
+    emit_signal("selection_changed", selection)
 
 func make_visible(vis: bool):
     toolbar.visible = vis
@@ -74,6 +77,7 @@ func make_visible(vis: bool):
         selection.selected = vis
     if not vis:
         selection = null
+        emit_signal("selection_changed", null)
 
 var ignore_inputs = false
 

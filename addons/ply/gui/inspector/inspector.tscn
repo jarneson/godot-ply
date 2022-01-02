@@ -63,15 +63,3 @@ size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="Apply" type="Button" parent="."]
-margin_top = 84.0
-margin_right = 1024.0
-margin_bottom = 104.0
-text = "Apply"
-
-[node name="LineEdit" type="LineEdit" parent="."]
-margin_top = 108.0
-margin_right = 1024.0
-margin_bottom = 132.0
-text = "asdf"

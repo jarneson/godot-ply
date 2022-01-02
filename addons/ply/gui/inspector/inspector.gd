@@ -15,9 +15,9 @@ onready var scale_container = $"G/ScaleInputs"
 var scale_x
 var scale_y
 var scale_z
-onready var apply = $Apply
 
 var plugin = null
+var gizmo_transform
 
 func _prep_slider(s, l, mn, mx, st, mod, axis):
 	s.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -63,6 +63,38 @@ func _ready():
 	scale_container.add_child(scale_y)
 	scale_container.add_child(scale_z)
 
+	plugin.connect("selection_changed", self, "_on_selection_changed")
+	hide()
+
+var current_selection
+func _on_selection_changed(selection):
+	if current_selection:
+		current_selection.disconnect("selection_changed", self, "_on_selected_geometry_changed")
+		current_selection.disconnect("selection_mutated", self, "_on_selected_geometry_mutated")
+	current_selection = selection
+	gizmo_transform = null
+	hide()
+	if current_selection:
+		current_selection.connect("selection_changed", self, "_on_selected_geometry_changed")
+		current_selection.connect("selection_mutated", self, "_on_selected_geometry_mutated")
+
+func _on_selected_geometry_changed():
+	gizmo_transform = current_selection.get_selection_transform()
+	if gizmo_transform:
+		translate_x.value = gizmo_transform.origin.x
+		translate_y.value = gizmo_transform.origin.y
+		translate_z.value = gizmo_transform.origin.z
+		show()
+	else:
+		hide()
+
+func _on_selected_geometry_mutated():
+	gizmo_transform = current_selection.get_selection_transform()
+	translate_x.value = gizmo_transform.origin.x
+	translate_y.value = gizmo_transform.origin.y
+	translate_z.value = gizmo_transform.origin.z
+
+
 func _transform_axis_edit_started(s, mode, axis):
 	print("start: %s %s" % [mode, axis])
 
@@ -72,8 +104,3 @@ func _transform_axis_edit_committed(value, s, mode, axis):
 func _transform_axis_value_changed(val, s, mode, axis):
 	print("value: %s %s: %s" % [mode, axis, val])
 
-func _process(delta):
-	if not plugin or not plugin.selection:
-		# should get freed
-		return
-	pass

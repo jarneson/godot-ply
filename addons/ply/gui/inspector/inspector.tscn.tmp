@@ -14,65 +14,51 @@ __meta__ = {
 
 [node name="G" type="GridContainer" parent="."]
 margin_right = 1024.0
-margin_bottom = 80.0
+margin_bottom = 50.0
 columns = 2
 
 [node name="Translate" type="Label" parent="G"]
-margin_top = 4.0
 margin_right = 58.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 0, 16 )
+margin_bottom = 14.0
 text = "Translate"
 
 [node name="TranslateInputs" type="HBoxContainer" parent="G"]
 margin_left = 62.0
 margin_right = 1024.0
-margin_bottom = 24.0
+margin_bottom = 14.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Rotate" type="Label" parent="G"]
-margin_top = 33.0
+margin_top = 18.0
 margin_right = 58.0
-margin_bottom = 47.0
+margin_bottom = 32.0
 text = "Rotate"
 
 [node name="RotateInputs" type="HBoxContainer" parent="G"]
 margin_left = 62.0
-margin_top = 28.0
+margin_top = 18.0
 margin_right = 1024.0
-margin_bottom = 52.0
+margin_bottom = 32.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Scale" type="Label" parent="G"]
-margin_top = 61.0
+margin_top = 36.0
 margin_right = 58.0
-margin_bottom = 75.0
+margin_bottom = 50.0
 text = "Scale"
 
 [node name="ScaleInputs" type="HBoxContainer" parent="G"]
 margin_left = 62.0
-margin_top = 56.0
+margin_top = 36.0
 margin_right = 1024.0
-margin_bottom = 80.0
+margin_bottom = 50.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="Apply" type="Button" parent="."]
-margin_top = 84.0
-margin_right = 1024.0
-margin_bottom = 104.0
-text = "Apply"
-
-[node name="LineEdit" type="LineEdit" parent="."]
-margin_top = 108.0
-margin_right = 1024.0
-margin_bottom = 132.0
-text = "asdf"

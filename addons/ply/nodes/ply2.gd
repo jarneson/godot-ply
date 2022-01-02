@@ -1,6 +1,9 @@
 tool
 extends Node
 
+signal selection_changed
+signal selection_mutated
+
 const SelectionMode = preload("../utils/selection_mode.gd")
 const GizmoMode = preload("../utils/gizmo_mode.gd")
 
@@ -76,6 +79,7 @@ func _on_mesh_updated():
         selected_faces.erase(f)
     if parent:
         parent.set(parent_property, _ply_mesh.get_mesh(parent.get(parent_property)))
+    emit_signal("selection_mutated")
 
 var selected: bool setget _set_selected,_get_selected
 var _wireframe: Wireframe
@@ -198,6 +202,7 @@ func select_geometry(hits: Array, toggle: bool):
                         selected_faces.push_back(h[1])
                 else:
                     selected_faces.push_back(h[1])
+    emit_signal("selection_changed")
 
 var _current_edit
 func begin_edit():
@@ -266,6 +271,7 @@ func translate_selection(global_dir: Vector3):
     _ply_mesh.transform_faces(selected_faces, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
     _ply_mesh.transform_edges(selected_edges, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
     _ply_mesh.transform_vertexes(selected_vertices, Transform.IDENTITY, Transform(Basis.IDENTITY, dir))
+    emit_signal("selection_mutated")
 
 var last_rotation: Basis = Basis.IDENTITY 
 func rotate_selection(axis: Vector3, rad: float):
@@ -275,6 +281,7 @@ func rotate_selection(axis: Vector3, rad: float):
     _ply_mesh.transform_edges(selected_edges, Transform(last_rotation, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
     _ply_mesh.transform_vertexes(selected_vertices, Transform(last_rotation, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
     last_rotation = new_basis
+    emit_signal("selection_mutated")
 
 var last_scale: Basis = Basis.IDENTITY 
 func scale_selection(scale: Vector3):
@@ -289,3 +296,4 @@ func scale_selection(scale: Vector3):
     _ply_mesh.transform_edges(selected_edges, Transform(last_scale, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
     _ply_mesh.transform_vertexes(selected_vertices, Transform(last_scale, Vector3.ZERO), Transform(new_basis, Vector3.ZERO))
     last_scale = new_basis
+    emit_signal("selection_mutated")
