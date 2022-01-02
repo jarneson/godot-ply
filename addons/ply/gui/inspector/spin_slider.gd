@@ -50,6 +50,7 @@ func _evaluate_input_text():
 	if not val:
 		return
 	value = val
+	emit_signal("value_changed", value)
 	emit_signal("edit_committed", value)
 
 func _on_value_input_focus_exited():
