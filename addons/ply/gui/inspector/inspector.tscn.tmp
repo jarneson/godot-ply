@@ -18,9 +18,10 @@ margin_bottom = 80.0
 columns = 2
 
 [node name="Translate" type="Label" parent="G"]
-margin_top = 5.0
+margin_top = 4.0
 margin_right = 58.0
-margin_bottom = 19.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 16 )
 text = "Translate"
 
 [node name="TranslateInputs" type="HBoxContainer" parent="G"]
