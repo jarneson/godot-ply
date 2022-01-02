@@ -47,7 +47,7 @@ func _evaluate_input_text():
 	if err != OK:
 		return
 	var val = expr.execute(Array(), null, false)
-	if not val:
+	if val == null:
 		return
 	value = val
 	emit_signal("value_changed", value)

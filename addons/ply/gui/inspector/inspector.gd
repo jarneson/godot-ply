@@ -64,6 +64,14 @@ func _ready():
 	scale_container.add_child(scale_z)
 
 	plugin.connect("selection_changed", self, "_on_selection_changed")
+
+	rotate_x.value = 0
+	rotate_y.value = 0
+	rotate_z.value = 0
+	scale_x.value = 1
+	scale_y.value = 1
+	scale_z.value = 1
+
 	hide()
 
 var current_selection
@@ -73,10 +81,10 @@ func _on_selection_changed(selection):
 		current_selection.disconnect("selection_mutated", self, "_on_selected_geometry_mutated")
 	current_selection = selection
 	gizmo_transform = null
-	hide()
 	if current_selection:
 		current_selection.connect("selection_changed", self, "_on_selected_geometry_changed")
 		current_selection.connect("selection_mutated", self, "_on_selected_geometry_mutated")
+		_on_selected_geometry_changed()
 
 func _on_selected_geometry_changed():
 	gizmo_transform = current_selection.get_selection_transform()
@@ -84,15 +92,22 @@ func _on_selected_geometry_changed():
 		translate_x.value = gizmo_transform.origin.x
 		translate_y.value = gizmo_transform.origin.y
 		translate_z.value = gizmo_transform.origin.z
+		rotate_x.value = 0
+		rotate_y.value = 0
+		rotate_z.value = 0
+		scale_x.value = 1
+		scale_y.value = 1
+		scale_z.value = 1
 		show()
 	else:
 		hide()
 
 func _on_selected_geometry_mutated():
 	gizmo_transform = current_selection.get_selection_transform()
-	translate_x.value = gizmo_transform.origin.x
-	translate_y.value = gizmo_transform.origin.y
-	translate_z.value = gizmo_transform.origin.z
+	if gizmo_transform:
+		translate_x.value = gizmo_transform.origin.x
+		translate_y.value = gizmo_transform.origin.y
+		translate_z.value = gizmo_transform.origin.z
 
 
 var in_edit: bool
@@ -104,10 +119,29 @@ func _transform_axis_edit_committed(value, s, mode, axis):
 	current_selection.commit_edit("Ply: " + mode, plugin.get_undo_redo())
 	in_edit = false
 
+	rotate_x.value = 0
+	rotate_y.value = 0
+	rotate_z.value = 0
+	scale_x.value = 1
+	scale_y.value = 1
+	scale_z.value = 1
+
 func _transform_axis_value_changed(val, s, mode, axis):
 	match mode:
 		"Translate":
 			var v = Vector3(translate_x.value, translate_y.value, translate_z.value)
 			var o = current_selection.get_selection_transform().origin
 			current_selection.translate_selection(v-o)
-
+		"Rotate":
+			var ax
+			match axis:
+				"X":
+					ax = Vector3.RIGHT
+				"Y":
+					ax = Vector3.UP
+				"Z":
+					ax = Vector3.BACK
+			current_selection.rotate_selection(ax, deg2rad(s.value))
+		"Scale":
+			var v = Vector3(scale_x.value, scale_y.value, scale_z.value)
+			current_selection.scale_selection(v)
