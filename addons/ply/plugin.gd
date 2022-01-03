@@ -19,7 +19,7 @@ const Inspector = preload("./plugin/inspector.gd")
 
 const Interop = preload("./interop.gd")
 
-const PlyEditor = preload("./nodes/ply2.gd")
+const PlyEditor = preload("./nodes/ply.gd")
 
 func get_plugin_name():
     return "Ply"
@@ -32,7 +32,7 @@ var toolbar = preload("./gui/toolbar/toolbar.tscn").instance()
 
 func _enter_tree() -> void:
     Interop.register(self, "ply")
-    add_custom_type("PlyEditor", "Node", preload("./nodes/ply2.gd"), preload("./icons/plugin.svg"))
+    add_custom_type("PlyEditor", "Node", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
 
     selector = Selector.new(self)
     transform_gizmo = TransformGizmo.new(self)

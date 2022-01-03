@@ -2,7 +2,7 @@ tool
 extends Object
 
 const SelectionMode = preload("../utils/selection_mode.gd")
-const PlyEditor = preload("../nodes/ply2.gd")
+const PlyEditor = preload("../nodes/ply.gd")
 
 var _plugin: EditorPlugin
 

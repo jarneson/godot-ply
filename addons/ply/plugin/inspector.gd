@@ -1,7 +1,7 @@
 tool
 extends EditorInspectorPlugin
 
-const PlyEditor = preload("../nodes/ply2.gd")
+const PlyEditor = preload("../nodes/ply.gd")
 const InspectorControl = preload("../gui/inspector/inspector.tscn")
 
 var plugin

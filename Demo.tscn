@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=2]
 
-[ext_resource path="res://addons/ply/nodes/ply2.gd" type="Script" id=1]
+[ext_resource path="res://addons/ply/nodes/ply.gd" type="Script" id=1]
 [ext_resource path="res://addons/ply/debug_material.tres" type="Material" id=2]
 [ext_resource path="res://addons/ply/debug.png" type="Texture" id=3]
 [ext_resource path="res://Demo.gd" type="Script" id=4]
