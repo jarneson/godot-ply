@@ -1,6 +1,7 @@
 tool
 extends VBoxContainer
 
+const GizmoMode = preload("../../utils/gizmo_mode.gd")
 const SpinSlider = preload("./spin_slider.gd")
 
 onready var tool_grid = $"G"
@@ -39,6 +40,8 @@ func _prep_slider(s, l, mn, mx, st, mod, axis):
 	s.connect("edit_committed", self, "_transform_axis_edit_committed", [s, mod, axis])
 
 func _ready():
+	current_gizmo_mode = plugin.toolbar.gizmo_mode
+
 	translate_x = SpinSlider.new()
 	_prep_slider(translate_x, "x", -65535, 65535, 0.001, "Translate", "X")
 	translate_y = SpinSlider.new()
@@ -70,6 +73,7 @@ func _ready():
 	scale_container.add_child(scale_z)
 
 	plugin.connect("selection_changed", self, "_on_selection_changed")
+	plugin.toolbar.connect("gizmo_mode_changed", self, "_on_gizmo_mode_changed")
 
 	rotate_x.value = 0
 	rotate_y.value = 0
@@ -79,6 +83,43 @@ func _ready():
 	scale_z.value = 1
 
 	tool_grid.hide()
+
+func _get_origin():
+	match current_gizmo_mode:
+		GizmoMode.GLOBAL:
+			return gizmo_transform.origin
+		GizmoMode.LOCAL:
+			return current_selection.parent.global_transform.inverse().xform(gizmo_transform.origin)
+		GizmoMode.NORMAL:
+			return Vector3.ZERO
+
+func _reset_everything(exclude_rot_scale = false):
+	gizmo_transform = current_selection.get_selection_transform(current_gizmo_mode)
+	vertex_count.text = str(current_selection.ply_mesh.vertex_count())
+	edge_count.text = str(current_selection.ply_mesh.edge_count())
+	face_count.text = str(current_selection.ply_mesh.face_count())
+	selection_text.text = str(current_selection.selected_vertices + current_selection.selected_edges + current_selection.selected_faces)
+	if gizmo_transform:
+		var v = _get_origin()
+		if current_gizmo_mode != GizmoMode.NORMAL || !exclude_rot_scale:
+			translate_x.value = v.x
+			translate_y.value = v.y
+			translate_z.value = v.z
+		if not exclude_rot_scale:
+			rotate_x.value = 0
+			rotate_y.value = 0
+			rotate_z.value = 0
+			scale_x.value = 1
+			scale_y.value = 1
+			scale_z.value = 1
+		tool_grid.show()
+	else:
+		tool_grid.hide()
+
+var current_gizmo_mode
+func _on_gizmo_mode_changed(mode):
+	current_gizmo_mode = mode
+	_reset_everything()
 
 var current_selection
 func _on_selection_changed(selection):
@@ -93,35 +134,11 @@ func _on_selection_changed(selection):
 		_on_selected_geometry_changed()
 
 func _on_selected_geometry_changed():
-	gizmo_transform = current_selection.get_selection_transform()
-	vertex_count.text = str(current_selection.ply_mesh.vertex_count())
-	edge_count.text = str(current_selection.ply_mesh.edge_count())
-	face_count.text = str(current_selection.ply_mesh.face_count())
-	selection_text.text = str(current_selection.selected_vertices + current_selection.selected_edges + current_selection.selected_faces)
-	if gizmo_transform:
-		translate_x.value = gizmo_transform.origin.x
-		translate_y.value = gizmo_transform.origin.y
-		translate_z.value = gizmo_transform.origin.z
-		rotate_x.value = 0
-		rotate_y.value = 0
-		rotate_z.value = 0
-		scale_x.value = 1
-		scale_y.value = 1
-		scale_z.value = 1
-		tool_grid.show()
-	else:
-		tool_grid.hide()
+	_reset_everything()
 
 func _on_selected_geometry_mutated():
-	gizmo_transform = current_selection.get_selection_transform()
-	vertex_count.text = str(current_selection.ply_mesh.vertex_count())
-	edge_count.text = str(current_selection.ply_mesh.edge_count())
-	face_count.text = str(current_selection.ply_mesh.face_count())
-	selection_text.text = str(current_selection.selected_vertices + current_selection.selected_edges + current_selection.selected_faces)
-	if gizmo_transform:
-		translate_x.value = gizmo_transform.origin.x
-		translate_y.value = gizmo_transform.origin.y
-		translate_z.value = gizmo_transform.origin.z
+	if not in_edit:
+		_reset_everything()
 
 var in_edit: bool
 func _transform_axis_edit_started(s, mode, axis):
@@ -138,23 +155,39 @@ func _transform_axis_edit_committed(value, s, mode, axis):
 	scale_x.value = 1
 	scale_y.value = 1
 	scale_z.value = 1
+	_reset_everything()
 
 func _transform_axis_value_changed(val, s, mode, axis):
 	match mode:
 		"Translate":
 			var v = Vector3(translate_x.value, translate_y.value, translate_z.value)
-			var o = current_selection.get_selection_transform().origin
+			match current_gizmo_mode:
+				GizmoMode.LOCAL:
+					v = current_selection.parent.global_transform.xform(v)
+				GizmoMode.NORMAL:
+					v = gizmo_transform.origin + \
+						translate_x.value * gizmo_transform.basis.x + \
+						translate_y.value * gizmo_transform.basis.y + \
+						translate_z.value * gizmo_transform.basis.z
+			var o = gizmo_transform.origin
 			current_selection.translate_selection(v-o)
 		"Rotate":
 			var ax
 			match axis:
 				"X":
-					ax = Vector3.RIGHT
+					ax = gizmo_transform.basis.x
 				"Y":
-					ax = Vector3.UP
+					ax = gizmo_transform.basis.y
 				"Z":
-					ax = Vector3.BACK
+					ax = gizmo_transform.basis.z
 			current_selection.rotate_selection(ax, deg2rad(s.value))
 		"Scale":
-			var v = Vector3(scale_x.value, scale_y.value, scale_z.value)
+			var v = Vector3(1,1,1)
+			match axis:
+				"X":
+					v += (val - 1) * gizmo_transform.basis.x
+				"Y":
+					v += (val - 1) * gizmo_transform.basis.y
+				"Z":
+					v += (val - 1) * gizmo_transform.basis.z
 			current_selection.scale_selection(v)

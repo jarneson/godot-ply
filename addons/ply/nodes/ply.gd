@@ -282,6 +282,8 @@ func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override =
             v_z = v_y.cross(v_x)
             v_x = v_y.cross(v_z)
         basis = Basis(v_x, v_y, v_z)
+    if gizmo_mode == GizmoMode.GLOBAL:
+        basis = Basis.IDENTITY
     if basis_override:
         basis = basis_override
     return Transform(basis.orthonormalized(), parent.global_transform.xform(pos))
@@ -311,7 +313,9 @@ func scale_selection(scale: Vector3):
     if not _current_edit:
         return
     var basis = get_selection_transform().basis
+    print(scale)
     scale = basis.inverse().xform(scale - Vector3(1,1,1)) + Vector3(1,1,1)
+    print(scale)
     var new_basis = Basis.IDENTITY.scaled(scale)
     _ply_mesh.reject_edit(_current_edit, false)
     _ply_mesh.transform_faces(selected_faces, Transform(new_basis, Vector3.ZERO))
