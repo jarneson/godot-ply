@@ -16,6 +16,7 @@ static func semv(m, e):
 
     m.set_vertex_all(nv, mp, e)
 
+    m.set_vertex_edge(m.edge_destination_idx(e), ne)
     m.set_edge_face_left(ne, m.edge_face_left(e))
     m.set_edge_face_right(ne, m.edge_face_right(e))
     m.set_edge_origin_idx(ne, nv)

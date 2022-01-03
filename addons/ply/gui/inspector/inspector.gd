@@ -20,6 +20,7 @@ var scale_z
 onready var vertex_count = $"V/VertexCount"
 onready var edge_count = $"V/EdgeCount"
 onready var face_count = $"V/FaceCount"
+onready var selection_text = $"V/Selection"
 
 var plugin = null
 var gizmo_transform
@@ -96,6 +97,7 @@ func _on_selected_geometry_changed():
 	vertex_count.text = str(current_selection.ply_mesh.vertex_count())
 	edge_count.text = str(current_selection.ply_mesh.edge_count())
 	face_count.text = str(current_selection.ply_mesh.face_count())
+	selection_text.text = str(current_selection.selected_vertices + current_selection.selected_edges + current_selection.selected_faces)
 	if gizmo_transform:
 		translate_x.value = gizmo_transform.origin.x
 		translate_y.value = gizmo_transform.origin.y
@@ -115,6 +117,7 @@ func _on_selected_geometry_mutated():
 	vertex_count.text = str(current_selection.ply_mesh.vertex_count())
 	edge_count.text = str(current_selection.ply_mesh.edge_count())
 	face_count.text = str(current_selection.ply_mesh.face_count())
+	selection_text.text = str(current_selection.selected_vertices + current_selection.selected_edges + current_selection.selected_faces)
 	if gizmo_transform:
 		translate_x.value = gizmo_transform.origin.x
 		translate_y.value = gizmo_transform.origin.y
