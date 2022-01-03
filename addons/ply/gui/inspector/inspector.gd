@@ -3,6 +3,7 @@ extends VBoxContainer
 
 const SpinSlider = preload("./spin_slider.gd")
 
+onready var tool_grid = $"G"
 onready var translate_container = $"G/TranslateInputs"
 var translate_x 
 var translate_y 
@@ -15,6 +16,10 @@ onready var scale_container = $"G/ScaleInputs"
 var scale_x
 var scale_y
 var scale_z
+
+onready var vertex_count = $"V/VertexCount"
+onready var edge_count = $"V/EdgeCount"
+onready var face_count = $"V/FaceCount"
 
 var plugin = null
 var gizmo_transform
@@ -72,7 +77,7 @@ func _ready():
 	scale_y.value = 1
 	scale_z.value = 1
 
-	hide()
+	tool_grid.hide()
 
 var current_selection
 func _on_selection_changed(selection):
@@ -88,6 +93,9 @@ func _on_selection_changed(selection):
 
 func _on_selected_geometry_changed():
 	gizmo_transform = current_selection.get_selection_transform()
+	vertex_count.text = str(current_selection.ply_mesh.vertex_count())
+	edge_count.text = str(current_selection.ply_mesh.edge_count())
+	face_count.text = str(current_selection.ply_mesh.face_count())
 	if gizmo_transform:
 		translate_x.value = gizmo_transform.origin.x
 		translate_y.value = gizmo_transform.origin.y
@@ -98,17 +106,19 @@ func _on_selected_geometry_changed():
 		scale_x.value = 1
 		scale_y.value = 1
 		scale_z.value = 1
-		show()
+		tool_grid.show()
 	else:
-		hide()
+		tool_grid.hide()
 
 func _on_selected_geometry_mutated():
 	gizmo_transform = current_selection.get_selection_transform()
+	vertex_count.text = str(current_selection.ply_mesh.vertex_count())
+	edge_count.text = str(current_selection.ply_mesh.edge_count())
+	face_count.text = str(current_selection.ply_mesh.face_count())
 	if gizmo_transform:
 		translate_x.value = gizmo_transform.origin.x
 		translate_y.value = gizmo_transform.origin.y
 		translate_z.value = gizmo_transform.origin.z
-
 
 var in_edit: bool
 func _transform_axis_edit_started(s, mode, axis):

@@ -5,6 +5,7 @@
 [node name="Inspector" type="VBoxContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+rect_pivot_offset = Vector2( -351, -246 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource( 1 )
@@ -14,52 +15,98 @@ __meta__ = {
 
 [node name="G" type="GridContainer" parent="."]
 margin_right = 1024.0
-margin_bottom = 80.0
+margin_bottom = 50.0
 columns = 2
 
 [node name="Translate" type="Label" parent="G"]
-margin_top = 5.0
 margin_right = 58.0
-margin_bottom = 19.0
+margin_bottom = 14.0
 text = "Translate"
 
 [node name="TranslateInputs" type="HBoxContainer" parent="G"]
 margin_left = 62.0
 margin_right = 1024.0
-margin_bottom = 24.0
+margin_bottom = 14.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Rotate" type="Label" parent="G"]
-margin_top = 33.0
+margin_top = 18.0
 margin_right = 58.0
-margin_bottom = 47.0
+margin_bottom = 32.0
 text = "Rotate"
 
 [node name="RotateInputs" type="HBoxContainer" parent="G"]
 margin_left = 62.0
-margin_top = 28.0
+margin_top = 18.0
 margin_right = 1024.0
-margin_bottom = 52.0
+margin_bottom = 32.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Scale" type="Label" parent="G"]
-margin_top = 61.0
+margin_top = 36.0
 margin_right = 58.0
-margin_bottom = 75.0
+margin_bottom = 50.0
 text = "Scale"
 
 [node name="ScaleInputs" type="HBoxContainer" parent="G"]
 margin_left = 62.0
-margin_top = 56.0
+margin_top = 36.0
 margin_right = 1024.0
-margin_bottom = 80.0
+margin_bottom = 50.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="V" type="GridContainer" parent="."]
+margin_top = 54.0
+margin_right = 1024.0
+margin_bottom = 134.0
+columns = 2
+
+[node name="Label" type="Label" parent="V"]
+margin_top = 5.0
+margin_right = 56.0
+margin_bottom = 19.0
+text = "Vertices "
+
+[node name="VertexCount" type="LineEdit" parent="V"]
+margin_left = 60.0
+margin_right = 1024.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+editable = false
+
+[node name="Label2" type="Label" parent="V"]
+margin_top = 33.0
+margin_right = 56.0
+margin_bottom = 47.0
+text = "Edges"
+
+[node name="EdgeCount" type="LineEdit" parent="V"]
+margin_left = 60.0
+margin_top = 28.0
+margin_right = 1024.0
+margin_bottom = 52.0
+size_flags_horizontal = 3
+editable = false
+
+[node name="Label3" type="Label" parent="V"]
+margin_top = 61.0
+margin_right = 56.0
+margin_bottom = 75.0
+text = "Faces"
+
+[node name="FaceCount" type="LineEdit" parent="V"]
+margin_left = 60.0
+margin_top = 56.0
+margin_right = 1024.0
+margin_bottom = 80.0
+size_flags_horizontal = 3
+editable = false

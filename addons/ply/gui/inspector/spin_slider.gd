@@ -25,6 +25,7 @@ func _ready():
 	connect("focus_entered", self, "_on_focus_entered")
 	value_input = LineEdit.new()
 	value_input.set_as_toplevel(true)
+	value_input.focus_mode = Control.FOCUS_CLICK
 	value_input.hide()
 	value_input.connect("modal_closed", self, "_on_value_input_closed")
 	value_input.connect("text_entered", self, "_on_value_input_entered")
@@ -39,7 +40,10 @@ func _on_value_input_entered(_text):
 	value_input_just_closed = true
 	value_input.hide()
 
-func _evaluate_input_text():
+func _evaluate_input_text(and_hide: bool):
+	if value_input_just_closed:
+		return
+	value_input_just_closed = true
 	var text = value_input.text
 	text.replace(",", ".")
 	var expr = Expression.new()
@@ -52,17 +56,16 @@ func _evaluate_input_text():
 	value = val
 	emit_signal("value_changed", value)
 	emit_signal("edit_committed", value)
+	if and_hide:
+		value_input.hide()
 
 func _on_value_input_focus_exited():
 	if value_input.get_menu().visible:
 		return
-	_evaluate_input_text()
-	if not value_input_just_closed:
-		value_input.hide()
+	_evaluate_input_text(true)
 
 func _on_value_input_closed():
-	_evaluate_input_text()
-	value_input_just_closed = true
+	_evaluate_input_text(false)
 
 func _on_focus_entered():
 	if (Input.is_action_pressed("ui_focus_next") || Input.is_action_pressed("ui_focus_prev")) && not value_input_just_closed:
