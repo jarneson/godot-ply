@@ -567,8 +567,7 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
             if snap:
                 motion = motion.snapped(Vector3(snap, snap, snap))
 
-            var delta = original_origin + motion - transform.origin
-            _plugin.selection.translate_selection(delta)
+            _plugin.selection.translate_selection(motion)
         TransformMode.ROTATE:
             var plane = Plane()
             var axis = Vector3()
