@@ -310,12 +310,8 @@ func rotate_selection(axis: Vector3, rad: float):
 func scale_selection(scale: Vector3):
     if not _current_edit:
         return
-    if scale.x == 0:
-        scale.x = 0.001
-    if scale.y == 0:
-        scale.y = 0.001
-    if scale.z == 0:
-        scale.z = 0.001
+    var basis = get_selection_transform().basis
+    scale = basis.inverse().xform(scale - Vector3(1,1,1)) + Vector3(1,1,1)
     var new_basis = Basis.IDENTITY.scaled(scale)
     _ply_mesh.reject_edit(_current_edit, false)
     _ply_mesh.transform_faces(selected_faces, Transform(new_basis, Vector3.ZERO))
