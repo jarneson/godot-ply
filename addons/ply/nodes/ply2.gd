@@ -94,6 +94,10 @@ func _on_mesh_updated():
                     parent.set_surface_material(i, default_material)
                 else:
                     parent.set_surface_material(i, mesh_instance_memo[i])
+            
+            var collision_shape = parent.get_node_or_null("StaticBody/CollisionShape")
+            if collision_shape:
+                collision_shape.shape = parent.mesh.create_trimesh_shape()
         if parent is CSGMesh:
             if not csg_mesh_memo:
                 parent.material = default_material
