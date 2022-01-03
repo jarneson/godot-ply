@@ -4,6 +4,8 @@ extends Node
 signal selection_changed
 signal selection_mutated
 
+const default_material = preload("../debug_material.tres")
+
 const SelectionMode = preload("../utils/selection_mode.gd")
 const GizmoMode = preload("../utils/gizmo_mode.gd")
 
@@ -43,7 +45,7 @@ func _enter_tree():
     if not Engine.editor_hint:
         return
     if not _ply_mesh:
-        return
+        _ply_mesh = PlyMesh.new()
     if not _ply_mesh.is_connected("mesh_updated", self, "_on_mesh_updated"):
         _ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 
@@ -78,7 +80,25 @@ func _on_mesh_updated():
     for f in remove:
         selected_faces.erase(f)
     if parent:
+        var mesh_instance_memo = {}
+        var csg_mesh_memo = null
+        if parent is MeshInstance and parent.mesh:
+            for i in range(parent.mesh.get_surface_count()):
+                mesh_instance_memo[i] = parent.get_surface_material(i)
+        if parent is CSGMesh:
+            csg_mesh_memo = parent.material
         parent.set(parent_property, _ply_mesh.get_mesh(parent.get(parent_property)))
+        if parent is MeshInstance and parent.mesh:
+            for i in range(parent.mesh.get_surface_count()):
+                if not mesh_instance_memo.has(i) or not mesh_instance_memo[i]:
+                    parent.set_surface_material(i, default_material)
+                else:
+                    parent.set_surface_material(i, mesh_instance_memo[i])
+        if parent is CSGMesh:
+            if not csg_mesh_memo:
+                parent.material = default_material
+            else:
+                parent.material = csg_mesh_memo
     emit_signal("selection_mutated")
 
 var selected: bool setget _set_selected,_get_selected

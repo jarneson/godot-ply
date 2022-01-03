@@ -517,7 +517,6 @@ var edit_plane: bool = false
 var edit_axis: int = TransformAxis.X
 var in_edit: bool = false
 
-var original_origin # nullable vector3
 var original_intersect # nullable vector3
 func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
     if not transform:
@@ -559,7 +558,6 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
             
             if not original_intersect:
                 original_intersect = intersection
-                original_origin = transform.origin
 
             var motion = intersection - original_intersect
             if motion_mask != Vector3.ZERO:
@@ -636,7 +634,6 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
             
             if not original_intersect:
                 original_intersect = intersection
-                original_origin = transform.origin
 
             var motion = intersection - original_intersect
             if motion_mask != Vector3.ZERO:

@@ -37,7 +37,6 @@ func get_text_value():
 	return str(stepify(value, step))
 
 func _on_value_input_entered(_text):
-	value_input_just_closed = true
 	value_input.hide()
 
 func _evaluate_input_text(and_hide: bool):

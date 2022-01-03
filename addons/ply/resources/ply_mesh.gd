@@ -460,12 +460,12 @@ func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
 	var tri_res = face_tris(f_idx)
 	var verts = tri_res[0]
 	var tris = tri_res[1]
+	var norm = face_normal(f_idx)
 
 	if verts.size() == 0:
 		return
 
 	for vtx in verts:
-		# st.add_uv(vtx[1])
 		st.add_vertex(vtx[0]+offset)
 
 	for tri in tris:
