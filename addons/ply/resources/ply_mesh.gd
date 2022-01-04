@@ -143,6 +143,22 @@ func get_vertex_edges(v_idx, start=null):
 
 	return out
 
+func get_vertex_faces(v_idx):
+	var edges = get_vertex_edges(v_idx)
+	var faces = {}
+	for e in edges:
+		faces[edge_face_left(e)] = true
+		faces[edge_face_right(e)] = true
+	return faces.keys()
+
+func vertex_normal(v_idx):
+	var faces = get_vertex_faces(v_idx)
+	var normal = Vector3.ZERO
+	for f in faces:
+		normal += face_normal(f)
+	normal /= faces.size()
+	return normal
+
 """
 ███████╗██████╗  ██████╗ ███████╗███████╗
 ██╔════╝██╔══██╗██╔════╝ ██╔════╝██╔════╝
@@ -300,6 +316,9 @@ func set_edge_destination(e, v):
 func edge_midpoint(e):
 	return (edge_origin(e) + edge_destination(e)) / 2
 
+func edge_normal(e):
+	return (face_normal(edge_face_left(e))+face_normal(edge_face_right(e)))/2
+
 """
 ███████╗ █████╗  ██████╗███████╗███████╗
 ██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝
@@ -441,12 +460,12 @@ func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
 	var tri_res = face_tris(f_idx)
 	var verts = tri_res[0]
 	var tris = tri_res[1]
+	var norm = face_normal(f_idx)
 
 	if verts.size() == 0:
 		return
 
 	for vtx in verts:
-		# st.add_uv(vtx[1])
 		st.add_vertex(vtx[0]+offset)
 
 	for tri in tris:
@@ -546,7 +565,7 @@ func face_intersect_ray_distance(face_idx, ray_start, ray_dir):
 func begin_edit():
 	return [vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges, face_surfaces]
 
-func reject_edit(pre_edits):
+func reject_edit(pre_edits, emit=true):
 	vertexes = pre_edits[0]
 	vertex_edges = pre_edits[1]
 	edge_vertexes = pre_edits[2]
@@ -554,6 +573,8 @@ func reject_edit(pre_edits):
 	edge_edges = pre_edits[4]
 	face_edges = pre_edits[5]
 	face_surfaces = pre_edits[6]
+	if emit:
+		emit_change_signal()
 
 func emit_change_signal():
 	emit_signal("mesh_updated")
@@ -577,7 +598,7 @@ func commit_edit(name, undo_redo, pre_edits):
 	undo_redo.add_do_method(self, "emit_change_signal")
 	undo_redo.add_undo_method(self, "emit_change_signal")
 	undo_redo.commit_action()
-	emit_signal("mesh_updated")
+	emit_change_signal()
 
 """
 ███████╗██████╗ ██╗████████╗██╗███╗   ██╗ ██████╗ 
@@ -598,35 +619,61 @@ func translate_face_by_median(f_idx, new_median):
 	
 	emit_signal("mesh_updated")
 
-func transform_faces(faces, prev_xf, new_xf):
+func transform_faces(faces, new_xf):
 	var v_idxs = []
 	for f in faces:
 		for idx in face_vertex_indexes(f):
 			if not v_idxs.has(idx):
 				v_idxs.push_back(idx)
 	
-	transform_vertexes(v_idxs, prev_xf, new_xf)
+	transform_vertexes(v_idxs, new_xf)
 
-func transform_edges(edges, prev_xf, new_xf):
+func transform_edges(edges, new_xf):
 	var v_idxs = []
 	for e in edges:
 		if not v_idxs.has(edge_origin_idx(e)):
 			v_idxs.push_back(edge_origin_idx(e))
 		if not v_idxs.has(edge_destination_idx(e)):
 			v_idxs.push_back(edge_destination_idx(e))
-	transform_vertexes(v_idxs, prev_xf, new_xf)
+	transform_vertexes(v_idxs, new_xf)
 
-func transform_vertexes(vtxs, prev_xf, new_xf):
+func transform_vertexes(vtxs, new_xf):
 	var center = Vector3.ZERO
 	for v in vtxs:
 		center = center + vertexes[v]
 	center = center / vtxs.size()
 
-	var prev_rs = prev_xf.basis.inverse()
-	var new_rs = new_xf.basis
-
 	var dict = {}
 	for idx in vtxs:
-		vertexes[idx] = new_rs.xform(prev_rs.xform(vertexes[idx]-center))+center+new_xf.origin-prev_xf.origin
+		vertexes[idx] = new_xf.basis.xform(vertexes[idx]-center)+center+new_xf.origin
 
-	emit_signal("mesh_updated")
+func scale_faces(faces, b, scale):
+	var v_idxs = []
+	for f in faces:
+		for idx in face_vertex_indexes(f):
+			if not v_idxs.has(idx):
+				v_idxs.push_back(idx)
+	
+	scale_vertices(v_idxs, b, scale)
+
+func scale_edges(edges, b, scale):
+	var v_idxs = []
+	for e in edges:
+		if not v_idxs.has(edge_origin_idx(e)):
+			v_idxs.push_back(edge_origin_idx(e))
+		if not v_idxs.has(edge_destination_idx(e)):
+			v_idxs.push_back(edge_destination_idx(e))
+	scale_vertices(v_idxs, b, scale)
+
+func scale_vertices(vtxs, b, scale):
+	var verts = []
+	for v in vtxs:
+		verts.push_back(vertexes[v])
+	var center = geometric_median(verts)
+
+	for idx in vtxs:
+		var v = vertexes[idx]
+		v = b.xform(v - center)
+		v = Basis.IDENTITY.scaled(scale).xform(v)
+		v = b.inverse().xform(v)+center
+		vertexes[idx] = v

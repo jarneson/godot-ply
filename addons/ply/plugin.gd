@@ -1,6 +1,8 @@
 tool
 extends EditorPlugin
 
+signal selection_changed(selection)
+
 """
 ██████╗ ██████╗ ███████╗██╗      ██████╗  █████╗ ██████╗ ███████╗
 ██╔══██╗██╔══██╗██╔════╝██║     ██╔═══██╗██╔══██╗██╔══██╗██╔════╝
@@ -10,72 +12,76 @@ extends EditorPlugin
 ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝
 """
 const Selector = preload("./plugin/selector.gd")
-const SpatialEditor = preload("./plugin/spatial_editor.gd")
-const Toolbar = preload("./plugin/toolbar.gd")
 
 const SelectionMode = preload("./utils/selection_mode.gd")
-const PlyNode = preload("./nodes/ply.gd")
-const Face = preload("./gui/face.gd")
-const Edge = preload("./gui/edge.gd")
-const Editor = preload("./gui/editor.gd")
-const Handle = preload("./plugin/handle.gd")
+const TransformGizmo = preload("./plugin/transform_gizmo.gd")
+const Inspector = preload("./plugin/inspector.gd")
 
 const Interop = preload("./interop.gd")
+
+const PlyEditor = preload("./nodes/ply.gd")
 
 func get_plugin_name():
     return "Ply"
 
-var spatial_editor = null
-var selector = null
-var toolbar = null
+var selector: Selector
+var transform_gizmo: TransformGizmo
+var inspector: Inspector
 
-var undo_redo = null
-
-"""
-███████╗████████╗ █████╗ ██████╗ ████████╗██╗   ██╗██████╗   ██╗████████╗███████╗ █████╗ ██████╗ ██████╗  ██████╗ ██╗    ██╗███╗   ██╗
-██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██║   ██║██╔══██╗ ██╔╝╚══██╔══╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔═══██╗██║    ██║████╗  ██║
-███████╗   ██║   ███████║██████╔╝   ██║   ██║   ██║██████╔╝██╔╝    ██║   █████╗  ███████║██████╔╝██║  ██║██║   ██║██║ █╗ ██║██╔██╗ ██║
-╚════██║   ██║   ██╔══██║██╔══██╗   ██║   ██║   ██║██╔═══╝██╔╝     ██║   ██╔══╝  ██╔══██║██╔══██╗██║  ██║██║   ██║██║███╗██║██║╚██╗██║
-███████║   ██║   ██║  ██║██║  ██║   ██║   ╚██████╔╝██║   ██╔╝      ██║   ███████╗██║  ██║██║  ██║██████╔╝╚██████╔╝╚███╔███╔╝██║ ╚████║
-╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝   ╚═╝       ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝
-"""
+var toolbar = preload("./gui/toolbar/toolbar.tscn").instance()
 
 func _enter_tree() -> void:
     Interop.register(self, "ply")
-    add_custom_type("PlyInstance", "MeshInstance", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
-    undo_redo = get_undo_redo()
+    add_custom_type("PlyEditor", "Node", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
 
     selector = Selector.new(self)
-    spatial_editor = SpatialEditor.new(self)
-    toolbar = Toolbar.new(self)
+    transform_gizmo = TransformGizmo.new(self)
+    inspector = Inspector.new(self)
 
+    transform_gizmo.startup()
     selector.startup()
-    spatial_editor.startup()
-    toolbar.startup()
+    add_inspector_plugin(inspector)
 
-    set_input_event_forwarding_always_enabled()
+    toolbar.plugin = self
+    toolbar.visible = false
+    add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , toolbar)
 
 func _exit_tree() -> void:
     remove_custom_type("PlyInstance")
+    remove_custom_type("PlyEditor")
 
-    toolbar.teardown()
-    spatial_editor.teardown()
+    remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT , toolbar)
+    remove_inspector_plugin(inspector)
+    transform_gizmo.teardown()
+    toolbar.queue_free()
     selector.teardown()
+    selector.free()
     Interop.deregister(self)
 
-func get_state():
-    return { 
-        "selector": selector.get_state(),
-        "spatial_editor": spatial_editor.get_state()
-    }
+func handles(o: Object):
+    return o is PlyEditor
 
-func set_state(state):
-    selector.set_state(state.get("selector"))
-    spatial_editor.set_state(state.get("spatial_editor"))
+func clear():
+    print("clear")
+
+var selection # nullable PlyEditor
+
+func edit(o: Object):
+    assert(o is PlyEditor)
+    selection = o
+    emit_signal("selection_changed", selection)
+
+func make_visible(vis: bool):
+    toolbar.visible = vis
+    if selection:
+        selection.selected = vis
+    if not vis:
+        selection = null
+        emit_signal("selection_changed", null)
 
 var ignore_inputs = false
 
-func _interop_notification(caller_plugin_id, code, _id, _args):
+func _interop_notification(caller_plugin_id: String, code: int, _id, _args):
     if caller_plugin_id == "gsr":
         match code:
             Interop.NOTIFY_CODE_WORK_STARTED:
@@ -83,17 +89,12 @@ func _interop_notification(caller_plugin_id, code, _id, _args):
             Interop.NOTIFY_CODE_WORK_ENDED:
                 ignore_inputs = false
 
-"""
-███████╗███████╗██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
-██╔════╝██╔════╝██║     ██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
-███████╗█████╗  ██║     █████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║
-╚════██║██╔══╝  ██║     ██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║
-███████║███████╗███████╗███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║
-╚══════╝╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-"""
+var last_camera: Camera
 
-func forward_spatial_gui_input(camera, event):
-    if event is InputEventMouseButton:
-        if event.button_index == BUTTON_LEFT:
-            return selector.handle_click(camera, event)
-    return false
+func forward_spatial_gui_input(camera: Camera, event: InputEvent):
+    last_camera = camera
+    return selector.handle_input(camera, event) 
+
+func _process(_delta):
+    if last_camera:
+        transform_gizmo.process()

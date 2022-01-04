@@ -26,7 +26,7 @@ static func faces(ply_mesh, face_indices, undo_redo=null):
     for edge in seen_edges:
         seen_edges[edge] = Euler.semv(ply_mesh, edge)
 
-    for face_idx in face_indices:
+    for face_idx in face_edges.keys():
         var edges = face_edges[face_idx]
         if edges.size() == 4:
             var v1 = seen_edges[edges[0]][0]

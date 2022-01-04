@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/ply/resources/ply_mesh.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+vertexes = PoolVector3Array( -0.472097, 0, -0.5, 0.5, 0, -0.5, 0.5, 0, 0.5, -0.472097, 0, 0.5, -0.472097, 2.05463, -0.5, 0.5, 2.05463, -0.5, 0.5, 2.05463, 0.5, -0.472097, 2.05463, 0.5 )
+vertex_edges = PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7 )
+edge_vertexes = PoolIntArray( 0, 1, 1, 2, 2, 3, 3, 0, 4, 0, 5, 1, 6, 2, 7, 3, 5, 4, 6, 5, 7, 6, 4, 7 )
+edge_faces = PoolIntArray( 1, 2, 1, 3, 1, 4, 1, 5, 5, 2, 2, 3, 3, 4, 4, 5, 0, 2, 0, 3, 0, 4, 0, 5 )
+edge_edges = PoolIntArray( 3, 5, 0, 6, 1, 7, 2, 4, 11, 0, 8, 1, 9, 2, 10, 3, 9, 4, 10, 5, 11, 6, 8, 7 )
+face_edges = PoolIntArray( 11, 0, 4, 5, 6, 7 )
+face_surfaces = PoolIntArray( 0, 0, 0, 0, 0, 0 )

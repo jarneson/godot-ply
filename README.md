@@ -1,6 +1,8 @@
 # ![icon](./addons/ply/icons/plugin.svg) godot-ply ![icon](./addons/ply/icons/plugin.svg)
 Godot plugin for in-editor box modeling for grayboxing or prototyping 3d levels.
 
+![Editor Screenshot](./editor.png)
+
 Only tested in Godot 3.4. Icons are only good for dark mode.
 
 See demos [on youtube](https://www.youtube.com/channel/UCf1IV6ABf3a4nW1wEyPwmMQ).
@@ -10,7 +12,7 @@ See demos [on youtube](https://www.youtube.com/channel/UCf1IV6ABf3a4nW1wEyPwmMQ)
 - Activate the plugin in your project settings.
 
 ## Usage
-Create a ![nodeicon](./addons/ply/icons/plugin.svg) PlyInstance node in your scene, and select it.
+Create a ![nodeicon](./addons/ply/icons/plugin.svg) PlyEditor node as the child of a MeshInstance or CSGMesh and select it.
 
 ### Editing Meshes
 There are four selection modes:
@@ -19,11 +21,19 @@ There are four selection modes:
 - ![edgeicon](./addons/ply/icons/select_edge.svg) ` 3 ` Edge
 - ![vertexicon](./addons/ply/icons/select_vertex.svg) ` 4 ` Vertex
 
-There are two editor modes are toggled by the ![transformicon](./addons/ply/icons/icon_tool_move.svg) `` ` `` Transform toggle in the menu.
-- Selection mode: select faces, edges, and vertices with the mouse
-- Transform mode: use the gizmo to translate, rotate and scale
+And three gizmo modes:
+- Global - Translate/Rotate/Scale along global coordinates
+- Local - Translate/Rotate/Scale along model local coordinates
+- Normal - Translate/Rotate/Scale along coordinates aligned to the average normal of the selected geometry
 
-For an even smoother transformation experience, we recommend the excellent [Grab-Scale-Rotate for Godot](https://github.com/z1dev/gsr_for_godot) plugin. With this plugin, you will never have to enter Transform mode! Thanks to [Plugin Interop](https://github.com/jarneson/godot-plugin-interop) these two plugins are nicely integrated. Although the depth select feature of GSR conflicts with Ply's geometry selection tools.
+The gizmo behaves much like the standard Godot gizmo, however it includes scale handles by default.
+- Translate Axis: Arrows
+- Translate Plane: Squares
+- Rotate Around Axis: Arcs
+- Scale Axis: Cubes
+- Scale Plane: Triangles
+
+The inspector includes translate/rotate/scale tools for fine tuning, which respect the selected gizmo mode.
 
 There are tools for each selection mode:
 - Mesh
@@ -51,7 +61,7 @@ There are tools for each selection mode:
         - Connect: Remove the two selected faces, creating a new face between edges. Tries to select an edge pairing that works.. but not always.
         - Subdivide: Subdivide a quad or a tri into 4 quads or 4 tris
         - Triangulate: Triangulates a face using an ear clipping algorithm
-    - Paint Faces: Moves the selected face to the selected surface, allowing multiple materials per Ply Instance.
+    - Paint Faces: Moves the selected face to the selected surface, allowing multiple materials per Ply Instance. Assign materials to the parent MeshInstance.
 - Edge
     - Select Edges
         - ![loopicon](./addons/ply/icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
@@ -63,7 +73,7 @@ There are tools for each selection mode:
     - None, yet!
 
 ### Collisions
-Collision meshes are updated automatically if there is a CollisionShape child of the PlyInstance at `$StaticBody/CollsionShape`. This is the default naming if you use the `Create Trimesh Static Body` tool.
+Collision meshes are updated automatically if there is a CollisionShape child of the parent MeshInstance node at `$StaticBody/CollsionShape`. This is the default naming if you use the `Create Trimesh Static Body` tool in the .
 
 ## Details
 Meshes are meant to only be oriented manifolds. Some properties:
