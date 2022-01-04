@@ -182,12 +182,4 @@ func _transform_axis_value_changed(val, s, mode, axis):
 					ax = gizmo_transform.basis.z
 			current_selection.rotate_selection(ax, deg2rad(s.value))
 		"Scale":
-			var v = Vector3(1,1,1)
-			match axis:
-				"X":
-					v += (val - 1) * gizmo_transform.basis.x
-				"Y":
-					v += (val - 1) * gizmo_transform.basis.y
-				"Z":
-					v += (val - 1) * gizmo_transform.basis.z
-			current_selection.scale_selection(v)
+			current_selection.scale_selection(Vector3(scale_x.value, scale_y.value, scale_z.value), gizmo_transform.basis)

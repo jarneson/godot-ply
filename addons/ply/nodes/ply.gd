@@ -301,7 +301,7 @@ func translate_selection(global_dir: Vector3):
 func rotate_selection(axis: Vector3, rad: float):
     if not _current_edit:
         return
-    axis = parent.global_transform.basis.inverse().xform(axis)
+    axis = parent.global_transform.basis.inverse().xform(axis).normalized()
     var new_basis = Basis(axis, rad)
     _ply_mesh.reject_edit(_current_edit, false)
     _ply_mesh.transform_faces(selected_faces, Transform(new_basis, Vector3.ZERO))
@@ -309,16 +309,19 @@ func rotate_selection(axis: Vector3, rad: float):
     _ply_mesh.transform_vertexes(selected_vertices, Transform(new_basis, Vector3.ZERO))
     emit_signal("selection_mutated")
 
-func scale_selection(scale: Vector3):
+# take in a local-space->scale-space basis and apply it to verts then apply the scale vector
+# and revert the space conversion
+func scale_selection(scale: Vector3, global_basis: Basis):
     if not _current_edit:
         return
-    var basis = get_selection_transform().basis
-    print(scale)
-    scale = basis.inverse().xform(scale - Vector3(1,1,1)) + Vector3(1,1,1)
-    print(scale)
-    var new_basis = Basis.IDENTITY.scaled(scale)
+    print("%s" % [parent.global_transform.basis])
+    print("%s * %s" % [parent.global_transform.basis.inverse(), global_basis])
+    var basis = parent.global_transform.basis.inverse() * global_basis
+    if global_basis == Basis.IDENTITY:
+        basis = parent.global_transform.basis * global_basis
+    print("%s along %s" % [scale, basis])
     _ply_mesh.reject_edit(_current_edit, false)
-    _ply_mesh.transform_faces(selected_faces, Transform(new_basis, Vector3.ZERO))
-    _ply_mesh.transform_edges(selected_edges, Transform(new_basis, Vector3.ZERO))
-    _ply_mesh.transform_vertexes(selected_vertices, Transform(new_basis, Vector3.ZERO))
+    _ply_mesh.scale_faces(selected_faces, basis, scale)
+    _ply_mesh.scale_edges(selected_edges, basis, scale)
+    _ply_mesh.scale_vertices(selected_vertices, basis, scale)
     emit_signal("selection_mutated")

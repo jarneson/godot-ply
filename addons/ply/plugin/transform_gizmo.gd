@@ -642,8 +642,8 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
             if snap:
                 motion = motion.snapped(Vector3(snap, snap, snap))
 
-            var scale = Vector3(1,1,1) + motion
-            _plugin.selection.scale_selection(scale)
+            var scale = Vector3(1,1,1) + xb.inverse().xform(motion)
+            _plugin.selection.scale_selection(scale, xb)
 
 func end_edit():
     if not in_edit:

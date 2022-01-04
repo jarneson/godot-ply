@@ -646,3 +646,34 @@ func transform_vertexes(vtxs, new_xf):
 	var dict = {}
 	for idx in vtxs:
 		vertexes[idx] = new_xf.basis.xform(vertexes[idx]-center)+center+new_xf.origin
+
+func scale_faces(faces, b, scale):
+	var v_idxs = []
+	for f in faces:
+		for idx in face_vertex_indexes(f):
+			if not v_idxs.has(idx):
+				v_idxs.push_back(idx)
+	
+	scale_vertices(v_idxs, b, scale)
+
+func scale_edges(edges, b, scale):
+	var v_idxs = []
+	for e in edges:
+		if not v_idxs.has(edge_origin_idx(e)):
+			v_idxs.push_back(edge_origin_idx(e))
+		if not v_idxs.has(edge_destination_idx(e)):
+			v_idxs.push_back(edge_destination_idx(e))
+	scale_vertices(v_idxs, b, scale)
+
+func scale_vertices(vtxs, b, scale):
+	var verts = []
+	for v in vtxs:
+		verts.push_back(vertexes[v])
+	var center = geometric_median(verts)
+
+	for idx in vtxs:
+		var v = vertexes[idx]
+		v = b.xform(v - center)
+		v = Basis.IDENTITY.scaled(scale).xform(v)
+		v = b.inverse().xform(v)+center
+		vertexes[idx] = v
