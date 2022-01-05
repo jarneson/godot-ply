@@ -314,12 +314,9 @@ func rotate_selection(axis: Vector3, rad: float):
 func scale_selection(scale: Vector3, global_basis: Basis):
     if not _current_edit:
         return
-    print("%s" % [parent.global_transform.basis])
-    print("%s * %s" % [parent.global_transform.basis.inverse(), global_basis])
     var basis = parent.global_transform.basis.inverse() * global_basis
     if global_basis == Basis.IDENTITY:
         basis = parent.global_transform.basis * global_basis
-    print("%s along %s" % [scale, basis])
     _ply_mesh.reject_edit(_current_edit, false)
     _ply_mesh.scale_faces(selected_faces, basis, scale)
     _ply_mesh.scale_edges(selected_edges, basis, scale)
