@@ -11,15 +11,15 @@ signal selection_changed(selection)
 ██║     ██║  ██║███████╗███████╗╚██████╔╝██║  ██║██████╔╝███████║
 ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝
 """
-const Selector = preload("./plugin/selector.gd")
+const Selector = preload("res://addons/ply/plugin/selector.gd")
 
-const SelectionMode = preload("./utils/selection_mode.gd")
-const TransformGizmo = preload("./plugin/transform_gizmo.gd")
-const Inspector = preload("./plugin/inspector.gd")
+const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
+const TransformGizmo = preload("res://addons/ply/plugin/transform_gizmo.gd")
+const Inspector = preload("res://addons/ply/plugin/inspector.gd")
 
-const Interop = preload("./interop.gd")
+const Interop = preload("res://addons/ply/interop.gd")
 
-const PlyEditor = preload("./nodes/ply.gd")
+const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 
 func get_plugin_name():
     return "Ply"
@@ -28,11 +28,11 @@ var selector: Selector
 var transform_gizmo: TransformGizmo
 var inspector: Inspector
 
-var toolbar = preload("./gui/toolbar/toolbar.tscn").instance()
+var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instance()
 
 func _enter_tree() -> void:
     Interop.register(self, "ply")
-    add_custom_type("PlyEditor", "Node", preload("./nodes/ply.gd"), preload("./icons/plugin.svg"))
+    add_custom_type("PlyEditor", "Node", preload("res://addons/ply/nodes/ply.gd"), preload("res://addons/ply/icons/plugin.svg"))
 
     selector = Selector.new(self)
     transform_gizmo = TransformGizmo.new(self)

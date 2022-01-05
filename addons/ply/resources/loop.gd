@@ -1,6 +1,6 @@
-const Side = preload("../utils/direction.gd")
-const Subdivide = preload("./subdivide.gd")
-const Euler = preload("./euler.gd")
+const Side = preload("res://addons/ply/utils/direction.gd")
+const Subdivide = preload("res://addons/ply/resources/subdivide.gd")
+const Euler = preload("res://addons/ply/resources/euler.gd")
 
 # only works for quads, adjust offset to change direction
 static func get_face_loop(ply_mesh, f_idx, edge_offset=0):

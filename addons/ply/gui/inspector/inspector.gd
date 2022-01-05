@@ -1,8 +1,8 @@
 tool
 extends VBoxContainer
 
-const GizmoMode = preload("../../utils/gizmo_mode.gd")
-const SpinSlider = preload("./spin_slider.gd")
+const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
+const SpinSlider = preload("res://addons/ply/gui/inspector/spin_slider.gd")
 
 onready var tool_grid = $"G"
 onready var translate_container = $"G/TranslateInputs"

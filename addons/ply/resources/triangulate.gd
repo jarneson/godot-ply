@@ -1,4 +1,4 @@
-const Euler = preload("./euler.gd")
+const Euler = preload("res://addons/ply/resources/euler.gd")
 
 static func object(ply_mesh):
     var f = []

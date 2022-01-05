@@ -1,4 +1,4 @@
-const Side = preload("../utils/direction.gd")
+const Side = preload("res://addons/ply/utils/direction.gd")
 
 static func faces(ply_mesh, faces, undo_redo=null, distance=1):
     # walk the outside of the faces:

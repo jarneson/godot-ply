@@ -1,4 +1,4 @@
-const Side = preload("../utils/direction.gd")
+const Side = preload("res://addons/ply/utils/direction.gd")
 
 static func faces(ply_mesh, f1, f2, undo_redo=null):
     var f1_edges = ply_mesh.get_face_edges(f1)

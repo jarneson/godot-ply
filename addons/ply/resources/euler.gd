@@ -1,4 +1,4 @@
-const Side = preload("../utils/direction.gd")
+const Side = preload("res://addons/ply/utils/direction.gd")
 
 # Split-Edge-Make-Vert
 # > x-----------x

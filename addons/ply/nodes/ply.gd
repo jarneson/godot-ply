@@ -4,15 +4,17 @@ extends Node
 signal selection_changed
 signal selection_mutated
 
-const default_material = preload("../debug_material.tres")
 
-const SelectionMode = preload("../utils/selection_mode.gd")
-const GizmoMode = preload("../utils/gizmo_mode.gd")
+const default_material = preload("res://addons/ply/debug_material.tres")
 
-const PlyMesh = preload("../resources/ply_mesh.gd")
-const Wireframe = preload("./ply_wireframe.gd")
-const Vertices = preload("./ply_vertices.gd")
-const Faces = preload("./ply_faces.gd")
+const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
+const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
+const Median = preload("res://addons/ply/resources/median.gd")
+
+const PlyMesh = preload("res://addons/ply/resources/ply_mesh.gd")
+const Wireframe = preload("res://addons/ply/nodes/ply_wireframe.gd")
+const Vertices = preload("res://addons/ply/nodes/ply_vertices.gd")
+const Faces = preload("res://addons/ply/nodes/ply_faces.gd")
 
 export(String) var parent_property = "mesh"
 export(Resource) var ply_mesh setget set_ply_mesh,get_ply_mesh
@@ -263,7 +265,7 @@ func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override =
         if normals != null:
             normals.push_back(_ply_mesh.face_normal(f))
 
-    var pos = _ply_mesh.geometric_median(verts.keys())
+    var pos = Median.geometric_median(verts.keys())
 
     var basis = parent.global_transform.basis
     if normals != null:

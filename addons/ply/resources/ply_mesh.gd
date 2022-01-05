@@ -2,25 +2,258 @@ tool
 extends Resource
 class_name PlyMesh
 
-"""
-███████╗██╗ ██████╗ ███╗   ██╗ █████╗ ██╗     ███████╗
-██╔════╝██║██╔════╝ ████╗  ██║██╔══██╗██║     ██╔════╝
-███████╗██║██║  ███╗██╔██╗ ██║███████║██║     ███████╗
-╚════██║██║██║   ██║██║╚██╗██║██╔══██║██║     ╚════██║
-███████║██║╚██████╔╝██║ ╚████║██║  ██║███████╗███████║
-╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚══════╝
-"""
+const Median = preload("res://addons/ply/resources/median.gd")
+const Side = preload("res://addons/ply/utils/direction.gd")
+
 signal mesh_updated
 
-"""
-███████╗███╗   ██╗██╗   ██╗███╗   ███╗███████╗
-██╔════╝████╗  ██║██║   ██║████╗ ████║██╔════╝
-█████╗  ██╔██╗ ██║██║   ██║██╔████╔██║███████╗
-██╔══╝  ██║╚██╗██║██║   ██║██║╚██╔╝██║╚════██║
-███████╗██║ ╚████║╚██████╔╝██║ ╚═╝ ██║███████║
-╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
-"""
-const Side = preload("../utils/direction.gd")
+func emit_change_signal():
+	emit_signal("mesh_updated")
+
+export var vertexes = PoolVector3Array()
+export var vertex_edges = PoolIntArray()
+
+export var edge_vertexes = PoolIntArray()
+export var edge_faces = PoolIntArray()
+export var edge_edges = PoolIntArray()
+
+export var face_edges = PoolIntArray()
+export var face_surfaces = PoolIntArray()
+
+#########################################
+# Primary API
+#########################################
+
+func vertex_count() -> int:
+	return vertexes.size()
+
+func vertex(i: int) -> Vector3:
+	return vertexes[i]
+
+func vertex_normal(v_idx: int) -> Vector3:
+	var faces = get_vertex_faces(v_idx)
+	var normal = Vector3.ZERO
+	for f in faces:
+		normal += face_normal(f)
+	normal /= faces.size()
+	return normal
+
+func edge_count() -> int:
+	return edge_vertexes.size() / 2
+
+func edge(i: int) -> Array:
+	return [edge_origin(i), edge_destination(i)]
+	pass
+
+func edge_normal(e: int) -> Vector3:
+	return (face_normal(edge_face_left(e))+face_normal(edge_face_right(e)))/2
+
+func face_count() -> int:
+	return face_edges.size()
+
+func face_vertices(idx):
+	var vert_idxs = face_vertex_indexes(idx)
+	var verts = PoolVector3Array()
+	for idx in vert_idxs:
+		verts.push_back(vertexes[idx])
+	return verts
+
+func face_tris(f_idx: int) -> Array:
+	var verts = face_vertices(f_idx)
+	if verts.size() == 0:
+		return []
+
+	var mapped_verts = []
+	if true:
+		var face_normal = face_normal(f_idx)
+		var axis_a = (verts[verts.size()-1] - verts[0]).normalized()
+		var axis_b = axis_a.cross(face_normal)
+		var p_origin = verts[0]
+		for vtx in verts:
+			mapped_verts.push_back([vtx, Vector2((vtx-p_origin).dot(axis_a), (vtx-p_origin).dot(axis_b))])
+	
+	var tris = []
+	var remaining = []
+	remaining.resize(verts.size())
+	for i in range(verts.size()):
+		remaining[i] = i
+	
+	while remaining.size() > 3:
+		var min_idx = null
+		var min_dot = null
+		for curr in range(remaining.size()):
+			var prev = curr-1
+			if prev < 0:
+				prev = remaining.size()-1
+			var next = curr+1
+			if next >= remaining.size():
+				next = 0
+
+			var va = verts[remaining[prev]]
+			var vb = verts[remaining[curr]]
+			var vc = verts[remaining[next]]
+
+			var ab = vb-va
+			var bc = vc-vb
+
+			var d = ab.dot(bc)
+
+			if not min_dot or d < min_dot:
+				min_idx = curr
+				min_dot = d
+
+		var curr = min_idx
+		var prev = curr-1
+		if prev < 0:
+			prev = remaining.size()-1
+		var next = curr+1
+		if next >= remaining.size():
+			next = 0
+		tris.push_back([remaining[prev], remaining[curr], remaining[next]])
+		remaining.remove(min_idx)
+
+	if remaining.size() == 3:
+		tris.push_back([remaining[0], remaining[1], remaining[2]])
+
+	return [mapped_verts, tris]
+
+func face_normal(idx: int) -> Vector3:
+	return average_vertex_normal(face_vertices(idx))
+
+func face_surface(idx: int) -> int:
+	return face_surfaces[idx]
+
+func set_face_surface(idx: int, s: int):
+	face_surfaces[idx] = s
+
+func begin_edit() -> Array:
+	return [vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges, face_surfaces]
+
+func reject_edit(pre_edits: Array, emit: bool = true):
+	vertexes = pre_edits[0]
+	vertex_edges = pre_edits[1]
+	edge_vertexes = pre_edits[2]
+	edge_faces = pre_edits[3]
+	edge_edges = pre_edits[4]
+	face_edges = pre_edits[5]
+	face_surfaces = pre_edits[6]
+	if emit:
+		emit_change_signal()
+
+func get_mesh(mesh: ArrayMesh = null) -> ArrayMesh:
+	var max_surface = 0
+	var surface_map = {}
+	for f_idx in range(face_surfaces.size()):
+		var s = face_surfaces[f_idx]
+		if surface_map.has(s):
+			surface_map[s].push_back(f_idx)
+		else:
+			if s > max_surface:
+				max_surface = s
+			surface_map[s] = [f_idx]
+	var surfaces = []
+	surfaces.resize(max_surface+1)
+	if not mesh:
+		mesh = ArrayMesh.new()
+	while mesh.get_surface_count() > 0:
+		mesh.surface_remove(0)
+	for s_idx in range(surfaces.size()):
+		var st = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+
+		if surface_map.has(s_idx):
+			var num_verts = 0
+			var faces = surface_map[s_idx]
+			for v in faces:
+				num_verts += render_face(st, v, Vector3.ZERO, num_verts)
+			
+			st.generate_normals()
+		surfaces[s_idx] = st.commit(mesh)
+	return mesh
+
+func commit_edit(name: String, undo_redo: UndoRedo, pre_edits: Array):
+	undo_redo.create_action(name)
+	undo_redo.add_do_property(self, "vertexes", vertexes)
+	undo_redo.add_undo_property(self, "vertexes", pre_edits[0])
+	undo_redo.add_do_property(self, "vertex_edges", vertex_edges)
+	undo_redo.add_undo_property(self, "vertex_edges", pre_edits[1])
+	undo_redo.add_do_property(self, "edge_vertexes", edge_vertexes)
+	undo_redo.add_undo_property(self, "edge_vertexes", pre_edits[2])
+	undo_redo.add_do_property(self, "edge_faces", edge_faces)
+	undo_redo.add_undo_property(self, "edge_faces", pre_edits[3])
+	undo_redo.add_do_property(self, "edge_edges", edge_edges)
+	undo_redo.add_undo_property(self, "edge_edges", pre_edits[4])
+	undo_redo.add_do_property(self, "face_edges", face_edges)
+	undo_redo.add_undo_property(self, "face_edges", pre_edits[5])
+	undo_redo.add_do_property(self, "face_surfaces", face_surfaces)
+	undo_redo.add_undo_property(self, "face_surfaces", pre_edits[6])
+	undo_redo.add_do_method(self, "emit_change_signal")
+	undo_redo.add_undo_method(self, "emit_change_signal")
+	undo_redo.commit_action()
+	emit_change_signal()
+
+func transform_faces(faces: Array, new_xf: Transform):
+	var v_idxs = []
+	for f in faces:
+		for idx in face_vertex_indexes(f):
+			if not v_idxs.has(idx):
+				v_idxs.push_back(idx)
+	
+	transform_vertexes(v_idxs, new_xf)
+
+func transform_edges(edges: Array, new_xf: Transform):
+	var v_idxs = []
+	for e in edges:
+		if not v_idxs.has(edge_origin_idx(e)):
+			v_idxs.push_back(edge_origin_idx(e))
+		if not v_idxs.has(edge_destination_idx(e)):
+			v_idxs.push_back(edge_destination_idx(e))
+	transform_vertexes(v_idxs, new_xf)
+
+func transform_vertexes(vtxs: Array, new_xf: Transform):
+	var center = Vector3.ZERO
+	for v in vtxs:
+		center = center + vertexes[v]
+	center = center / vtxs.size()
+
+	var dict = {}
+	for idx in vtxs:
+		vertexes[idx] = new_xf.basis.xform(vertexes[idx]-center)+center+new_xf.origin
+
+func scale_faces(faces: Array, b: Basis, scale: Vector3):
+	var v_idxs = []
+	for f in faces:
+		for idx in face_vertex_indexes(f):
+			if not v_idxs.has(idx):
+				v_idxs.push_back(idx)
+	
+	scale_vertices(v_idxs, b, scale)
+
+func scale_edges(edges: Array, b: Basis, scale: Vector3):
+	var v_idxs = []
+	for e in edges:
+		if not v_idxs.has(edge_origin_idx(e)):
+			v_idxs.push_back(edge_origin_idx(e))
+		if not v_idxs.has(edge_destination_idx(e)):
+			v_idxs.push_back(edge_destination_idx(e))
+	scale_vertices(v_idxs, b, scale)
+
+func scale_vertices(vtxs: Array, b: Basis, scale: Vector3):
+	var verts = []
+	for v in vtxs:
+		verts.push_back(vertexes[v])
+	var center = Median.geometric_median(verts)
+
+	for idx in vtxs:
+		var v = vertexes[idx]
+		v = b.xform(v - center)
+		v = Basis.IDENTITY.scaled(scale).xform(v)
+		v = b.inverse().xform(v)+center
+		vertexes[idx] = v
+
+#########################################
+# End Primary API
+#########################################
 
 func is_manifold():
 	if edge_count() == 0:
@@ -55,17 +288,6 @@ func is_manifold():
 			return "Edge %s has %s face(s)." % [e, seen_edges[e]]
 	return null
 
-"""
-██╗   ██╗███████╗██████╗ ████████╗██╗ ██████╗███████╗███████╗
-██║   ██║██╔════╝██╔══██╗╚══██╔══╝██║██╔════╝██╔════╝██╔════╝
-██║   ██║█████╗  ██████╔╝   ██║   ██║██║     █████╗  ███████╗
-╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║   ██║██║     ██╔══╝  ╚════██║
- ╚████╔╝ ███████╗██║  ██║   ██║   ██║╚██████╗███████╗███████║
-  ╚═══╝  ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝╚══════╝╚══════╝
-"""
-export var vertexes = PoolVector3Array()
-export var vertex_edges = PoolIntArray()
-
 func evict_vertices(idxs, ignore_edges=[]):
 	idxs.sort()
 	idxs.invert()
@@ -78,9 +300,6 @@ func evict_vertices(idxs, ignore_edges=[]):
 			assert(edge_vertexes[e_idx] != idx, "trying to evict vertex %s in use by edge %s" % [idx, e_idx/2])
 			if edge_vertexes[e_idx] > idx:
 				edge_vertexes[e_idx] -= 1
-
-func vertex_count():
-	return vertexes.size()
 
 func set_vertex(idx, pos):
 	if vertexes[idx] == pos:
@@ -98,19 +317,6 @@ func set_vertex_all(idx, pos, edge):
 func expand_vertexes(more):
 	vertexes.resize(vertexes.size()+more)
 	vertex_edges.resize(vertex_edges.size()+more)
-
-func geometric_median(verts, iters=5):
-	var start = Vector3.ZERO
-	if verts.size() == 0:
-		return start
-	for v in verts:
-		start = start + v
-	start = start / verts.size()
-
-	for i in range(iters):
-		pass # TODO: weiszfeld's
-	
-	return start
 
 func average_vertex_normal(verts):
 	var normal_sum = Vector3.ZERO
@@ -151,30 +357,10 @@ func get_vertex_faces(v_idx):
 		faces[edge_face_right(e)] = true
 	return faces.keys()
 
-func vertex_normal(v_idx):
-	var faces = get_vertex_faces(v_idx)
-	var normal = Vector3.ZERO
-	for f in faces:
-		normal += face_normal(f)
-	normal /= faces.size()
-	return normal
-
-"""
-███████╗██████╗  ██████╗ ███████╗███████╗
-██╔════╝██╔══██╗██╔════╝ ██╔════╝██╔════╝
-█████╗  ██║  ██║██║  ███╗█████╗  ███████╗
-██╔══╝  ██║  ██║██║   ██║██╔══╝  ╚════██║
-███████╗██████╔╝╚██████╔╝███████╗███████║
-╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚══════╝
-"""
 # 2 vertices and faces per edge
 # 2 connecting edges per edge, one way traversal
 # 2*idx for left, 2*idx+1 for right
 #         origin,       destination
-export var edge_vertexes = PoolIntArray()
-export var edge_faces = PoolIntArray()
-export var edge_edges = PoolIntArray()
-
 func evict_edges(idxs):
 	idxs.sort()
 	idxs.invert()
@@ -206,9 +392,6 @@ func evict_edges(idxs):
 			assert(face_edges[i] != idx, "attempting to evict edge %s in use by face %s" % [idx, i])
 			if face_edges[i] > idx:
 				face_edges[i] -= 1
-
-func edge_count():
-	return edge_vertexes.size() / 2
 
 func expand_edges(more):
 	edge_vertexes.resize(edge_vertexes.size()+more*2)
@@ -313,23 +496,6 @@ func set_edge_origin(e, v):
 func set_edge_destination(e, v):
 	edge_vertexes[2*e+1] = v
 
-func edge_midpoint(e):
-	return (edge_origin(e) + edge_destination(e)) / 2
-
-func edge_normal(e):
-	return (face_normal(edge_face_left(e))+face_normal(edge_face_right(e)))/2
-
-"""
-███████╗ █████╗  ██████╗███████╗███████╗
-██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝
-█████╗  ███████║██║     █████╗  ███████╗
-██╔══╝  ██╔══██║██║     ██╔══╝  ╚════██║
-██║     ██║  ██║╚██████╗███████╗███████║
-╚═╝     ╚═╝  ╚═╝ ╚═════╝╚══════╝╚══════╝
-"""
-export var face_edges = PoolIntArray()
-export var face_surfaces = PoolIntArray()
-
 func evict_faces(idxs, ignore_edges=[]):
 	idxs.sort()
 	idxs.invert()
@@ -343,9 +509,6 @@ func evict_faces(idxs, ignore_edges=[]):
 			assert(edge_faces[i] != f_idx, "attempting to evict face %s in use by edge %s" % [f_idx, i/2])
 			if edge_faces[i] > f_idx:
 				edge_faces[i] -= 1
-
-func face_count():
-	return face_edges.size()
 
 func expand_faces(more):
 	face_edges.resize(face_edges.size()+more)
@@ -370,92 +533,6 @@ func face_vertex_indexes(idx):
 			assert(false, "edge %s retured does not include face %s" % [e, idx])
 	return verts
 
-func face_vertices(idx):
-	var vert_idxs = face_vertex_indexes(idx)
-	var verts = PoolVector3Array()
-	for idx in vert_idxs:
-		verts.push_back(vertexes[idx])
-	return verts
-
-func face_normal(idx):
-	return average_vertex_normal(face_vertices(idx))
-
-func face_median(idx):
-	return geometric_median(face_vertices(idx))
-
-func face_surface(idx):
-	return face_surfaces[idx]
-
-func set_face_surface(idx, s):
-	face_surfaces[idx] = s
-
-"""
-██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ ██╗███╗   ██╗ ██████╗ 
-██╔══██╗██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗██║████╗  ██║██╔════╝ 
-██████╔╝█████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝██║██╔██╗ ██║██║  ███╗
-██╔══██╗██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗██║██║╚██╗██║██║   ██║
-██║  ██║███████╗██║ ╚████║██████╔╝███████╗██║  ██║██║██║ ╚████║╚██████╔╝
-╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
-"""
-func face_tris(f_idx):
-	var verts = face_vertices(f_idx)
-	if verts.size() == 0:
-		return []
-
-	var mapped_verts = []
-	if true:
-		var face_normal = face_normal(f_idx)
-		var axis_a = (verts[verts.size()-1] - verts[0]).normalized()
-		var axis_b = axis_a.cross(face_normal)
-		var p_origin = verts[0]
-		for vtx in verts:
-			mapped_verts.push_back([vtx, Vector2((vtx-p_origin).dot(axis_a), (vtx-p_origin).dot(axis_b))])
-	
-	var tris = []
-	var remaining = []
-	remaining.resize(verts.size())
-	for i in range(verts.size()):
-		remaining[i] = i
-	
-	while remaining.size() > 3:
-		var min_idx = null
-		var min_dot = null
-		for curr in range(remaining.size()):
-			var prev = curr-1
-			if prev < 0:
-				prev = remaining.size()-1
-			var next = curr+1
-			if next >= remaining.size():
-				next = 0
-
-			var va = verts[remaining[prev]]
-			var vb = verts[remaining[curr]]
-			var vc = verts[remaining[next]]
-
-			var ab = vb-va
-			var bc = vc-vb
-
-			var d = ab.dot(bc)
-
-			if not min_dot or d < min_dot:
-				min_idx = curr
-				min_dot = d
-
-		var curr = min_idx
-		var prev = curr-1
-		if prev < 0:
-			prev = remaining.size()-1
-		var next = curr+1
-		if next >= remaining.size():
-			next = 0
-		tris.push_back([remaining[prev], remaining[curr], remaining[next]])
-		remaining.remove(min_idx)
-
-	if remaining.size() == 3:
-		tris.push_back([remaining[0], remaining[1], remaining[2]])
-
-	return [mapped_verts, tris]
-
 func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
 	var tri_res = face_tris(f_idx)
 	var verts = tri_res[0]
@@ -473,39 +550,7 @@ func render_face(st, f_idx, offset=Vector3.ZERO, num_verts=0):
 			st.add_index(val+num_verts)
 
 	return verts.size()
-
-func get_mesh(mesh=null):
-	var max_surface = 0
-	var surface_map = {}
-	for f_idx in range(face_surfaces.size()):
-		var s = face_surfaces[f_idx]
-		if surface_map.has(s):
-			surface_map[s].push_back(f_idx)
-		else:
-			if s > max_surface:
-				max_surface = s
-			surface_map[s] = [f_idx]
-	var surfaces = []
-	surfaces.resize(max_surface+1)
-	if not mesh:
-		mesh = ArrayMesh.new()
-	while mesh.get_surface_count() > 0:
-		mesh.surface_remove(0)
-	for s_idx in range(surfaces.size()):
-		var st = SurfaceTool.new()
-		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-
-		if surface_map.has(s_idx):
-			var num_verts = 0
-			var faces = surface_map[s_idx]
-			for v in faces:
-				num_verts += render_face(st, v, Vector3.ZERO, num_verts)
-			
-			st.generate_normals()
-		surfaces[s_idx] = st.commit(mesh)
-	return mesh
 		
-
 func set_mesh(vs, ves, fes, fss, evs, efs, ees):
 	vertexes = PoolVector3Array(vs)
 	vertex_edges = PoolIntArray(ves)
@@ -515,7 +560,6 @@ func set_mesh(vs, ves, fes, fss, evs, efs, ees):
 	edge_faces = PoolIntArray(efs)
 	edge_edges = PoolIntArray(ees)
 	emit_signal("mesh_updated")
-
 
 func face_intersect_ray_distance(face_idx, ray_start, ray_dir):
 	var tri_res = face_tris(face_idx)
@@ -553,127 +597,3 @@ func face_intersect_ray_distance(face_idx, ray_start, ray_dir):
 			if not min_dist or t < min_dist:
 				min_dist = t
 	return min_dist
-
-"""
-████████╗ ██████╗  ██████╗ ██╗     ███████╗
-╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔════╝
-   ██║   ██║   ██║██║   ██║██║     ███████╗
-   ██║   ██║   ██║██║   ██║██║     ╚════██║
-   ██║   ╚██████╔╝╚██████╔╝███████╗███████║
-   ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
-"""
-func begin_edit():
-	return [vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges, face_surfaces]
-
-func reject_edit(pre_edits, emit=true):
-	vertexes = pre_edits[0]
-	vertex_edges = pre_edits[1]
-	edge_vertexes = pre_edits[2]
-	edge_faces = pre_edits[3]
-	edge_edges = pre_edits[4]
-	face_edges = pre_edits[5]
-	face_surfaces = pre_edits[6]
-	if emit:
-		emit_change_signal()
-
-func emit_change_signal():
-	emit_signal("mesh_updated")
-
-func commit_edit(name, undo_redo, pre_edits):
-	undo_redo.create_action(name)
-	undo_redo.add_do_property(self, "vertexes", vertexes)
-	undo_redo.add_undo_property(self, "vertexes", pre_edits[0])
-	undo_redo.add_do_property(self, "vertex_edges", vertex_edges)
-	undo_redo.add_undo_property(self, "vertex_edges", pre_edits[1])
-	undo_redo.add_do_property(self, "edge_vertexes", edge_vertexes)
-	undo_redo.add_undo_property(self, "edge_vertexes", pre_edits[2])
-	undo_redo.add_do_property(self, "edge_faces", edge_faces)
-	undo_redo.add_undo_property(self, "edge_faces", pre_edits[3])
-	undo_redo.add_do_property(self, "edge_edges", edge_edges)
-	undo_redo.add_undo_property(self, "edge_edges", pre_edits[4])
-	undo_redo.add_do_property(self, "face_edges", face_edges)
-	undo_redo.add_undo_property(self, "face_edges", pre_edits[5])
-	undo_redo.add_do_property(self, "face_surfaces", face_surfaces)
-	undo_redo.add_undo_property(self, "face_surfaces", pre_edits[6])
-	undo_redo.add_do_method(self, "emit_change_signal")
-	undo_redo.add_undo_method(self, "emit_change_signal")
-	undo_redo.commit_action()
-	emit_change_signal()
-
-"""
-███████╗██████╗ ██╗████████╗██╗███╗   ██╗ ██████╗ 
-██╔════╝██╔══██╗██║╚══██╔══╝██║████╗  ██║██╔════╝ 
-█████╗  ██║  ██║██║   ██║   ██║██╔██╗ ██║██║  ███╗
-██╔══╝  ██║  ██║██║   ██║   ██║██║╚██╗██║██║   ██║
-███████╗██████╔╝██║   ██║   ██║██║ ╚████║╚██████╔╝
-╚══════╝╚═════╝ ╚═╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
-"""
-func translate_face_by_median(f_idx, new_median):
-	var v_idxs = face_vertex_indexes(f_idx)
-	var vs = face_vertices(f_idx)
-	var median = geometric_median(vs)
-	var shift = new_median - median
-
-	for idx in v_idxs:
-		vertexes[idx] = vertexes[idx] + shift
-	
-	emit_signal("mesh_updated")
-
-func transform_faces(faces, new_xf):
-	var v_idxs = []
-	for f in faces:
-		for idx in face_vertex_indexes(f):
-			if not v_idxs.has(idx):
-				v_idxs.push_back(idx)
-	
-	transform_vertexes(v_idxs, new_xf)
-
-func transform_edges(edges, new_xf):
-	var v_idxs = []
-	for e in edges:
-		if not v_idxs.has(edge_origin_idx(e)):
-			v_idxs.push_back(edge_origin_idx(e))
-		if not v_idxs.has(edge_destination_idx(e)):
-			v_idxs.push_back(edge_destination_idx(e))
-	transform_vertexes(v_idxs, new_xf)
-
-func transform_vertexes(vtxs, new_xf):
-	var center = Vector3.ZERO
-	for v in vtxs:
-		center = center + vertexes[v]
-	center = center / vtxs.size()
-
-	var dict = {}
-	for idx in vtxs:
-		vertexes[idx] = new_xf.basis.xform(vertexes[idx]-center)+center+new_xf.origin
-
-func scale_faces(faces, b, scale):
-	var v_idxs = []
-	for f in faces:
-		for idx in face_vertex_indexes(f):
-			if not v_idxs.has(idx):
-				v_idxs.push_back(idx)
-	
-	scale_vertices(v_idxs, b, scale)
-
-func scale_edges(edges, b, scale):
-	var v_idxs = []
-	for e in edges:
-		if not v_idxs.has(edge_origin_idx(e)):
-			v_idxs.push_back(edge_origin_idx(e))
-		if not v_idxs.has(edge_destination_idx(e)):
-			v_idxs.push_back(edge_destination_idx(e))
-	scale_vertices(v_idxs, b, scale)
-
-func scale_vertices(vtxs, b, scale):
-	var verts = []
-	for v in vtxs:
-		verts.push_back(vertexes[v])
-	var center = geometric_median(verts)
-
-	for idx in vtxs:
-		var v = vertexes[idx]
-		v = b.xform(v - center)
-		v = Basis.IDENTITY.scaled(scale).xform(v)
-		v = b.inverse().xform(v)+center
-		vertexes[idx] = v

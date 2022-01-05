@@ -4,17 +4,17 @@ extends Control
 signal selection_mode_changed(mode)
 signal gizmo_mode_changed(mode)
 
-const SelectionMode = preload("../../utils/selection_mode.gd")
-const GizmoMode = preload("../../utils/gizmo_mode.gd")
+const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
+const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
 
-const Extrude = preload("../../resources/extrude.gd")
-const Subdivide = preload("../../resources/subdivide.gd")
-const Triangulate = preload("../../resources/triangulate.gd")
-const Loop = preload("../../resources/loop.gd")
-const Collapse = preload("../../resources/collapse.gd")
-const Connect = preload("../../resources/connect.gd")
-const Generate = preload("../../resources/generate.gd")
-const ExportMesh = preload("../../resources/export.gd")
+const Extrude = preload("res://addons/ply/resources/extrude.gd")
+const Subdivide = preload("res://addons/ply/resources/subdivide.gd")
+const Triangulate = preload("res://addons/ply/resources/triangulate.gd")
+const Loop = preload("res://addons/ply/resources/loop.gd")
+const Collapse = preload("res://addons/ply/resources/collapse.gd")
+const Connect = preload("res://addons/ply/resources/connect.gd")
+const Generate = preload("res://addons/ply/resources/generate.gd")
+const ExportMesh = preload("res://addons/ply/resources/export.gd")
 
 var plugin: EditorPlugin
 

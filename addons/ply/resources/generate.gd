@@ -1,4 +1,4 @@
-const Subdivide = preload("./subdivide.gd")
+const Subdivide = preload("res://addons/ply/resources/subdivide.gd")
 
 static func nGon(ply_mesh, vertices, undo_redo=null, action_name="Generate N-Gon"):
     var vertex_edges = []

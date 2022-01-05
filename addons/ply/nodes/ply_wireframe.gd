@@ -21,6 +21,7 @@ func _process(_delta):
             set_color(Color.green)
         else:
             set_color(Color.blue)
-        add_vertex(editor.ply_mesh.edge_origin(e))
-        add_vertex(editor.ply_mesh.edge_destination(e))
+        var verts = editor.ply_mesh.edge(e)
+        add_vertex(verts[0])
+        add_vertex(verts[1])
     end()

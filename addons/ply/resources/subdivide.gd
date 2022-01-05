@@ -1,5 +1,5 @@
-const Euler = preload("./euler.gd")
-const Side = preload("../utils/direction.gd")
+const Euler = preload("res://addons/ply/resources/euler.gd")
+const Side = preload("res://addons/ply/utils/direction.gd")
 
 static func object(ply_mesh, undo_redo=null):
     var f = []

@@ -1,4 +1,4 @@
-const Side = preload("../utils/direction.gd")
+const Side = preload("res://addons/ply/utils/direction.gd")
 
 static func edges(ply_mesh, edge_indices, undo_redo = null):
     var pre_edit
