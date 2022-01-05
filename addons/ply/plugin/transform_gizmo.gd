@@ -601,49 +601,84 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
                 
             _plugin.selection.rotate_selection(axis, angle)
         TransformMode.SCALE:
-            var motion_mask = Vector3.ZERO
-            var p = Plane()
-            match edit_axis:
-                TransformAxis.X:
-                    motion_mask = xb.x
-                    var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
-                    p = Plane(normal, normal.dot(transform.origin))
-                TransformAxis.Y:
-                    motion_mask = xb.y
-                    var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
-                    p = Plane(normal, normal.dot(transform.origin))
-                TransformAxis.Z:
-                    motion_mask = xb.z
-                    var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
-                    p = Plane(normal, normal.dot(transform.origin))
-                TransformAxis.YZ:
-                    motion_mask = xb.y + xb.z
-                    var normal = xb.x
-                    p = Plane(normal, normal.dot(transform.origin))
-                TransformAxis.XZ:
-                    motion_mask = xb.x + xb.z
-                    var normal = xb.y
-                    p = Plane(normal, normal.dot(transform.origin))
-                TransformAxis.XY:
-                    motion_mask = xb.x + xb.y
-                    var normal = xb.z
-                    p = Plane(normal, normal.dot(transform.origin))
-            var intersection = p.intersects_ray(ray_pos, ray)
-            if not intersection:
-                return
-            
-            if not original_intersect:
-                original_intersect = intersection
+            if edit_axis == TransformAxis.X || edit_axis == TransformAxis.Y || edit_axis == TransformAxis.Z:
+                var motion_mask = Vector3.ZERO
+                var p = Plane()
+                var scale_factor_index = -1
+                match edit_axis:
+                    TransformAxis.X:
+                        motion_mask = xb.x
+                        scale_factor_index = 0
+                        var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+                        p = Plane(normal, normal.dot(transform.origin))
+                    TransformAxis.Y:
+                        motion_mask = xb.y
+                        scale_factor_index = 1
+                        var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+                        p = Plane(normal, normal.dot(transform.origin))
+                    TransformAxis.Z:
+                        motion_mask = xb.z
+                        scale_factor_index = 2
+                        var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
+                        p = Plane(normal, normal.dot(transform.origin))
+                var intersection = p.intersects_ray(ray_pos, ray)
+                if not intersection:
+                    return
+                
+                if not original_intersect:
+                    original_intersect = intersection
 
-            var motion = intersection - original_intersect
-            if motion_mask != Vector3.ZERO:
-                motion = motion_mask.dot(motion) * motion_mask
-            motion /= original_intersect.distance_to(transform.origin)
-            if snap:
-                motion = motion.snapped(Vector3(snap, snap, snap))
+                var motion = intersection - original_intersect
+                if motion_mask != Vector3.ZERO:
+                    motion = motion_mask.dot(motion) * motion_mask
+                motion /= original_intersect.distance_to(transform.origin)
+                if snap:
+                    motion = motion.snapped(Vector3(snap, snap, snap))
 
-            var scale = Vector3(1,1,1) + xb.inverse().xform(motion)
-            _plugin.selection.scale_selection(scale, xb)
+                var scale = Vector3(1,1,1) + xb.inverse().xform(motion)
+                _plugin.selection.scale_selection_along_plane_normal(motion_mask, scale[scale_factor_index])
+            else:
+                var p = Plane()
+                var normal: Vector3
+                var scale_idx: int
+                var axis_1: Vector3
+                var axis_2: Vector3
+                match edit_axis:
+                    TransformAxis.YZ:
+                        axis_1 = xb.y
+                        axis_2 = xb.z
+                        scale_idx = 1
+                        normal = xb.x
+                        p = Plane(normal, normal.dot(transform.origin))
+                    TransformAxis.XZ:
+                        axis_1 = xb.x
+                        axis_2 = xb.z
+                        scale_idx = 0
+                        normal = xb.y
+                        p = Plane(normal, normal.dot(transform.origin))
+                    TransformAxis.XY:
+                        axis_1 = xb.x
+                        axis_2 = xb.y
+                        scale_idx = 0
+                        normal = xb.z
+                        p = Plane(normal, normal.dot(transform.origin))
+                var motion_mask = axis_1 + axis_2
+                var intersection = p.intersects_ray(ray_pos, ray)
+                if not intersection:
+                    return
+                
+                if not original_intersect:
+                    original_intersect = intersection
+
+                var motion = intersection - original_intersect
+                if motion_mask != Vector3.ZERO:
+                    motion = motion_mask.dot(motion) * motion_mask
+                motion /= original_intersect.distance_to(transform.origin)
+                if snap:
+                    motion = motion.snapped(Vector3(snap, snap, snap))
+
+                var scale = Vector3(1,1,1) + xb.inverse().xform(motion)
+                _plugin.selection.scale_selection_along_plane(normal, [axis_1, axis_2], scale[scale_idx])
 
 func end_edit():
     if not in_edit:

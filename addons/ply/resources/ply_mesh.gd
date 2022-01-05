@@ -220,25 +220,25 @@ func transform_vertexes(vtxs: Array, new_xf: Transform):
 	for idx in vtxs:
 		vertexes[idx] = new_xf.basis.xform(vertexes[idx]-center)+center+new_xf.origin
 
-func scale_faces(faces: Array, b: Basis, scale: Vector3):
+func scale_faces(faces: Array, plane_normal: Vector3, axes: Array, scale_factor: float):
 	var v_idxs = []
 	for f in faces:
 		for idx in face_vertex_indexes(f):
 			if not v_idxs.has(idx):
 				v_idxs.push_back(idx)
 	
-	scale_vertices(v_idxs, b, scale)
+	scale_vertices(v_idxs, plane_normal, axes, scale_factor)
 
-func scale_edges(edges: Array, b: Basis, scale: Vector3):
+func scale_edges(edges: Array, plane_normal: Vector3, axes: Array, scale_factor: float):
 	var v_idxs = []
 	for e in edges:
 		if not v_idxs.has(edge_origin_idx(e)):
 			v_idxs.push_back(edge_origin_idx(e))
 		if not v_idxs.has(edge_destination_idx(e)):
 			v_idxs.push_back(edge_destination_idx(e))
-	scale_vertices(v_idxs, b, scale)
+	scale_vertices(v_idxs, plane_normal, axes, scale_factor)
 
-func scale_vertices(vtxs: Array, b: Basis, scale: Vector3):
+func scale_vertices(vtxs: Array, plane_normal: Vector3, axes: Array, scale_factor: float):
 	var verts = []
 	for v in vtxs:
 		verts.push_back(vertexes[v])
@@ -246,10 +246,44 @@ func scale_vertices(vtxs: Array, b: Basis, scale: Vector3):
 
 	for idx in vtxs:
 		var v = vertexes[idx]
-		v = b.xform(v - center)
-		v = Basis.IDENTITY.scaled(scale).xform(v)
-		v = b.inverse().xform(v)+center
-		vertexes[idx] = v
+		v = v - center
+		var dist = plane_normal.cross(-v).length()
+		var delta = dist * (scale_factor - 1)
+		var dir = (axes[0].dot(v)*axes[0] + axes[1].dot(v)*axes[1]).normalized()
+		vertexes[idx] = v + dir * delta + center
+
+func scale_faces_along_axis(idxs: Array, plane_normal: Vector3, scale_factor: float):
+	var v_idxs = []
+	for f in idxs:
+		for idx in face_vertex_indexes(f):
+			if not v_idxs.has(idx):
+				v_idxs.push_back(idx)
+	
+	scale_vertices_along_axis(v_idxs, plane_normal, scale_factor)
+
+func scale_edges_along_axis(idxs: Array, plane_normal: Vector3, scale_factor: float):
+	var v_idxs = []
+	for e in idxs:
+		if not v_idxs.has(edge_origin_idx(e)):
+			v_idxs.push_back(edge_origin_idx(e))
+		if not v_idxs.has(edge_destination_idx(e)):
+			v_idxs.push_back(edge_destination_idx(e))
+	scale_vertices_along_axis(v_idxs, plane_normal, scale_factor)
+
+func scale_vertices_along_axis(vtxs: Array, plane_normal: Vector3, scale_factor: float):
+	var verts = []
+	for v in vtxs:
+		verts.push_back(vertexes[v])
+	var center = Median.geometric_median(verts)
+
+	for idx in vtxs:
+		var v = vertexes[idx]
+		v = v - center
+		var dist = plane_normal.dot(v) / plane_normal.length()
+		var delta = dist * (scale_factor - 1)
+		vertexes[idx] = v + plane_normal*delta + center
+
+
 
 #########################################
 # End Primary API

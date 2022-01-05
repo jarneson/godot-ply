@@ -311,16 +311,24 @@ func rotate_selection(axis: Vector3, rad: float):
     _ply_mesh.transform_vertexes(selected_vertices, Transform(new_basis, Vector3.ZERO))
     emit_signal("selection_mutated")
 
-# take in a local-space->scale-space basis and apply it to verts then apply the scale vector
-# and revert the space conversion
-func scale_selection(scale: Vector3, global_basis: Basis):
+func scale_selection_along_plane(plane_normal: Vector3, axes: Array, scale_factor: float):
     if not _current_edit:
         return
-    var basis = parent.global_transform.basis.inverse() * global_basis
-    if global_basis == Basis.IDENTITY:
-        basis = parent.global_transform.basis * global_basis
+    var b = parent.global_transform.basis.orthonormalized().inverse()
+    plane_normal = b.xform(plane_normal).normalized()
+    axes = [b.xform(axes[0]).normalized(), b.xform(axes[1]).normalized()]
     _ply_mesh.reject_edit(_current_edit, false)
-    _ply_mesh.scale_faces(selected_faces, basis, scale)
-    _ply_mesh.scale_edges(selected_edges, basis, scale)
-    _ply_mesh.scale_vertices(selected_vertices, basis, scale)
+    _ply_mesh.scale_faces(selected_faces, plane_normal, axes, scale_factor)
+    _ply_mesh.scale_edges(selected_edges, plane_normal, axes, scale_factor)
+    _ply_mesh.scale_vertices(selected_vertices, plane_normal, axes, scale_factor)
+    emit_signal("selection_mutated")
+
+func scale_selection_along_plane_normal(plane_normal: Vector3, scale_factor: float):
+    if not _current_edit:
+        return
+    plane_normal = parent.global_transform.basis.orthonormalized().inverse().xform(plane_normal).normalized()
+    _ply_mesh.reject_edit(_current_edit, false)
+    _ply_mesh.scale_faces_along_axis(selected_faces, plane_normal, scale_factor)
+    _ply_mesh.scale_edges_along_axis(selected_edges, plane_normal, scale_factor)
+    _ply_mesh.scale_vertices_along_axis(selected_vertices, plane_normal, scale_factor)
     emit_signal("selection_mutated")
