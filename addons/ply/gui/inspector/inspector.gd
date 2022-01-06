@@ -99,7 +99,7 @@ func _reset_everything(exclude_rot_scale = false):
 	edge_count.text = str(current_selection.ply_mesh.edge_count())
 	face_count.text = str(current_selection.ply_mesh.face_count())
 	selection_text.text = str(current_selection.selected_vertices + current_selection.selected_edges + current_selection.selected_faces)
-	if gizmo_transform:
+	if gizmo_transform != null:
 		var v = _get_origin()
 		if current_gizmo_mode != GizmoMode.NORMAL || !exclude_rot_scale:
 			translate_x.value = v.x

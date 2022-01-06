@@ -354,7 +354,7 @@ func _set_highlight(highlight_axis):
         scale_plane_gizmo[i].surface_set_material(0, axis_materials_selected[i] if i+12 == highlight_axis else axis_materials[i])
 
 func _update_view():
-    if not transform:
+    if transform == null:
         for i in range(3):
             VisualServer.instance_set_visible(move_gizmo_instances[i], false)
             VisualServer.instance_set_visible(move_plane_gizmo_instances[i], false)
@@ -378,7 +378,7 @@ func _update_view():
         VisualServer.instance_set_visible(scale_plane_gizmo_instances[i], true)
 
 func select(camera: Camera, screen_position: Vector2, only_highlight: bool = false) -> bool:
-    if not transform:
+    if transform == null:
         return false
     
     var ray_pos = camera.project_ray_origin(screen_position)
@@ -393,8 +393,6 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
         for i in range(3):
             var grabber_pos = gt.origin + gt.basis[i] * (GIZMO_ARROW_OFFSET + (GIZMO_ARROW_SIZE * 0.5))
             var grabber_radius = gs * GIZMO_ARROW_SIZE
-            var r: Vector3
-
             var res = Geometry.segment_intersects_sphere(ray_pos, ray_pos + ray * 1000, grabber_pos, grabber_radius)
             if res.size() > 0:
                 var d = res[0].distance_to(ray_pos)
@@ -519,7 +517,7 @@ var in_edit: bool = false
 
 var original_intersect # nullable vector3
 func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
-    if not transform:
+    if transform == null:
         return
     if not in_edit:
         return
