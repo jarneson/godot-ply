@@ -1,15 +1,17 @@
 tool
 extends Control
 
-signal edit_started()
+signal edit_started
 signal value_changed(value)
 signal edit_committed(value)
 
 var value: float setget set_value
 
+
 func set_value(v):
 	value = v
 	update()
+
 
 var label: String
 var min_value: float
@@ -20,6 +22,7 @@ var allow_lesser: bool
 
 var value_input: LineEdit
 var value_input_just_closed: bool
+
 
 func _ready():
 	connect("focus_entered", self, "_on_focus_entered")
@@ -33,11 +36,14 @@ func _ready():
 	add_child(value_input)
 	focus_mode = FOCUS_ALL
 
+
 func get_text_value():
 	return str(stepify(value, step))
 
+
 func _on_value_input_entered(_text):
 	value_input.hide()
+
 
 func _evaluate_input_text(and_hide: bool):
 	if value_input_just_closed:
@@ -58,18 +64,25 @@ func _evaluate_input_text(and_hide: bool):
 	if and_hide:
 		value_input.hide()
 
+
 func _on_value_input_focus_exited():
 	if value_input.get_menu().visible:
 		return
 	_evaluate_input_text(true)
 
+
 func _on_value_input_closed():
 	_evaluate_input_text(false)
 
+
 func _on_focus_entered():
-	if (Input.is_action_pressed("ui_focus_next") || Input.is_action_pressed("ui_focus_prev")) && not value_input_just_closed:
+	if (
+		(Input.is_action_pressed("ui_focus_next") || Input.is_action_pressed("ui_focus_prev"))
+		&& not value_input_just_closed
+	):
 		_handle_focus()
 	value_input_just_closed = false
+
 
 func _handle_focus():
 	var gr = get_global_rect()
@@ -84,6 +97,7 @@ func _handle_focus():
 	value_input_just_closed = false
 	emit_signal("edit_started")
 
+
 func _draw():
 	var sb = get_stylebox("normal", "LineEdit")
 	draw_style_box(sb, Rect2(Vector2(), rect_size))
@@ -95,14 +109,18 @@ func _draw():
 	var vofs = (rect_size.y - font.get_height()) / 2 + font.get_ascent()
 	var fc = get_color("font_color", "LineEdit")
 	var numstr = get_text_value()
-	draw_string(font, Vector2(round(sb.get_offset().x), vofs), label, fc * Color(1,1,1,0.5))
-	draw_string(font, Vector2(round(sb.get_offset().x + string_width + sep), vofs), numstr, fc, number_width)
+	draw_string(font, Vector2(round(sb.get_offset().x), vofs), label, fc * Color(1, 1, 1, 0.5))
+	draw_string(
+		font, Vector2(round(sb.get_offset().x + string_width + sep), vofs), numstr, fc, number_width
+	)
+
 
 var grabbing_spinner_mouse_pos: Vector2
 var grabbing_spinner_attempt: bool
 var grabbing_spinner_dist_cache: float
 var grabbing_spinner: bool
 var pre_grab_value: float
+
 
 func _gui_input(evt):
 	if evt is InputEventMouseButton:

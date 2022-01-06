@@ -7,6 +7,6 @@ static func geometric_median(vertices: Array, iters: int = 5) -> Vector3:
 	start = start / vertices.size()
 
 	for i in range(iters):
-		pass # TODO: weiszfeld's
-	
+		pass  # TODO: weiszfeld's
+
 	return start

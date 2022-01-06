@@ -40,12 +40,12 @@ const NOTIFY_CODE_ALLOW_INPUT = 4
 # i.e. const MY_CODE = NOTIFY_CODE_USER + 1
 const NOTIFY_CODE_USER = 65536
 
-
 # Used internally to add a node in the editor interface. Used for interop.
 const _PLUGIN_NODE_NAME = "plugin_interop"
 # Used internally as a meta tag of the interop node to list plugins that registered.
 const _PLUGIN_DICTIONARY = "PluginDictionary"
 const _PLUGIN_DICTIONARY_NAMES = "PluginNamesDictionary"
+
 
 # Call on _enter_tree() to register the plugin using interop. `plugin_name` should be
 # a string uniquely identifying your plugin.
@@ -57,7 +57,11 @@ static func register(plugin: EditorPlugin, plugin_name: String):
 		n.name = _PLUGIN_NODE_NAME
 		base_control.add_child(n)
 	var plugins = n.get_meta(_PLUGIN_DICTIONARY) if n.has_meta(_PLUGIN_DICTIONARY) else null
-	var plugin_names = n.get_meta(_PLUGIN_DICTIONARY_NAMES) if n.has_meta(_PLUGIN_DICTIONARY_NAMES) else null
+	var plugin_names = (
+		n.get_meta(_PLUGIN_DICTIONARY_NAMES)
+		if n.has_meta(_PLUGIN_DICTIONARY_NAMES)
+		else null
+	)
 	if plugins == null:
 		plugins = {}
 		plugin_names = {}
@@ -67,26 +71,43 @@ static func register(plugin: EditorPlugin, plugin_name: String):
 	n.set_meta(_PLUGIN_DICTIONARY, plugins)
 	n.set_meta(_PLUGIN_DICTIONARY_NAMES, plugin_names)
 
+
 static func ___get_interop_node(plugin: EditorPlugin):
-	var n: Node = plugin.get_editor_interface().get_base_control().get_node_or_null(_PLUGIN_NODE_NAME)
+	var n: Node = plugin.get_editor_interface().get_base_control().get_node_or_null(
+		_PLUGIN_NODE_NAME
+	)
 	assert(n != null, "Interop node does not exist. Make sure to register your plugin first.")
 	return n
+
 
 static func ___get_interop_plugins(plugin: EditorPlugin):
 	var n: Node = ___get_interop_node(plugin)
 	var plugins = n.get_meta(_PLUGIN_DICTIONARY) if n.has_meta(_PLUGIN_DICTIONARY) else null
 	return plugins
 
+
 static func ___get_interop_plugin_names(plugin: EditorPlugin):
 	var n: Node = ___get_interop_node(plugin)
-	var plugin_names = n.get_meta(_PLUGIN_DICTIONARY_NAMES) if n.has_meta(_PLUGIN_DICTIONARY_NAMES) else null
+	var plugin_names = (
+		n.get_meta(_PLUGIN_DICTIONARY_NAMES)
+		if n.has_meta(_PLUGIN_DICTIONARY_NAMES)
+		else null
+	)
 	return plugin_names
+
 
 static func deregister(plugin: EditorPlugin):
 	var n: Node = ___get_interop_node(plugin)
 	var plugins = n.get_meta(_PLUGIN_DICTIONARY) if n.has_meta(_PLUGIN_DICTIONARY) else null
-	var plugin_names = n.get_meta(_PLUGIN_DICTIONARY_NAMES) if n.has_meta(_PLUGIN_DICTIONARY_NAMES) else null
-	assert(plugin_names != null && plugin_names.has(plugin), 'Your plugin is not registered, cannot deregister')
+	var plugin_names = (
+		n.get_meta(_PLUGIN_DICTIONARY_NAMES)
+		if n.has_meta(_PLUGIN_DICTIONARY_NAMES)
+		else null
+	)
+	assert(
+		plugin_names != null && plugin_names.has(plugin),
+		"Your plugin is not registered, cannot deregister"
+	)
 	var plugin_name = plugin_names[plugin]
 	plugins.erase(plugin_name)
 	plugin_names.erase(plugin)
@@ -96,11 +117,13 @@ static func deregister(plugin: EditorPlugin):
 		n.set_meta(_PLUGIN_DICTIONARY, plugins)
 		n.set_meta(_PLUGIN_DICTIONARY_NAMES, plugin_names)
 
+
 static func get_plugin_or_null(plugin: EditorPlugin, name_to_find: String):
 	var plugins = ___get_interop_plugins(plugin)
 	if plugins == null:
 		return null
 	return plugins.get(name_to_find)
+
 
 # Calls the _interop_notification(caller_plugin, code, id, args) function on every registered plugin.
 # caller_plugin - The registered name of your plugin sent to the receiver.
@@ -119,14 +142,18 @@ static func notify_plugins(plugin: EditorPlugin, code: int, id: String = String(
 		if p != plugin && p.has_method("_interop_notification"):
 			p._interop_notification(plugin_name, code, id, args)
 
+
 static func start_work(plugin: EditorPlugin, work_id: String, args = null):
 	notify_plugins(plugin, NOTIFY_CODE_WORK_STARTED, work_id, args)
+
 
 static func end_work(plugin: EditorPlugin, work_id: String, args = null):
 	notify_plugins(plugin, NOTIFY_CODE_WORK_ENDED, work_id, args)
 
+
 static func grab_full_input(plugin: EditorPlugin):
 	notify_plugins(plugin, NOTIFY_CODE_REQUEST_IGNORE_INPUT)
-	
+
+
 static func release_full_input(plugin: EditorPlugin):
 	notify_plugins(plugin, NOTIFY_CODE_ALLOW_INPUT)
