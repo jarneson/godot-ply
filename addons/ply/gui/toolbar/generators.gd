@@ -26,21 +26,25 @@ onready var cylinder_segments = $"C/C/Settings/CylinderSettings/SegmentsInput"
 
 var current_selection = "None"
 
+
 func _ready():
 	selection_plane.connect("pressed", self, "_set_selection", ["Plane"])
 	selection_cube.connect("pressed", self, "_set_selection", ["Cube"])
 	selection_icosphere.connect("pressed", self, "_set_selection", ["Icosphere"])
 	selection_cylinder.connect("pressed", self, "_set_selection", ["Cylinder"])
 
+
 func _set_selection(sel):
 	current_selection = sel
 	_update_display()
+
 
 func _hide_settings():
 	settings_plane.visible = false
 	settings_cube.visible = false
 	settings_icosphere.visible = false
 	settings_cylinder.visible = false
+
 
 func _update_display():
 	_hide_settings()
@@ -54,6 +58,7 @@ func _update_display():
 		"Cylinder":
 			settings_cylinder.visible = true
 
+
 func get_selection():
 	match current_selection:
 		"Plane":
@@ -63,4 +68,12 @@ func get_selection():
 		"Icosphere":
 			return ["Icosphere", [float(icosphere_radius.text), int(icosphere_subdivisions.text)]]
 		"Cylinder":
-			return ["Cylinder", [float(cylinder_radius.text), float(cylinder_depth.text), int(cylinder_vertices.text), int(cylinder_segments.text)]]
+			return [
+				"Cylinder",
+				[
+					float(cylinder_radius.text),
+					float(cylinder_depth.text),
+					int(cylinder_vertices.text),
+					int(cylinder_segments.text)
+				]
+			]
