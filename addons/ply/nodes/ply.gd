@@ -51,8 +51,52 @@ func _ready():
 func _enter_tree():
 	if not Engine.editor_hint:
 		return
-	if not _ply_mesh:
+
+	if false and get_parent() and get_parent().is_class("MeshInstance") and get_parent().mesh:
+		var generate = load("res://addons/ply/resources/generate.gd")
 		_ply_mesh = PlyMesh.new()
+		for surface_i in get_parent().mesh.get_surface_count():
+			
+			var mdt = MeshDataTool.new()
+			mdt.create_from_surface(get_parent().mesh, surface_i)
+			var vertices : PoolVector3Array = []
+			vertices.resize(mdt.get_vertex_count())
+			var vertex_edges : PoolIntArray
+			var edge_vertexes : PoolIntArray
+			var face_edges : PoolIntArray
+			var face_surfaces : PoolIntArray
+			var edge_faces : PoolIntArray
+			var edge_edges : PoolIntArray
+			for vert_i in mdt.get_vertex_count():
+				vertices[vert_i] = mdt.get_vertex(vert_i)
+				var curr = vert_i
+				var prev = vert_i - 1
+				if prev < 0:
+					prev = mdt.get_vertex_count() - 1
+				var next = vert_i + 1
+				if next >= mdt.get_vertex_count():
+					next = 0
+				vertex_edges.push_back(curr)
+				edge_vertexes.push_back(curr)
+				edge_vertexes.push_back(next)
+				edge_edges.push_back(prev)
+				edge_edges.push_back(next)
+
+			for face_i in mdt.get_face_count():
+				face_edges.push_back(mdt.get_face_edge(face_i, 0))
+				face_edges.push_back(mdt.get_face_edge(face_i, 1))
+				face_edges.push_back(mdt.get_face_edge(face_i, 2))
+				face_surfaces.push_back(surface_i)
+				edge_faces.append_array(mdt.get_edge_faces(face_i))
+				
+			_ply_mesh.set_mesh(
+				vertices, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, []
+			)
+			break
+		_on_mesh_updated()
+	elif not _ply_mesh:
+		_ply_mesh = PlyMesh.new()
+		
 	if not _ply_mesh.is_connected("mesh_updated", self, "_on_mesh_updated"):
 		_ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 
