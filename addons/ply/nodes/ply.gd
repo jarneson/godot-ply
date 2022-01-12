@@ -202,41 +202,36 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 	if mode == SelectionMode.VERTEX:
 		for v in range(_ply_mesh.vertex_count()):
 			var pos = parent.global_transform.xform(_ply_mesh.vertexes[v])
-			var dist = direction.cross(pos - origin).length()
-			scan_results.push_back(["V", v, dist, (pos - origin).length()])
+			var dist = pos.distance_to(origin)
+			var hit = Geometry.segment_intersects_sphere(origin, origin + direction*1000, pos, sqrt(dist)/32.0)
+			if hit:
+				print(pos.distance_to(origin))
+				print(hit[0].distance_to(origin))
+				scan_results.push_back(["V", v, 0.0, hit[0].distance_to(origin)])
 
 	if mode == SelectionMode.EDGE:
 		for e in range(_ply_mesh.edge_count()):
 			var e_origin = parent.global_transform.xform(_ply_mesh.edge_origin(e))
 			var e_destination = parent.global_transform.xform(_ply_mesh.edge_destination(e))
-
-			var p1 = e_origin
-			var p2 = origin
-			var v1 = e_destination - e_origin
-			var v2 = direction * 1000
-			var v21_0 = p2 - p1
-
-			var v22 = v2.dot(v2)
-			var v11 = v1.dot(v1)
-			var v21 = v2.dot(v1)
-			var v21_1 = v21_0.dot(v1)
-			var v21_2 = v21_0.dot(v2)
-			var denom = v21 * v21 - v22 * v11
-
-			var s = 0.0
-			var t = (v11 * s - v21_1) / v21
-			if !is_equal_approx(denom, 0):
-				s = (v21_2 * v21 - v22 * v21_1) / denom
-				t = (-v21_1 * v21 + v11 * v21_2) / denom
-
-			s = max(min(s, 1.0), 0.0)
-			t = max(min(t, 1.0), 0.0)
-
-			var p_a = p1 + s * v1
-			var p_b = p2 + t * v2
-
-			var dist = (p_b - p_a).length()
-			scan_results.push_back(["E", e, dist, (p1 - origin).length()])
+			if true:
+				var e_midpoint = (e_origin+e_destination)/2.0
+				var b_y = (e_destination - e_origin).normalized()
+				var b_x = Vector3.RIGHT
+				var b_z = Vector3.BACK
+				if b_y == b_x:
+					b_x = b_z.cross(b_y).normalized()
+					b_z = b_x.cross(b_y).normalized()
+				else:
+					b_z = b_x.cross(b_y).normalized()
+					b_x = b_z.cross(b_y).normalized()
+				var t = Transform(Basis(b_x, b_y, b_z), e_midpoint).inverse()
+				var eo = t.xform(e_origin)
+				var ed = t.xform(e_destination)
+				var r_o = t.xform(origin)
+				var r_d = t.basis.xform(direction)
+				var hit = Geometry.segment_intersects_cylinder(r_o, r_o + r_d * 1000, eo.distance_to(ed), 0.01)
+				if hit:
+					scan_results.push_back(["E", e, 0.0, hit[0].distance_to(eo)])
 
 	if mode == SelectionMode.FACE:
 		var ai = parent.global_transform.affine_inverse()
