@@ -4,4 +4,6 @@
 /LICENSE            export-ignore
 /editor.png         export-ignore
 /editor.png.import  export-ignore
+/icon_lg.png        export-ignore
+/icon_lg.png.import export-ignore
 /project.godot      export-ignore
