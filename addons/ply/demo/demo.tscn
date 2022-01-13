@@ -85,6 +85,7 @@ material/0 = ExtResource( 1 )
 
 [node name="PlyEditor" type="Node" parent="MeshInstance"]
 script = ExtResource( 2 )
+parent_property = "mesh"
 ply_mesh = SubResource( 3 )
 
 [node name="StaticBody" type="StaticBody" parent="MeshInstance"]
@@ -102,6 +103,7 @@ script = ExtResource( 2 )
 __meta__ = {
 "_editor_description_": ""
 }
+parent_property = "mesh"
 ply_mesh = SubResource( 5 )
 
 [node name="CSGCombiner" type="CSGCombiner" parent="."]
@@ -117,4 +119,5 @@ material = ExtResource( 1 )
 
 [node name="PlyEditor" type="Node" parent="CSGCombiner/CSGMesh"]
 script = ExtResource( 2 )
+parent_property = "mesh"
 ply_mesh = SubResource( 7 )

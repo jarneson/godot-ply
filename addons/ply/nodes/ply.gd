@@ -189,10 +189,7 @@ func _get_selected() -> bool:
 
 class IntersectSorter:
 	static func sort_ascending(a, b):
-		if is_equal_approx(a[2], b[2]):
-			if a[3] < b[3]:
-				return true
-		elif a[2] < b[2]:
+		if a[2] < b[2]:
 			return true
 		return false
 
@@ -207,7 +204,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 			if hit:
 				print(pos.distance_to(origin))
 				print(hit[0].distance_to(origin))
-				scan_results.push_back(["V", v, 0.0, hit[0].distance_to(origin)])
+				scan_results.push_back(["V", v, hit[0].distance_to(origin)])
 
 	if mode == SelectionMode.EDGE:
 		for e in range(_ply_mesh.edge_count()):
@@ -228,7 +225,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 				var hit = Geometry.segment_intersects_cylinder(r_o, r_o + r_d*1000.0, dist, sqrt(e_midpoint.distance_to(origin))/32.0)
 				if hit:
 					print("hit      : %s" % [e])
-					scan_results.push_back(["E", e, 0.0, origin.distance_to(t.inverse().xform(hit[0]))])
+					scan_results.push_back(["E", e, origin.distance_to(t.inverse().xform(hit[0]))])
 				
 
 	if mode == SelectionMode.FACE:
@@ -247,7 +244,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 					verts[tri[1]][0],
 					verts[tri[2]][0])
 				if hit:
-					scan_results.push_back(["F", f, 0, ai_origin.distance_to(hit)])
+					scan_results.push_back(["F", f, ai_origin.distance_to(hit)])
 
 	scan_results.sort_custom(IntersectSorter, "sort_ascending")
 	return scan_results

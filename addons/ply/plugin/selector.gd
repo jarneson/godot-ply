@@ -25,13 +25,6 @@ func _on_selection_mode_changed(_mode):
 	_plugin.selection.select_geometry([], false)
 
 
-const fuzziness = {
-	SelectionMode.MESH: 0.0001,
-	SelectionMode.FACE: 0.0001,
-	SelectionMode.EDGE: 0.01,
-	SelectionMode.VERTEX: 0.0,
-}
-
 
 func _scan_selection(camera: Camera, event: InputEventMouseButton):
 	var ray = camera.project_ray_normal(event.position)
@@ -41,9 +34,8 @@ func _scan_selection(camera: Camera, event: InputEventMouseButton):
 	var hits = _plugin.selection.get_ray_intersection(ray_pos, ray, selection_mode)
 	var deselect = true
 	if hits.size() > 0:
-		if hits[0][2] / hits[0][3] <= fuzziness[selection_mode]:
-			deselect = false
-			_plugin.selection.select_geometry([hits[0]], event.shift)
+		deselect = false
+		_plugin.selection.select_geometry([hits[0]], event.shift)
 	if deselect and not event.shift:
 		_plugin.selection.select_geometry([], false)
 
