@@ -40,6 +40,7 @@ There are tools for each selection mode:
     - Mesh Tools
         - Subdivide: Subdivide all quads/tris into four quads/tris
         - Triangulate: Triangulate all faces using an ear clipping algorithm
+		- Invert Normals: Inverts the normals of all faces
     - Mesh Utilities
         - Export to OBJ: Exports the selected mesh to an OBJ file
             - Currently just exports basic geometry, excluding normals, materials, etc

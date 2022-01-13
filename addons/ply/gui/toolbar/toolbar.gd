@@ -7,6 +7,7 @@ signal gizmo_mode_changed(mode)
 const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
 const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
 
+const Invert = preload("res://addons/ply/resources/invert.gd")
 const Extrude = preload("res://addons/ply/resources/extrude.gd")
 const Subdivide = preload("res://addons/ply/resources/subdivide.gd")
 const Triangulate = preload("res://addons/ply/resources/triangulate.gd")
@@ -30,6 +31,7 @@ onready var gizmo_normal = $Normal
 onready var mesh_tools = $MeshTools
 onready var mesh_subdivide = $MeshTools/Subdivide
 onready var mesh_triangulate = $MeshTools/Triangulate
+onready var mesh_invert_normals = $MeshTools/InvertNormals
 onready var mesh_export_to_obj = $MeshTools/ExportOBJ
 onready var mesh_quick_generators = $MeshTools/QuickGenerators
 onready var mesh_generators = $MeshTools/Generators
@@ -75,6 +77,7 @@ func _ready():
 	mesh_export_to_obj.connect("pressed", self, "_export_to_obj")
 	mesh_subdivide.connect("pressed", self, "_mesh_subdivide")
 	mesh_triangulate.connect("pressed", self, "_mesh_triangulate")
+	mesh_invert_normals.connect("pressed", self, "_mesh_invert_normals")
 	mesh_quick_generators.get_popup().connect("id_pressed", self, "_on_generators_id_pressed")
 	mesh_generators.connect("pressed", self, "_open_generators_modal")
 	generators_modal.connect("confirmed", self, "_on_generators_modal_confirmed")
@@ -446,3 +449,12 @@ func _mesh_triangulate():
 	var pre_edit = plugin.selection.ply_mesh.begin_edit()
 	Triangulate.object(plugin.selection.ply_mesh)
 	plugin.selection.ply_mesh.commit_edit("Subdivide Mesh", plugin.get_undo_redo(), pre_edit)
+
+func _mesh_invert_normals():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.MESH:
+		return
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	Invert.normals(plugin.selection.ply_mesh)
+	plugin.selection.ply_mesh.commit_edit("Invert Normals", plugin.get_undo_redo(), pre_edit)

@@ -71,16 +71,16 @@ __meta__ = {
 
 [node name="TitleLabel" type="MarginContainer" parent="."]
 margin_right = 1024.0
-margin_bottom = 74.0
+margin_bottom = 50.0
 
 [node name="ColorRect" type="ColorRect" parent="TitleLabel"]
 margin_right = 1024.0
-margin_bottom = 74.0
+margin_bottom = 50.0
 color = Color( 0, 0, 0, 0.392157 )
 
 [node name="MarginContainer" type="MarginContainer" parent="TitleLabel"]
 margin_right = 1024.0
-margin_bottom = 74.0
+margin_bottom = 50.0
 custom_constants/margin_right = 5
 custom_constants/margin_top = 5
 custom_constants/margin_left = 5
@@ -90,12 +90,12 @@ custom_constants/margin_bottom = 5
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 1019.0
-margin_bottom = 69.0
+margin_bottom = 45.0
 
 [node name="Title" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
-margin_top = 16.0
-margin_right = 840.0
-margin_bottom = 48.0
+margin_top = 4.0
+margin_right = 888.0
+margin_bottom = 36.0
 rect_min_size = Vector2( 0, 32 )
 size_flags_horizontal = 3
 text = "Ply"
@@ -105,10 +105,10 @@ __meta__ = {
 }
 
 [node name="Version" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
-margin_left = 844.0
-margin_top = 16.0
-margin_right = 898.0
-margin_bottom = 48.0
+margin_left = 892.0
+margin_top = 4.0
+margin_right = 946.0
+margin_bottom = 36.0
 rect_min_size = Vector2( 0, 32 )
 text = "1.0.0_RC"
 valign = 1
@@ -117,9 +117,9 @@ __meta__ = {
 }
 
 [node name="GithubLink" type="ToolButton" parent="TitleLabel/MarginContainer/HBoxContainer"]
-margin_left = 902.0
-margin_right = 946.0
-margin_bottom = 64.0
+margin_left = 950.0
+margin_right = 994.0
+margin_bottom = 40.0
 icon = ExtResource( 17 )
 script = ExtResource( 18 )
 __meta__ = {
@@ -127,16 +127,16 @@ __meta__ = {
 }
 
 [node name="TextureRect" type="TextureRect" parent="TitleLabel/MarginContainer/HBoxContainer"]
-margin_left = 950.0
+margin_left = 998.0
 margin_right = 1014.0
-margin_bottom = 64.0
+margin_bottom = 40.0
 texture = ExtResource( 15 )
 stretch_mode = 4
 
 [node name="ToolModeLabel" type="MarginContainer" parent="."]
-margin_top = 78.0
+margin_top = 54.0
 margin_right = 1024.0
-margin_bottom = 115.0
+margin_bottom = 91.0
 
 [node name="ColorRect" type="ColorRect" parent="ToolModeLabel"]
 margin_right = 1024.0
@@ -168,9 +168,9 @@ __meta__ = {
 }
 
 [node name="Mesh" type="ToolButton" parent="."]
-margin_top = 119.0
+margin_top = 95.0
 margin_right = 1024.0
-margin_bottom = 191.0
+margin_bottom = 119.0
 toggle_mode = true
 pressed = true
 shortcut = SubResource( 4 )
@@ -180,9 +180,9 @@ icon = ExtResource( 3 )
 align = 2
 
 [node name="Face" type="ToolButton" parent="."]
-margin_top = 195.0
+margin_top = 123.0
 margin_right = 1024.0
-margin_bottom = 267.0
+margin_bottom = 147.0
 toggle_mode = true
 shortcut = SubResource( 6 )
 group = ExtResource( 11 )
@@ -191,9 +191,9 @@ icon = ExtResource( 2 )
 align = 2
 
 [node name="Edge" type="ToolButton" parent="."]
-margin_top = 271.0
+margin_top = 151.0
 margin_right = 1024.0
-margin_bottom = 343.0
+margin_bottom = 175.0
 toggle_mode = true
 shortcut = SubResource( 8 )
 group = ExtResource( 11 )
@@ -202,9 +202,9 @@ icon = ExtResource( 1 )
 align = 2
 
 [node name="Vertex" type="ToolButton" parent="."]
-margin_top = 347.0
+margin_top = 179.0
 margin_right = 1024.0
-margin_bottom = 419.0
+margin_bottom = 203.0
 toggle_mode = true
 shortcut = SubResource( 10 )
 group = ExtResource( 11 )
@@ -213,9 +213,9 @@ icon = ExtResource( 4 )
 align = 2
 
 [node name="GizmoModeLabel" type="MarginContainer" parent="."]
-margin_top = 423.0
+margin_top = 207.0
 margin_right = 1024.0
-margin_bottom = 460.0
+margin_bottom = 244.0
 
 [node name="ColorRect" type="ColorRect" parent="GizmoModeLabel"]
 margin_right = 1024.0
@@ -247,18 +247,18 @@ __meta__ = {
 }
 
 [node name="Global" type="ToolButton" parent="."]
-margin_top = 464.0
+margin_top = 248.0
 margin_right = 1024.0
-margin_bottom = 486.0
+margin_bottom = 270.0
 toggle_mode = true
 group = ExtResource( 8 )
 text = "Global"
 align = 2
 
 [node name="Local" type="ToolButton" parent="."]
-margin_top = 490.0
+margin_top = 274.0
 margin_right = 1024.0
-margin_bottom = 512.0
+margin_bottom = 296.0
 toggle_mode = true
 pressed = true
 group = ExtResource( 8 )
@@ -266,24 +266,24 @@ text = "Local"
 align = 2
 
 [node name="Normal" type="ToolButton" parent="."]
-margin_top = 516.0
+margin_top = 300.0
 margin_right = 1024.0
-margin_bottom = 538.0
+margin_bottom = 322.0
 toggle_mode = true
 group = ExtResource( 8 )
 text = "Normal"
 align = 2
 
 [node name="Spacer" type="CenterContainer" parent="."]
-margin_top = 542.0
+margin_top = 326.0
 margin_right = 1024.0
-margin_bottom = 542.0
+margin_bottom = 364.0
 size_flags_vertical = 3
 
 [node name="MeshTools" type="VBoxContainer" parent="."]
-margin_top = 546.0
+margin_top = 368.0
 margin_right = 1024.0
-margin_bottom = 752.0
+margin_bottom = 600.0
 
 [node name="Tools" type="MarginContainer" parent="MeshTools"]
 margin_right = 1024.0
@@ -332,10 +332,17 @@ margin_bottom = 89.0
 text = "Triangulate"
 align = 2
 
-[node name="Utils" type="MarginContainer" parent="MeshTools"]
+[node name="InvertNormals" type="ToolButton" parent="MeshTools"]
 margin_top = 93.0
 margin_right = 1024.0
-margin_bottom = 130.0
+margin_bottom = 115.0
+text = "Invert Normals"
+align = 2
+
+[node name="Utils" type="MarginContainer" parent="MeshTools"]
+margin_top = 119.0
+margin_right = 1024.0
+margin_bottom = 156.0
 
 [node name="ColorRect" type="ColorRect" parent="MeshTools/Utils"]
 margin_right = 1024.0
@@ -367,24 +374,24 @@ __meta__ = {
 }
 
 [node name="ExportOBJ" type="ToolButton" parent="MeshTools"]
-margin_top = 134.0
+margin_top = 160.0
 margin_right = 1024.0
-margin_bottom = 156.0
+margin_bottom = 182.0
 text = "Export to OBJ"
 align = 2
 
 [node name="QuickGenerators" type="MenuButton" parent="MeshTools"]
-margin_top = 160.0
+margin_top = 186.0
 margin_right = 1024.0
-margin_bottom = 180.0
+margin_bottom = 206.0
 text = "Quick Generate..."
 align = 2
 items = [ "Plane", null, 0, false, false, 0, 0, null, "", false, "Cube", null, 0, false, false, 1, 0, null, "", false ]
 
 [node name="Generators" type="ToolButton" parent="MeshTools"]
-margin_top = 184.0
+margin_top = 210.0
 margin_right = 1024.0
-margin_bottom = 206.0
+margin_bottom = 232.0
 text = "Generate"
 align = 2
 
