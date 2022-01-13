@@ -215,32 +215,39 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 			var e_destination = parent.global_transform.xform(_ply_mesh.edge_destination(e))
 			if true:
 				var e_midpoint = (e_origin+e_destination)/2.0
-				var b_y = (e_destination - e_origin).normalized()
-				var b_x = Vector3.RIGHT
-				var b_z = Vector3.BACK
-				if b_y == b_x:
-					b_x = b_z.cross(b_y).normalized()
-					b_z = b_x.cross(b_y).normalized()
-				else:
-					b_z = b_x.cross(b_y).normalized()
-					b_x = b_z.cross(b_y).normalized()
+				var dir = (e_destination - e_origin).normalized()
+				var dist = e_destination.distance_to(e_origin)
+
+				var b_z = dir.normalized()
+				var b_y = direction.cross(b_z).normalized()
+				var b_x = b_z.cross(b_y)
 				var t = Transform(Basis(b_x, b_y, b_z), e_midpoint).inverse()
-				var eo = t.xform(e_origin)
-				var ed = t.xform(e_destination)
+
 				var r_o = t.xform(origin)
 				var r_d = t.basis.xform(direction)
-				var hit = Geometry.segment_intersects_cylinder(r_o, r_o + r_d * 1000, eo.distance_to(ed), 0.01)
+				var hit = Geometry.segment_intersects_cylinder(r_o, r_o + r_d*1000.0, dist, sqrt(e_midpoint.distance_to(origin))/32.0)
 				if hit:
-					scan_results.push_back(["E", e, 0.0, hit[0].distance_to(eo)])
+					print("hit      : %s" % [e])
+					scan_results.push_back(["E", e, 0.0, origin.distance_to(t.inverse().xform(hit[0]))])
+				
 
 	if mode == SelectionMode.FACE:
 		var ai = parent.global_transform.affine_inverse()
 		var ai_origin = ai.xform(origin)
 		var ai_direction = ai.basis.xform(direction).normalized()
 		for f in range(_ply_mesh.face_count()):
-			var dist = _ply_mesh.face_intersect_ray_distance(f, ai_origin, ai_direction)
-			if dist != null:
-				scan_results.push_back(["F", f, 0, dist])
+			var ft = _ply_mesh.face_tris(f)
+			var verts = ft[0]
+			var tris = ft[1]
+			for tri in tris:
+				var hit = Geometry.segment_intersects_triangle(
+					ai_origin,
+					ai_origin + ai_direction*1000.0,
+					verts[tri[0]][0],
+					verts[tri[1]][0],
+					verts[tri[2]][0])
+				if hit:
+					scan_results.push_back(["F", f, 0, ai_origin.distance_to(hit)])
 
 	scan_results.sort_custom(IntersectSorter, "sort_ascending")
 	return scan_results
