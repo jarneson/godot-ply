@@ -21,6 +21,9 @@ There are four selection modes:
 - ![edgeicon](./addons/ply/icons/select_edge.svg) ` 3 ` Edge
 - ![vertexicon](./addons/ply/icons/select_vertex.svg) ` 4 ` Vertex
 
+Shift + Clicking will add and subtract from the set of selections.
+<br>Alt + Clicking in edge or face mode will select loops.
+
 And three gizmo modes:
 - Global - Translate/Rotate/Scale along global coordinates
 - Local - Translate/Rotate/Scale along model local coordinates

@@ -244,7 +244,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 					verts[tri[1]][0],
 					verts[tri[2]][0])
 				if hit:
-					scan_results.push_back(["F", f, ai_origin.distance_to(hit)])
+					scan_results.push_back(["F", f, ai_origin.distance_to(hit), hit])
 
 	scan_results.sort_custom(IntersectSorter, "sort_ascending")
 	return scan_results
