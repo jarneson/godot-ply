@@ -4,7 +4,17 @@ extends Node
 signal selection_changed
 signal selection_mutated
 
-const default_material = preload("res://addons/ply/debug_material.tres")
+const default_materials = [
+	preload("res://addons/ply/materials/debug_material_light.tres"),
+	preload("res://addons/ply/materials/debug_material_medium.tres"),
+	preload("res://addons/ply/materials/debug_material_dark.tres"),
+	preload("res://addons/ply/materials/debug_material_red.tres"),
+	preload("res://addons/ply/materials/debug_material_orange.tres"),
+	preload("res://addons/ply/materials/debug_material_yellow.tres"),
+	preload("res://addons/ply/materials/debug_material_green.tres"),
+	preload("res://addons/ply/materials/debug_material_blue.tres"),
+	preload("res://addons/ply/materials/debug_material_purple.tres"),
+]
 
 const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
 const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
@@ -17,6 +27,7 @@ const Faces = preload("res://addons/ply/nodes/ply_faces.gd")
 
 export(String) var parent_property = "mesh"
 export(Resource) var ply_mesh setget set_ply_mesh, get_ply_mesh
+export(Array, Material) var materials setget set_materials
 
 var _ply_mesh: PlyMesh
 
@@ -41,14 +52,15 @@ func set_ply_mesh(v: Resource):
 		print("assigned resource that is not a ply_mesh to ply editor")
 
 
+func set_materials(v):
+	materials = v
+	_paint_faces()
+
+
 onready var parent = get_parent()
 
 
 func _ready():
-	pass
-
-
-func _enter_tree():
 	if not Engine.editor_hint:
 		return
 
@@ -96,7 +108,25 @@ func _enter_tree():
 		_on_mesh_updated()
 	elif not _ply_mesh:
 		_ply_mesh = PlyMesh.new()
+	_compute_materials()
+
+
+func _compute_materials():
+	materials = default_materials
+	var paints = _ply_mesh.face_paint_indices()
+	if parent is MeshInstance:
+		for surface in parent.mesh.get_surface_count():
+			var mat = parent.get_surface_material(surface)
+			if mat:
+				materials[paints[surface]] = parent.get_surface_material(surface)
+	elif parent is CSGMesh:
+		materials[0] = parent.material
+
 		
+func _enter_tree():
+	if not Engine.editor_hint:
+		return
+
 	if not _ply_mesh.is_connected("mesh_updated", self, "_on_mesh_updated"):
 		_ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 
@@ -112,6 +142,17 @@ func _exit_tree():
 
 func _clear_parent():
 	parent.set(parent_property, ArrayMesh.new())
+
+
+func _paint_faces():
+	if parent is MeshInstance and parent.mesh:
+		var paints = _ply_mesh.face_paint_indices()
+		for i in range(parent.mesh.get_surface_count()):
+			if materials.size() > paints[i]:
+				parent.set_surface_material(i, materials[paints[i]])
+
+	if parent is CSGMesh:
+		parent.material = materials[0]
 
 
 func _on_mesh_updated():
@@ -134,29 +175,12 @@ func _on_mesh_updated():
 	for f in remove:
 		selected_faces.erase(f)
 	if parent:
-		var mesh_instance_memo = {}
-		var csg_mesh_memo = null
-		if parent is MeshInstance and parent.mesh:
-			for i in range(parent.mesh.get_surface_count()):
-				mesh_instance_memo[i] = parent.get_surface_material(i)
-		if parent is CSGMesh:
-			csg_mesh_memo = parent.material
 		parent.set(parent_property, _ply_mesh.get_mesh(parent.get(parent_property)))
-		if parent is MeshInstance and parent.mesh:
-			for i in range(parent.mesh.get_surface_count()):
-				if not mesh_instance_memo.has(i) or not mesh_instance_memo[i]:
-					parent.set_surface_material(i, default_material)
-				else:
-					parent.set_surface_material(i, mesh_instance_memo[i])
-
+		if parent is MeshInstance:
 			var collision_shape = parent.get_node_or_null("StaticBody/CollisionShape")
 			if collision_shape:
 				collision_shape.shape = parent.mesh.create_trimesh_shape()
-		if parent is CSGMesh:
-			if not csg_mesh_memo:
-				parent.material = default_material
-			else:
-				parent.material = csg_mesh_memo
+	_paint_faces()
 	emit_signal("selection_mutated")
 
 
@@ -175,6 +199,7 @@ func _set_selected(v: bool):
 		_wireframe.queue_free()
 		_faces.queue_free()
 	if selected:
+		_compute_materials()
 		_vertices = Vertices.new()
 		add_child(_vertices)
 		_wireframe = Wireframe.new()

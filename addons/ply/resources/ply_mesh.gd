@@ -159,6 +159,17 @@ func reject_edit(pre_edits: Array, emit: bool = true):
 	if emit:
 		emit_change_signal()
 
+func face_paint_indices() -> Array:
+	var surfaces = []
+	var surface_map = {}
+	for f_idx in range(face_surfaces.size()):
+		var s = face_surfaces[f_idx]
+		if surface_map.has(s):
+			continue
+		surface_map[s] = true
+		surfaces.push_back(s)
+	surfaces.sort()
+	return surfaces
 
 func get_mesh(mesh: ArrayMesh = null) -> ArrayMesh:
 	var max_surface = 0
