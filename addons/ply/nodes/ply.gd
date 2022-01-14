@@ -269,7 +269,12 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 					verts[tri[1]][0],
 					verts[tri[2]][0])
 				if hit:
-					scan_results.push_back(["F", f, ai_origin.distance_to(hit), hit])
+					# offset faces that are facing away from the camera a bit, to select the correct face easier
+					var normal = (verts[tri[2]][0] - verts[tri[0]][0]).cross(verts[tri[1]][0] - verts[tri[0]][0]).normalized()
+					var mod = 0.0
+					if normal.dot(ai_direction) > 0:
+						mod = 0.01
+					scan_results.push_back(["F", f, ai_origin.distance_to(hit)+mod, hit])
 
 	scan_results.sort_custom(IntersectSorter, "sort_ascending")
 	return scan_results
