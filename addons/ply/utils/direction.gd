@@ -7,4 +7,4 @@ static func invert(dir) -> int:
 			return RIGHT
 		RIGHT:
 			return LEFT
-	return -1
+	return UNKNOWN
