@@ -68,17 +68,16 @@ func _ready():
 		var generate = load("res://addons/ply/resources/generate.gd")
 		_ply_mesh = PlyMesh.new()
 		for surface_i in get_parent().mesh.get_surface_count():
-			
 			var mdt = MeshDataTool.new()
 			mdt.create_from_surface(get_parent().mesh, surface_i)
-			var vertices : PoolVector3Array = []
+			var vertices: PoolVector3Array = []
 			vertices.resize(mdt.get_vertex_count())
-			var vertex_edges : PoolIntArray
-			var edge_vertexes : PoolIntArray
-			var face_edges : PoolIntArray
-			var face_surfaces : PoolIntArray
-			var edge_faces : PoolIntArray
-			var edge_edges : PoolIntArray
+			var vertex_edges: PoolIntArray
+			var edge_vertexes: PoolIntArray
+			var face_edges: PoolIntArray
+			var face_surfaces: PoolIntArray
+			var edge_faces: PoolIntArray
+			var edge_edges: PoolIntArray
 			for vert_i in mdt.get_vertex_count():
 				vertices[vert_i] = mdt.get_vertex(vert_i)
 				var curr = vert_i
@@ -100,7 +99,7 @@ func _ready():
 				face_edges.push_back(mdt.get_face_edge(face_i, 2))
 				face_surfaces.push_back(surface_i)
 				edge_faces.append_array(mdt.get_edge_faces(face_i))
-				
+
 			_ply_mesh.set_mesh(
 				vertices, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, []
 			)
@@ -123,7 +122,7 @@ func _compute_materials():
 	elif parent is CSGMesh:
 		materials[0] = parent.material
 
-		
+
 func _enter_tree():
 	if not Engine.editor_hint:
 		return
@@ -226,7 +225,9 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 		for v in range(_ply_mesh.vertex_count()):
 			var pos = parent.global_transform.xform(_ply_mesh.vertexes[v])
 			var dist = pos.distance_to(origin)
-			var hit = Geometry.segment_intersects_sphere(origin, origin + direction*1000, pos, sqrt(dist)/32.0)
+			var hit = Geometry.segment_intersects_sphere(
+				origin, origin + direction * 1000, pos, sqrt(dist) / 32.0
+			)
 			if hit:
 				print(pos.distance_to(origin))
 				print(hit[0].distance_to(origin))
@@ -237,7 +238,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 			var e_origin = parent.global_transform.xform(_ply_mesh.edge_origin(e))
 			var e_destination = parent.global_transform.xform(_ply_mesh.edge_destination(e))
 			if true:
-				var e_midpoint = (e_origin+e_destination)/2.0
+				var e_midpoint = (e_origin + e_destination) / 2.0
 				var dir = (e_destination - e_origin).normalized()
 				var dist = e_destination.distance_to(e_origin)
 
@@ -248,11 +249,12 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 
 				var r_o = t.xform(origin)
 				var r_d = t.basis.xform(direction)
-				var hit = Geometry.segment_intersects_cylinder(r_o, r_o + r_d*1000.0, dist, sqrt(e_midpoint.distance_to(origin))/32.0)
+				var hit = Geometry.segment_intersects_cylinder(
+					r_o, r_o + r_d * 1000.0, dist, sqrt(e_midpoint.distance_to(origin)) / 32.0
+				)
 				if hit:
 					print("hit      : %s" % [e])
 					scan_results.push_back(["E", e, origin.distance_to(t.inverse().xform(hit[0]))])
-				
 
 	if mode == SelectionMode.FACE:
 		var ai = parent.global_transform.affine_inverse()
@@ -265,17 +267,18 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
 			for tri in tris:
 				var hit = Geometry.segment_intersects_triangle(
 					ai_origin,
-					ai_origin + ai_direction*1000.0,
+					ai_origin + ai_direction * 1000.0,
 					verts[tri[0]][0],
 					verts[tri[1]][0],
-					verts[tri[2]][0])
+					verts[tri[2]][0]
+				)
 				if hit:
 					# offset faces that are facing away from the camera a bit, to select the correct face easier
 					var normal = (verts[tri[2]][0] - verts[tri[0]][0]).cross(verts[tri[1]][0] - verts[tri[0]][0]).normalized()
 					var mod = 0.0
 					if normal.dot(ai_direction) > 0:
 						mod = 0.01
-					scan_results.push_back(["F", f, ai_origin.distance_to(hit)+mod, hit])
+					scan_results.push_back(["F", f, ai_origin.distance_to(hit) + mod, hit])
 
 	scan_results.sort_custom(IntersectSorter, "sort_ascending")
 	return scan_results

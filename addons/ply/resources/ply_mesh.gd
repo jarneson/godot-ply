@@ -11,6 +11,7 @@ signal mesh_updated
 func emit_change_signal():
 	emit_signal("mesh_updated")
 
+
 export var vertexes = PoolVector3Array()
 export var vertex_edges = PoolIntArray()
 
@@ -159,6 +160,7 @@ func reject_edit(pre_edits: Array, emit: bool = true):
 	if emit:
 		emit_change_signal()
 
+
 func face_paint_indices() -> Array:
 	var surfaces = []
 	var surface_map = {}
@@ -170,6 +172,7 @@ func face_paint_indices() -> Array:
 		surfaces.push_back(s)
 	surfaces.sort()
 	return surfaces
+
 
 func get_mesh(mesh: ArrayMesh = null) -> ArrayMesh:
 	var max_surface = 0
@@ -490,11 +493,14 @@ func expand_edges(more):
 	edge_faces.resize(edge_faces.size() + more * 2)
 	edge_edges.resize(edge_edges.size() + more * 2)
 
+
 func set_edge_vertexes(arr: PoolIntArray):
 	edge_vertexes = arr
 
+
 func set_edge_edges(arr: PoolIntArray):
 	edge_edges = arr
+
 
 func edge_side(e_idx, f_idx):
 	if edge_face_left(e_idx) == f_idx:

@@ -450,6 +450,7 @@ func _mesh_triangulate():
 	Triangulate.object(plugin.selection.ply_mesh)
 	plugin.selection.ply_mesh.commit_edit("Subdivide Mesh", plugin.get_undo_redo(), pre_edit)
 
+
 func _mesh_invert_normals():
 	if plugin.ignore_inputs:
 		return

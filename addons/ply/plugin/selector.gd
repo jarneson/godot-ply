@@ -25,15 +25,17 @@ func teardown():
 func _on_selection_mode_changed(_mode):
 	_plugin.selection.select_geometry([], false)
 
+
 func _point_to_segment_dist(v, a, b):
-	var ab = b-a
-	var av = v-a
+	var ab = b - a
+	var av = v - a
 	if av.dot(ab) <= 0.0:
 		return av.length()
-	var bv = v-b
+	var bv = v - b
 	if bv.dot(ab) >= 0.0:
 		return bv.length()
-	return ab.cross(av).length()/ab.length()
+	return ab.cross(av).length() / ab.length()
+
 
 func _scan_selection(camera: Camera, event: InputEventMouseButton):
 	var ray = camera.project_ray_normal(event.position)
@@ -56,7 +58,8 @@ func _scan_selection(camera: Camera, event: InputEventMouseButton):
 					var dist = _point_to_segment_dist(
 						hit_pos,
 						_plugin.selection._ply_mesh.edge_origin(edges[idx]),
-						_plugin.selection._ply_mesh.edge_destination(edges[idx]))
+						_plugin.selection._ply_mesh.edge_destination(edges[idx])
+					)
 					if dist < min_dist:
 						min_dist = dist
 						min_idx = idx
