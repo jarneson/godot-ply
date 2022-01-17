@@ -27,7 +27,7 @@ var plugin = null
 var gizmo_transform
 
 
-func _prep_slider(s, l, mn, mx, st, mod, axis):
+func _prep_slider(s, l, mn, mx, st, mod, axis) -> void:
 	s.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	s.label = l
 	s.min_value = mn
@@ -41,7 +41,7 @@ func _prep_slider(s, l, mn, mx, st, mod, axis):
 	s.connect("edit_committed", self, "_transform_axis_edit_committed", [s, mod, axis])
 
 
-func _ready():
+func _ready() -> void:
 	current_gizmo_mode = plugin.toolbar.gizmo_mode
 
 	translate_x = SpinSlider.new()
@@ -87,7 +87,7 @@ func _ready():
 	tool_grid.hide()
 
 
-func _get_origin():
+func _get_origin() -> Vector3:
 	match current_gizmo_mode:
 		GizmoMode.GLOBAL:
 			return gizmo_transform.origin
@@ -95,9 +95,10 @@ func _get_origin():
 			return current_selection.parent.global_transform.inverse().xform(gizmo_transform.origin)
 		GizmoMode.NORMAL:
 			return Vector3.ZERO
+	return gizmo_transform.origin
 
 
-func _reset_everything(exclude_rot_scale = false):
+func _reset_everything(exclude_rot_scale = false) -> void:
 	gizmo_transform = current_selection.get_selection_transform(current_gizmo_mode)
 	vertex_count.text = str(current_selection.ply_mesh.vertex_count())
 	edge_count.text = str(current_selection.ply_mesh.edge_count())
@@ -130,7 +131,7 @@ func _reset_everything(exclude_rot_scale = false):
 var current_gizmo_mode
 
 
-func _on_gizmo_mode_changed(mode):
+func _on_gizmo_mode_changed(mode) -> void:
 	current_gizmo_mode = mode
 	_reset_everything()
 
@@ -138,7 +139,7 @@ func _on_gizmo_mode_changed(mode):
 var current_selection
 
 
-func _on_selection_changed(selection):
+func _on_selection_changed(selection) -> void:
 	if current_selection:
 		current_selection.disconnect("selection_changed", self, "_on_selected_geometry_changed")
 		current_selection.disconnect("selection_mutated", self, "_on_selected_geometry_mutated")
@@ -150,11 +151,11 @@ func _on_selection_changed(selection):
 		_on_selected_geometry_changed()
 
 
-func _on_selected_geometry_changed():
+func _on_selected_geometry_changed() -> void:
 	_reset_everything()
 
 
-func _on_selected_geometry_mutated():
+func _on_selected_geometry_mutated() -> void:
 	if not in_edit:
 		_reset_everything()
 
@@ -162,12 +163,12 @@ func _on_selected_geometry_mutated():
 var in_edit: bool
 
 
-func _transform_axis_edit_started(s, mode, axis):
+func _transform_axis_edit_started(s, mode, axis) -> void:
 	in_edit = true
 	current_selection.begin_edit()
 
 
-func _transform_axis_edit_committed(value, s, mode, axis):
+func _transform_axis_edit_committed(value, s, mode, axis) -> void:
 	current_selection.commit_edit("Ply: " + mode, plugin.get_undo_redo())
 	in_edit = false
 
@@ -180,7 +181,7 @@ func _transform_axis_edit_committed(value, s, mode, axis):
 	_reset_everything()
 
 
-func _transform_axis_value_changed(val, s, mode, axis):
+func _transform_axis_value_changed(val, s, mode, axis) -> void:
 	match mode:
 		"Translate":
 			var v = Vector3(translate_x.value, translate_y.value, translate_z.value)

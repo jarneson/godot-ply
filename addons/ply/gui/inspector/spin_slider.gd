@@ -24,7 +24,7 @@ var value_input: LineEdit
 var value_input_just_closed: bool
 
 
-func _ready():
+func _ready() -> void:
 	connect("focus_entered", self, "_on_focus_entered")
 	value_input = LineEdit.new()
 	value_input.set_as_toplevel(true)
@@ -37,15 +37,15 @@ func _ready():
 	focus_mode = FOCUS_ALL
 
 
-func get_text_value():
+func get_text_value() -> String:
 	return str(stepify(value, step))
 
 
-func _on_value_input_entered(_text):
+func _on_value_input_entered(_text) -> void:
 	value_input.hide()
 
 
-func _evaluate_input_text(and_hide: bool):
+func _evaluate_input_text(and_hide: bool) -> void:
 	if value_input_just_closed:
 		return
 	value_input_just_closed = true
@@ -65,17 +65,17 @@ func _evaluate_input_text(and_hide: bool):
 		value_input.hide()
 
 
-func _on_value_input_focus_exited():
+func _on_value_input_focus_exited() -> void:
 	if value_input.get_menu().visible:
 		return
 	_evaluate_input_text(true)
 
 
-func _on_value_input_closed():
+func _on_value_input_closed() -> void:
 	_evaluate_input_text(false)
 
 
-func _on_focus_entered():
+func _on_focus_entered() -> void:
 	if (
 		(Input.is_action_pressed("ui_focus_next") || Input.is_action_pressed("ui_focus_prev"))
 		&& not value_input_just_closed
@@ -84,7 +84,7 @@ func _on_focus_entered():
 	value_input_just_closed = false
 
 
-func _handle_focus():
+func _handle_focus() -> void:
 	var gr = get_global_rect()
 	value_input.set_text(get_text_value())
 	value_input.set_position(gr.position)
@@ -98,7 +98,7 @@ func _handle_focus():
 	emit_signal("edit_started")
 
 
-func _draw():
+func _draw() -> void:
 	var sb = get_stylebox("normal", "LineEdit")
 	draw_style_box(sb, Rect2(Vector2(), rect_size))
 	var font = get_font("font", "LineEdit")
@@ -122,7 +122,7 @@ var grabbing_spinner: bool
 var pre_grab_value: float
 
 
-func _gui_input(evt):
+func _gui_input(evt) -> void:
 	if evt is InputEventMouseButton:
 		if evt.button_index == BUTTON_LEFT:
 			if evt.pressed:

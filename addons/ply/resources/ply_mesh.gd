@@ -8,7 +8,7 @@ const Side = preload("res://addons/ply/utils/direction.gd")
 signal mesh_updated
 
 
-func emit_change_signal():
+func emit_change_signal() -> void:
 	emit_signal("mesh_updated")
 
 
@@ -50,18 +50,19 @@ func edge_count() -> int:
 
 func edge(i: int) -> Array:
 	return [edge_origin(i), edge_destination(i)]
-	pass
 
 
-func edge_normal(e: int) -> Vector3:
-	return (face_normal(edge_face_left(e)) + face_normal(edge_face_right(e))) / 2
+func edge_normal(e: int) -> Array:
+	var face_normal_left = face_normal(edge_face_left(e))
+	var face_normal_right = face_normal(edge_face_right(e))
+	return [(face_normal_left + face_normal_right) / 2]
 
 
 func face_count() -> int:
 	return face_edges.size()
 
 
-func face_vertices(idx):
+func face_vertices(idx) -> Array:
 	var vert_idxs = face_vertex_indexes(idx)
 	var verts = PoolVector3Array()
 	for idx in vert_idxs:
@@ -149,7 +150,7 @@ func begin_edit() -> Array:
 	]
 
 
-func reject_edit(pre_edits: Array, emit: bool = true):
+func reject_edit(pre_edits: Array, emit: bool = true) -> void:
 	vertexes = pre_edits[0]
 	vertex_edges = pre_edits[1]
 	edge_vertexes = pre_edits[2]
@@ -206,7 +207,7 @@ func get_mesh(mesh: ArrayMesh = null) -> ArrayMesh:
 	return mesh
 
 
-func commit_edit(name: String, undo_redo: UndoRedo, pre_edits: Array):
+func commit_edit(name: String, undo_redo: UndoRedo, pre_edits: Array) -> void:
 	undo_redo.create_action(name)
 	undo_redo.add_do_property(self, "vertexes", vertexes)
 	undo_redo.add_undo_property(self, "vertexes", pre_edits[0])
@@ -228,7 +229,7 @@ func commit_edit(name: String, undo_redo: UndoRedo, pre_edits: Array):
 	emit_change_signal()
 
 
-func transform_faces(faces: Array, new_xf: Transform):
+func transform_faces(faces: Array, new_xf: Transform) -> void:
 	var v_idxs = []
 	for f in faces:
 		for idx in face_vertex_indexes(f):
@@ -238,7 +239,7 @@ func transform_faces(faces: Array, new_xf: Transform):
 	transform_vertexes(v_idxs, new_xf)
 
 
-func transform_edges(edges: Array, new_xf: Transform):
+func transform_edges(edges: Array, new_xf: Transform) -> void:
 	var v_idxs = []
 	for e in edges:
 		if not v_idxs.has(edge_origin_idx(e)):
@@ -248,7 +249,7 @@ func transform_edges(edges: Array, new_xf: Transform):
 	transform_vertexes(v_idxs, new_xf)
 
 
-func transform_vertexes(vtxs: Array, new_xf: Transform):
+func transform_vertexes(vtxs: Array, new_xf: Transform) -> void:
 	var center = Vector3.ZERO
 	for v in vtxs:
 		center = center + vertexes[v]
@@ -259,7 +260,7 @@ func transform_vertexes(vtxs: Array, new_xf: Transform):
 		vertexes[idx] = new_xf.basis.xform(vertexes[idx] - center) + center + new_xf.origin
 
 
-func scale_faces(faces: Array, plane_normal: Vector3, axes: Array, scale_factor: float):
+func scale_faces(faces: Array, plane_normal: Vector3, axes: Array, scale_factor: float) -> void:
 	var v_idxs = []
 	for f in faces:
 		for idx in face_vertex_indexes(f):
@@ -269,7 +270,7 @@ func scale_faces(faces: Array, plane_normal: Vector3, axes: Array, scale_factor:
 	scale_vertices(v_idxs, plane_normal, axes, scale_factor)
 
 
-func scale_edges(edges: Array, plane_normal: Vector3, axes: Array, scale_factor: float):
+func scale_edges(edges: Array, plane_normal: Vector3, axes: Array, scale_factor: float) -> void:
 	var v_idxs = []
 	for e in edges:
 		if not v_idxs.has(edge_origin_idx(e)):
@@ -279,7 +280,7 @@ func scale_edges(edges: Array, plane_normal: Vector3, axes: Array, scale_factor:
 	scale_vertices(v_idxs, plane_normal, axes, scale_factor)
 
 
-func scale_vertices(vtxs: Array, plane_normal: Vector3, axes: Array, scale_factor: float):
+func scale_vertices(vtxs: Array, plane_normal: Vector3, axes: Array, scale_factor: float) -> void:
 	var verts = []
 	for v in vtxs:
 		verts.push_back(vertexes[v])
@@ -294,7 +295,7 @@ func scale_vertices(vtxs: Array, plane_normal: Vector3, axes: Array, scale_facto
 		vertexes[idx] = v + dir * delta + center
 
 
-func scale_faces_along_axis(idxs: Array, plane_normal: Vector3, scale_factor: float):
+func scale_faces_along_axis(idxs: Array, plane_normal: Vector3, scale_factor: float) -> void:
 	var v_idxs = []
 	for f in idxs:
 		for idx in face_vertex_indexes(f):
@@ -304,7 +305,7 @@ func scale_faces_along_axis(idxs: Array, plane_normal: Vector3, scale_factor: fl
 	scale_vertices_along_axis(v_idxs, plane_normal, scale_factor)
 
 
-func scale_edges_along_axis(idxs: Array, plane_normal: Vector3, scale_factor: float):
+func scale_edges_along_axis(idxs: Array, plane_normal: Vector3, scale_factor: float) -> void:
 	var v_idxs = []
 	for e in idxs:
 		if not v_idxs.has(edge_origin_idx(e)):
@@ -314,7 +315,7 @@ func scale_edges_along_axis(idxs: Array, plane_normal: Vector3, scale_factor: fl
 	scale_vertices_along_axis(v_idxs, plane_normal, scale_factor)
 
 
-func scale_vertices_along_axis(vtxs: Array, plane_normal: Vector3, scale_factor: float):
+func scale_vertices_along_axis(vtxs: Array, plane_normal: Vector3, scale_factor: float) -> void:
 	var verts = []
 	for v in vtxs:
 		verts.push_back(vertexes[v])
@@ -333,9 +334,9 @@ func scale_vertices_along_axis(vtxs: Array, plane_normal: Vector3, scale_factor:
 #########################################
 
 
-func is_manifold():
+func is_manifold() -> String:
 	if edge_count() == 0:
-		return null
+		return ""
 
 	var arr = []
 	for idx in range(edge_count()):
@@ -364,10 +365,10 @@ func is_manifold():
 	for e in seen_edges:
 		if seen_edges[e] != 2:
 			return "Edge %s has %s face(s)." % [e, seen_edges[e]]
-	return null
+	return ""
 
 
-func evict_vertices(idxs, ignore_edges = []):
+func evict_vertices(idxs, ignore_edges = []) -> void:
 	idxs.sort()
 	idxs.invert()
 	for idx in idxs:
@@ -384,28 +385,28 @@ func evict_vertices(idxs, ignore_edges = []):
 				edge_vertexes[e_idx] -= 1
 
 
-func set_vertex(idx, pos):
+func set_vertex(idx, pos) -> void:
 	if vertexes[idx] == pos:
 		return
 	vertexes[idx] = pos
 	emit_signal("mesh_updated")
 
 
-func set_vertex_edge(idx, e_idx):
+func set_vertex_edge(idx, e_idx) -> void:
 	vertex_edges[idx] = e_idx
 
 
-func set_vertex_all(idx, pos, edge):
+func set_vertex_all(idx, pos, edge) -> void:
 	vertexes[idx] = pos
 	vertex_edges[idx] = edge
 
 
-func expand_vertexes(more):
+func expand_vertexes(more) -> void:
 	vertexes.resize(vertexes.size() + more)
 	vertex_edges.resize(vertex_edges.size() + more)
 
 
-func average_vertex_normal(verts):
+func average_vertex_normal(verts) -> Vector3:
 	var normal_sum = Vector3.ZERO
 	for i in range(verts.size()):
 		var left_idx = i - 1
@@ -418,7 +419,7 @@ func average_vertex_normal(verts):
 	return (normal_sum / verts.size()).normalized()
 
 
-func get_vertex_edges(v_idx, start = null):
+func get_vertex_edges(v_idx, start = null) -> Array:
 	if not start:
 		start = vertex_edges[v_idx]
 	var out = []
@@ -438,7 +439,7 @@ func get_vertex_edges(v_idx, start = null):
 	return out
 
 
-func get_vertex_faces(v_idx):
+func get_vertex_faces(v_idx) -> Array:
 	var edges = get_vertex_edges(v_idx)
 	var faces = {}
 	for e in edges:
@@ -451,7 +452,7 @@ func get_vertex_faces(v_idx):
 # 2 connecting edges per edge, one way traversal
 # 2*idx for left, 2*idx+1 for right
 #         origin,       destination
-func evict_edges(idxs):
+func evict_edges(idxs) -> void:
 	idxs.sort()
 	idxs.invert()
 	var ignore = idxs.duplicate()
@@ -488,37 +489,39 @@ func evict_edges(idxs):
 				face_edges[i] -= 1
 
 
-func expand_edges(more):
+func expand_edges(more) -> void:
 	edge_vertexes.resize(edge_vertexes.size() + more * 2)
 	edge_faces.resize(edge_faces.size() + more * 2)
 	edge_edges.resize(edge_edges.size() + more * 2)
 
 
-func set_edge_vertexes(arr: PoolIntArray):
+func set_edge_vertexes(arr: PoolIntArray) -> void:
 	edge_vertexes = arr
 
 
-func set_edge_edges(arr: PoolIntArray):
+func set_edge_edges(arr: PoolIntArray) -> void:
 	edge_edges = arr
 
 
-func edge_side(e_idx, f_idx):
+func edge_side(e_idx, f_idx) -> int:
 	if edge_face_left(e_idx) == f_idx:
 		return Side.LEFT
 	if edge_face_right(e_idx) == f_idx:
 		return Side.RIGHT
 	assert(false, "edge %s does not touch face %s" % [e_idx, f_idx])
+	return Side.UNKNOWN
 
 
-func edge_face(e_idx, side):
+func edge_face(e_idx, side) -> int:
 	match side:
 		Side.LEFT:
 			return edge_face_left(e_idx)
 		Side.RIGHT:
 			return edge_face_right(e_idx)
+	return -1
 
 
-func set_edge_face(e_idx, side, f_idx):
+func set_edge_face(e_idx, side, f_idx) -> void:
 	match side:
 		Side.LEFT:
 			set_edge_face_left(e_idx, f_idx)
@@ -526,7 +529,7 @@ func set_edge_face(e_idx, side, f_idx):
 			set_edge_face_right(e_idx, f_idx)
 
 
-func get_face_edges_starting_at(start, side):
+func get_face_edges_starting_at(start, side) -> Array:
 	var f_idx = edge_face(start, side)
 	if f_idx < 0:
 		return []
@@ -539,15 +542,16 @@ func get_face_edges_starting_at(start, side):
 	return out
 
 
-func edge_cw(idx, side):
+func edge_cw(idx, side) -> Array:
 	match side:
 		Side.LEFT:
 			return edge_left_cw(idx)
 		Side.RIGHT:
 			return edge_right_cw(idx)
+	return []
 
 
-func set_edge_cw(idx, side, e):
+func set_edge_cw(idx, side, e) -> void:
 	match side:
 		Side.LEFT:
 			set_edge_left_cw(idx, e)
@@ -555,59 +559,59 @@ func set_edge_cw(idx, side, e):
 			set_edge_right_cw(idx, e)
 
 
-func edge_next_cw(edge, face):
+func edge_next_cw(edge, face) -> Array:
 	return edge_cw(edge, edge_side(edge, face))
 
 
-func edge_left_cw(idx):
+func edge_left_cw(idx) -> Array:
 	return edge_edges[2 * idx]
 
 
-func set_edge_left_cw(idx, cw):
+func set_edge_left_cw(idx, cw) -> void:
 	edge_edges[2 * idx] = cw
 
 
-func edge_right_cw(idx):
+func edge_right_cw(idx) -> Array:
 	return edge_edges[2 * idx + 1]
 
 
-func set_edge_right_cw(idx, cw):
+func set_edge_right_cw(idx, cw) -> void:
 	edge_edges[2 * idx + 1] = cw
 
 
-func edge_face_left(idx):
+func edge_face_left(idx) -> int:
 	return edge_faces[2 * idx]
 
 
-func set_edge_face_left(idx, f):
+func set_edge_face_left(idx, f) -> void:
 	edge_faces[2 * idx] = f
 
 
-func edge_face_right(idx):
+func edge_face_right(idx) -> int:
 	return edge_faces[2 * idx + 1]
 
 
-func set_edge_face_right(idx, f):
+func set_edge_face_right(idx, f) -> void:
 	edge_faces[2 * idx + 1] = f
 
 
-func edge_origin_idx(idx):
+func edge_origin_idx(idx) -> int:
 	return edge_vertexes[2 * idx]
 
 
-func set_edge_origin_idx(e, v):
+func set_edge_origin_idx(e, v) -> void:
 	edge_vertexes[2 * e] = v
 
 
-func edge_destination_idx(idx):
+func edge_destination_idx(idx) -> int:
 	return edge_vertexes[2 * idx + 1]
 
 
-func set_edge_destination_idx(e, v):
+func set_edge_destination_idx(e, v) -> void:
 	edge_vertexes[2 * e + 1] = v
 
 
-func edge_origin(idx):
+func edge_origin(idx) -> int:
 	return vertexes[edge_origin_idx(idx)]
 
 

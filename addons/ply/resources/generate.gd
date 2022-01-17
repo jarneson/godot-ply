@@ -1,7 +1,7 @@
 const Subdivide = preload("res://addons/ply/resources/subdivide.gd")
 
 
-static func nGon(ply_mesh, vertices, undo_redo = null, action_name = "Generate N-Gon"):
+static func nGon(ply_mesh, vertices, undo_redo = null, action_name = "Generate N-Gon") -> void:
 	var vertex_edges = []
 	var edge_vertexes = []
 	var face_edges = [0, 0]
@@ -33,7 +33,7 @@ static func nGon(ply_mesh, vertices, undo_redo = null, action_name = "Generate N
 		ply_mesh.commit_edit(action_name, undo_redo, pre_edit)
 
 
-static func icosphere(ply_mesh, radius, subdivides):
+static func icosphere(ply_mesh, radius, subdivides) -> void:
 	var t = (1.0 + sqrt(5.0)) / 2.0
 	var vertices = [
 		Vector3(-1, t, 0),

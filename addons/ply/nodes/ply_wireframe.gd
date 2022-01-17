@@ -3,7 +3,7 @@ extends ImmediateGeometry
 onready var editor = get_parent()
 
 
-func _ready():
+func _ready() -> void:
 	var m = SpatialMaterial.new()
 	m.albedo_color = Color.white
 	m.flags_use_point_size = true
@@ -14,7 +14,7 @@ func _ready():
 	set_material_override(m)
 
 
-func _process(_delta):
+func _process(_delta) -> void:
 	global_transform = editor.parent.global_transform
 	clear()
 	begin(Mesh.PRIMITIVE_LINES)

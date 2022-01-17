@@ -4,7 +4,7 @@ const Side = preload("res://addons/ply/utils/direction.gd")
 # Split-Edge-Make-Vert
 # > x-----------x
 # < x-----x-----x
-static func semv(m, e):
+static func semv(m, e) -> Array:
 	var o = m.edge_origin(e)
 	var d = m.edge_destination(e)
 	var mp = (o + d) / 2

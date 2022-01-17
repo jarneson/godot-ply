@@ -1,4 +1,4 @@
-static func export_to_obj(ply_mesh, file):
+static func export_to_obj(ply_mesh, file) -> void:
 	file.store_line("# Exported from godot-ply")
 	file.store_line("o PlyMesh")
 	for vtx in ply_mesh.vertexes:

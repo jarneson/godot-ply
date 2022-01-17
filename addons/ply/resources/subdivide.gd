@@ -2,14 +2,14 @@ const Euler = preload("res://addons/ply/resources/euler.gd")
 const Side = preload("res://addons/ply/utils/direction.gd")
 
 
-static func object(ply_mesh, undo_redo = null):
+static func object(ply_mesh, undo_redo = null) -> void:
 	var f = []
 	for i in range(ply_mesh.face_count()):
 		f.push_back(i)
-	return faces(ply_mesh, f, undo_redo)
+	faces(ply_mesh, f, undo_redo)
 
 
-static func faces(ply_mesh, face_indices, undo_redo = null):
+static func faces(ply_mesh, face_indices, undo_redo = null) -> Array:
 	var pre_edit = null
 	if undo_redo:
 		pre_edit = ply_mesh.begin_edit()
@@ -60,7 +60,7 @@ static func faces(ply_mesh, face_indices, undo_redo = null):
 
 
 # returns [new_edge_idx, new_vertex_idx]
-static func edge(ply_mesh, edge_idx, undo_redo = null):
+static func edge(ply_mesh, edge_idx, undo_redo = null) -> Array:
 	var pre_edit = null
 	if undo_redo:
 		pre_edit = ply_mesh.begin_edit()

@@ -4,7 +4,7 @@ const Euler = preload("res://addons/ply/resources/euler.gd")
 
 
 # only works for quads, adjust offset to change direction
-static func get_face_loop(ply_mesh, f_idx, edge_offset = 0):
+static func get_face_loop(ply_mesh, f_idx, edge_offset = 0) -> Array:
 	print("%s / %s" % [f_idx, edge_offset])
 	var out = [f_idx]
 	var face_edges = ply_mesh.get_face_edges(f_idx)
@@ -45,7 +45,7 @@ static func get_face_loop(ply_mesh, f_idx, edge_offset = 0):
 
 
 # only works for verts with 4 edges
-static func get_edge_loop(ply_mesh, e_idx):
+static func get_edge_loop(ply_mesh, e_idx) -> Array:
 	var out = []
 	var next_vtx = ply_mesh.edge_origin_idx(e_idx)
 	var next_edge = e_idx

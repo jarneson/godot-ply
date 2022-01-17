@@ -41,42 +41,42 @@ render_mode unshaded, depth_test_disable;
 uniform vec4 albedo; 
 
 mat3 orthonormalize(mat3 m) { 
-    vec3 x = normalize(m[0]); 
-    vec3 y = normalize(m[1] - x * dot(x, m[1])); 
-    vec3 z = m[2] - x * dot(x, m[2]); 
-    z = normalize(z - y * (dot(y,m[2]))); 
-    return mat3(x,y,z); 
+	vec3 x = normalize(m[0]); 
+	vec3 y = normalize(m[1] - x * dot(x, m[1])); 
+	vec3 z = m[2] - x * dot(x, m[2]); 
+	z = normalize(z - y * (dot(y,m[2]))); 
+	return mat3(x,y,z); 
 } 
 
 void vertex() { 
-    mat3 mv = orthonormalize(mat3(MODELVIEW_MATRIX)); 
-    vec3 n = mv * VERTEX; 
-    float orientation = dot(vec3(0,0,-1),n); 
-    if (orientation <= 0.005) { 
-        VERTEX += NORMAL*0.02; 
-    } 
+	mat3 mv = orthonormalize(mat3(MODELVIEW_MATRIX)); 
+	vec3 n = mv * VERTEX; 
+	float orientation = dot(vec3(0,0,-1),n); 
+	if (orientation <= 0.005) { 
+		VERTEX += NORMAL*0.02; 
+	} 
 } 
 
 void fragment() { 
-    ALBEDO = albedo.rgb; 
-    ALPHA = albedo.a; 
+	ALBEDO = albedo.rgb; 
+	ALPHA = albedo.a; 
 }
 """
 
 var _plugin: EditorPlugin
 
 
-func _init(p: EditorPlugin):
+func _init(p: EditorPlugin) -> void:
 	_plugin = p
 
 
-func startup():
+func startup() -> void:
 	_init_materials()
 	_init_meshes()
 	_init_instance()
 
 
-func teardown():
+func teardown() -> void:
 	for i in range(3):
 		VisualServer.free_rid(move_gizmo_instances[i])
 		VisualServer.free_rid(move_plane_gizmo_instances[i])
@@ -106,7 +106,7 @@ var rotation_materials = [null, null, null]
 var rotation_materials_selected = [null, null, null]
 
 
-func _init_materials():
+func _init_materials() -> void:
 	var rotate_shader = Shader.new()
 	rotate_shader.code = ROTATE_SHADER_CODE
 	for i in range(3):
@@ -139,7 +139,7 @@ func _init_materials():
 		rotation_materials_selected[i] = rotate_mat_hl
 
 
-func _init_meshes():
+func _init_meshes() -> void:
 	for i in range(3):
 		var ivec = Vector3.ZERO
 		ivec[i] = 1
@@ -288,7 +288,7 @@ func _init_meshes():
 			st.commit(scale_plane_gizmo[i])
 
 
-func _init_instance():
+func _init_instance() -> void:
 	for i in range(3):
 		move_gizmo_instances[i] = VisualServer.instance_create()
 		VisualServer.instance_set_base(move_gizmo_instances[i], move_gizmo[i])
@@ -369,7 +369,7 @@ func _get_transform(camera: Camera) -> Transform:
 	return xform
 
 
-func _set_highlight(highlight_axis):
+func _set_highlight(highlight_axis) -> void:
 	for i in range(3):
 		move_gizmo[i].surface_set_material(
 			0, axis_materials_selected[i] if i == highlight_axis else axis_materials[i]
@@ -388,7 +388,7 @@ func _set_highlight(highlight_axis):
 		)
 
 
-func _update_view():
+func _update_view() -> void:
 	if transform == null:
 		for i in range(3):
 			VisualServer.instance_set_visible(move_gizmo_instances[i], false)
@@ -574,7 +574,7 @@ var in_edit: bool = false
 var original_intersect  # nullable vector3
 
 
-func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
+func compute_edit(camera: Camera, screen_position: Vector2, snap = null) -> void:
 	if transform == null:
 		return
 	if not in_edit:
@@ -748,7 +748,7 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null):
 				)
 
 
-func end_edit():
+func end_edit() -> void:
 	if not in_edit:
 		return
 
@@ -765,7 +765,7 @@ func end_edit():
 	_plugin.selection.commit_edit(name, _plugin.get_undo_redo())
 
 
-func abort_edit():
+func abort_edit() -> void:
 	if not in_edit:
 		return
 	_plugin.selection.abort_edit()
@@ -773,7 +773,7 @@ func abort_edit():
 	original_intersect = null
 
 
-func process():
+func process() -> void:
 	var basis_override = null
 	if in_edit:
 		basis_override = transform.basis

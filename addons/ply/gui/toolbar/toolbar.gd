@@ -64,7 +64,7 @@ onready var edge_collapse = $EdgeTools/Collapse
 onready var vertex_tools = $VertexTools
 
 
-func _ready():
+func _ready() -> void:
 	selection_mesh.connect("toggled", self, "_update_selection_mode", [SelectionMode.MESH])
 	selection_face.connect("toggled", self, "_update_selection_mode", [SelectionMode.FACE])
 	selection_edge.connect("toggled", self, "_update_selection_mode", [SelectionMode.EDGE])
@@ -105,14 +105,14 @@ func _ready():
 	edge_collapse.connect("pressed", self, "_edge_collapse")
 
 
-func _process(_delta):
+func _process(_delta) -> void:
 	_update_tool_visibility()
 
 
 var selection_mode: int = SelectionMode.MESH
 
 
-func _update_selection_mode(selected, mode):
+func _update_selection_mode(selected, mode) -> void:
 	if selected:
 		selection_mode = mode
 		emit_signal("selection_mode_changed", mode)
@@ -121,20 +121,20 @@ func _update_selection_mode(selected, mode):
 var gizmo_mode: int = GizmoMode.LOCAL
 
 
-func _update_gizmo_mode(selected, mode):
+func _update_gizmo_mode(selected, mode) -> void:
 	if selected:
 		gizmo_mode = mode
 		emit_signal("gizmo_mode_changed", mode)
 
 
-func _update_tool_visibility():
+func _update_tool_visibility() -> void:
 	mesh_tools.visible = selection_mesh.pressed
 	face_tools.visible = selection_face.pressed
 	edge_tools.visible = selection_edge.pressed
 	vertex_tools.visible = selection_vertex.pressed
 
 
-func set_selection_mode(mode):
+func set_selection_mode(mode) -> void:
 	match mode:
 		SelectionMode.MESH:
 			selection_mesh.pressed = true

@@ -10,23 +10,23 @@ var _plugin: EditorPlugin
 var selection: PlyEditor
 
 
-func _init(p: EditorPlugin):
+func _init(p: EditorPlugin) -> void:
 	_plugin = p
 
 
-func startup():
+func startup() -> void:
 	_plugin.toolbar.connect("selection_mode_changed", self, "_on_selection_mode_changed")
 
 
-func teardown():
+func teardown() -> void:
 	_plugin.toolbar.disconnect("selection_mode_changed", self, "_on_selection_mode_changed")
 
 
-func _on_selection_mode_changed(_mode):
+func _on_selection_mode_changed(_mode) -> void:
 	_plugin.selection.select_geometry([], false)
 
 
-func _point_to_segment_dist(v, a, b):
+func _point_to_segment_dist(v, a, b) -> Vector3:
 	var ab = b - a
 	var av = v - a
 	if av.dot(ab) <= 0.0:
@@ -37,7 +37,7 @@ func _point_to_segment_dist(v, a, b):
 	return ab.cross(av).length() / ab.length()
 
 
-func _scan_selection(camera: Camera, event: InputEventMouseButton):
+func _scan_selection(camera: Camera, event: InputEventMouseButton) -> void:
 	var ray = camera.project_ray_normal(event.position)
 	var ray_pos = camera.project_ray_origin(event.position)
 	var selection_mode = _plugin.toolbar.selection_mode
@@ -76,7 +76,7 @@ func _scan_selection(camera: Camera, event: InputEventMouseButton):
 		_plugin.selection.select_geometry([], false)
 
 
-func handle_input(camera: Camera, event: InputEvent):
+func handle_input(camera: Camera, event: InputEvent) -> bool:
 	if _plugin.ignore_inputs:
 		return false
 	if event is InputEventMouseButton:

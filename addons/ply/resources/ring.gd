@@ -1,2 +1,2 @@
-func edge(ply_mesh, edge_idx):
+func edge(ply_mesh, edge_idx) -> void:
 	pass

@@ -1,13 +1,13 @@
 const Side = preload("res://addons/ply/utils/direction.gd")
 
 
-static func faces(ply_mesh, f1, f2, undo_redo = null):
+static func faces(ply_mesh, f1, f2, undo_redo = null) -> bool:
 	var f1_edges = ply_mesh.get_face_edges(f1)
 	var f2_edges = ply_mesh.get_face_edges(f2)
 
 	if f1_edges.size() != f2_edges.size():
 		print("faces have different number of edges")
-		return
+		return false
 
 	var seen_verts = {}
 	for e in f1_edges:
@@ -19,7 +19,7 @@ static func faces(ply_mesh, f1, f2, undo_redo = null):
 			or seen_verts.has(ply_mesh.edge_destination_idx(e))
 		):
 			print("faces share a vertex")
-			return
+			return false
 
 	# there must be a better way to do this
 	var min_dist = null
@@ -55,7 +55,7 @@ static func faces(ply_mesh, f1, f2, undo_redo = null):
 	# insert faces between edge maps
 	var edge_start = ply_mesh.edge_count()
 	var face_start = ply_mesh.face_count()
-	ply_mesh.expand_edges(f1_edges.size())
+	ply_mesh.expand_edges(f1_edges.size())                                                                                                                          
 	ply_mesh.expand_faces(f1_edges.size())
 	for arr_idx in range(f1_edges.size()):
 		var prev = arr_idx - 1
@@ -108,4 +108,4 @@ static func faces(ply_mesh, f1, f2, undo_redo = null):
 
 	if undo_redo:
 		ply_mesh.commit_edit("Connect Faces", undo_redo, pre_edit)
-	pass
+	return true

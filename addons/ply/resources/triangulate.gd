@@ -8,7 +8,7 @@ static func object(ply_mesh):
 	return faces(ply_mesh, f)
 
 
-static func faces(ply_mesh, face_indices):
+static func faces(ply_mesh, face_indices) -> void:
 	for face_idx in face_indices:
 		var verts = ply_mesh.face_vertex_indexes(face_idx)
 		while verts.size() > 3:

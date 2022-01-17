@@ -36,7 +36,7 @@ func get_ply_mesh() -> Resource:
 	return _ply_mesh
 
 
-func set_ply_mesh(v: Resource):
+func set_ply_mesh(v: Resource) -> void:
 	if v == null:
 		if _ply_mesh && _ply_mesh.is_connected("mesh_updated", self, "_on_mesh_updated"):
 			_ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
@@ -52,7 +52,7 @@ func set_ply_mesh(v: Resource):
 		print("assigned resource that is not a ply_mesh to ply editor")
 
 
-func set_materials(v):
+func set_materials(v) -> void:
 	materials = v
 	_paint_faces()
 
@@ -60,7 +60,7 @@ func set_materials(v):
 onready var parent = get_parent()
 
 
-func _ready():
+func _ready() -> void:
 	if not Engine.editor_hint:
 		return
 
@@ -111,7 +111,7 @@ func _ready():
 	_compute_materials()
 
 
-func _compute_materials():
+func _compute_materials() -> void:
 	materials = default_materials
 	var paints = _ply_mesh.face_paint_indices()
 	if parent is MeshInstance:
@@ -123,7 +123,7 @@ func _compute_materials():
 		materials[0] = parent.material
 
 
-func _enter_tree():
+func _enter_tree() -> void:
 	if not Engine.editor_hint:
 		return
 
@@ -131,7 +131,7 @@ func _enter_tree():
 		_ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 
 
-func _exit_tree():
+func _exit_tree() -> void:
 	if not Engine.editor_hint:
 		return
 	if not _ply_mesh:
@@ -140,11 +140,11 @@ func _exit_tree():
 		_ply_mesh.disconnect("mesh_updated", self, "_on_mesh_updated")
 
 
-func _clear_parent():
+func _clear_parent() -> void:
 	parent.set(parent_property, ArrayMesh.new())
 
 
-func _paint_faces():
+func _paint_faces() -> void:
 	if parent is MeshInstance and parent.mesh:
 		var paints = _ply_mesh.face_paint_indices()
 		for i in range(parent.mesh.get_surface_count()):
@@ -155,7 +155,7 @@ func _paint_faces():
 		parent.material = materials[0]
 
 
-func _on_mesh_updated():
+func _on_mesh_updated() -> void:
 	var remove = []
 	for v in selected_vertices:
 		if v >= _ply_mesh.vertex_count():
@@ -190,7 +190,7 @@ var _vertices: Vertices
 var _faces: Faces
 
 
-func _set_selected(v: bool):
+func _set_selected(v: bool) -> void:
 	if selected == v:
 		return
 	selected = v
@@ -213,13 +213,13 @@ func _get_selected() -> bool:
 
 
 class IntersectSorter:
-	static func sort_ascending(a, b):
+	static func sort_ascending(a, b) -> bool:
 		if a[2] < b[2]:
 			return true
 		return false
 
 
-func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int):
+func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Array:
 	var scan_results = []
 	if mode == SelectionMode.VERTEX:
 		for v in range(_ply_mesh.vertex_count()):
@@ -289,7 +289,7 @@ var selected_edges: Array = []
 var selected_faces: Array = []
 
 
-func select_geometry(hits: Array, toggle: bool):
+func select_geometry(hits: Array, toggle: bool) -> void:
 	if not toggle:
 		selected_vertices = []
 		selected_edges = []
@@ -326,23 +326,23 @@ func select_geometry(hits: Array, toggle: bool):
 var _current_edit
 
 
-func begin_edit():
+func begin_edit() -> void:
 	_current_edit = _ply_mesh.begin_edit()
 
 
-func commit_edit(name: String, undo_redo: UndoRedo):
+func commit_edit(name: String, undo_redo: UndoRedo) -> void:
 	_ply_mesh.commit_edit(name, undo_redo, _current_edit)
 	_current_edit = null
 
 
-func abort_edit():
+func abort_edit() -> void:
 	_ply_mesh.reject_edit(_current_edit)
 	_current_edit = null
 
 
-func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null):
+func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null) -> Transform:
 	if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
-		return null
+		return parent.transform
 
 	var verts = {}
 	var normals = []
@@ -389,7 +389,7 @@ func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override =
 	return Transform(basis.orthonormalized(), parent.global_transform.xform(pos))
 
 
-func translate_selection(global_dir: Vector3):
+func translate_selection(global_dir: Vector3) -> void:
 	if not _current_edit:
 		return
 	var dir = parent.global_transform.basis.inverse().xform(global_dir)
@@ -400,7 +400,7 @@ func translate_selection(global_dir: Vector3):
 	emit_signal("selection_mutated")
 
 
-func rotate_selection(axis: Vector3, rad: float):
+func rotate_selection(axis: Vector3, rad: float) -> void:
 	if not _current_edit:
 		return
 	axis = parent.global_transform.basis.inverse().xform(axis).normalized()
@@ -412,7 +412,7 @@ func rotate_selection(axis: Vector3, rad: float):
 	emit_signal("selection_mutated")
 
 
-func scale_selection_along_plane(plane_normal: Vector3, axes: Array, scale_factor: float):
+func scale_selection_along_plane(plane_normal: Vector3, axes: Array, scale_factor: float) -> void:
 	if not _current_edit:
 		return
 	var b = parent.global_transform.basis.orthonormalized().inverse()
@@ -425,7 +425,7 @@ func scale_selection_along_plane(plane_normal: Vector3, axes: Array, scale_facto
 	emit_signal("selection_mutated")
 
 
-func scale_selection_along_plane_normal(plane_normal: Vector3, scale_factor: float):
+func scale_selection_along_plane_normal(plane_normal: Vector3, scale_factor: float) -> void:
 	if not _current_edit:
 		return
 	plane_normal = parent.global_transform.basis.orthonormalized().inverse().xform(plane_normal).normalized()

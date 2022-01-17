@@ -1,7 +1,7 @@
 const Side = preload("res://addons/ply/utils/direction.gd")
 
 
-static func normals(ply_mesh):
+static func normals(ply_mesh) -> void:
 	# reverse the winding
 	var new_edge_edges = PoolIntArray()
 	var new_edge_vertexes = PoolIntArray()
