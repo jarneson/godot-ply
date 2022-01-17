@@ -55,7 +55,7 @@ static func faces(ply_mesh, f1, f2, undo_redo = null) -> bool:
 	# insert faces between edge maps
 	var edge_start = ply_mesh.edge_count()
 	var face_start = ply_mesh.face_count()
-	ply_mesh.expand_edges(f1_edges.size())                                                                                                                          
+	ply_mesh.expand_edges(f1_edges.size())
 	ply_mesh.expand_faces(f1_edges.size())
 	for arr_idx in range(f1_edges.size()):
 		var prev = arr_idx - 1
