@@ -342,7 +342,7 @@ func abort_edit() -> void:
 
 func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null) -> Transform:
 	if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
-		return parent.transform
+		return Transform()
 
 	var verts = {}
 	var normals = []
