@@ -64,12 +64,12 @@ func _ready() -> void:
 	if not Engine.editor_hint:
 		return
 
-	if false and get_parent() and get_parent().is_class("MeshInstance") and get_parent().mesh:
+	if false and parent and parent.is_class("MeshInstance") and parent.mesh:
 		var generate = load("res://addons/ply/resources/generate.gd")
 		_ply_mesh = PlyMesh.new()
-		for surface_i in get_parent().mesh.get_surface_count():
+		for surface_i in parent.mesh.get_surface_count():
 			var mdt = MeshDataTool.new()
-			mdt.create_from_surface(get_parent().mesh, surface_i)
+			mdt.create_from_surface(parent.mesh, surface_i)
 			var vertices: PoolVector3Array = []
 			vertices.resize(mdt.get_vertex_count())
 			var vertex_edges: PoolIntArray
