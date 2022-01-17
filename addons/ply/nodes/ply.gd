@@ -108,6 +108,7 @@ func _ready():
 		_on_mesh_updated()
 	elif not _ply_mesh:
 		_ply_mesh = PlyMesh.new()
+		_ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 	_compute_materials()
 
 
@@ -127,7 +128,7 @@ func _enter_tree():
 	if not Engine.editor_hint:
 		return
 
-	if not _ply_mesh.is_connected("mesh_updated", self, "_on_mesh_updated"):
+	if _ply_mesh and not _ply_mesh.is_connected("mesh_updated", self, "_on_mesh_updated"):
 		_ply_mesh.connect("mesh_updated", self, "_on_mesh_updated")
 
 
