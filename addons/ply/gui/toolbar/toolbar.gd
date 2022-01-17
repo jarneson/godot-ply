@@ -65,6 +65,11 @@ onready var vertex_tools = $VertexTools
 
 
 func _ready() -> void:
+	var config = ConfigFile.new()
+	var err = config.load("res://addons/ply/plugin.cfg")
+	if err == OK:
+		var version = config.get_value("plugin", "version")
+		$TitleLabel/MarginContainer/HBoxContainer/Version.text = version
 	selection_mesh.connect("toggled", self, "_update_selection_mode", [SelectionMode.MESH])
 	selection_face.connect("toggled", self, "_update_selection_mode", [SelectionMode.FACE])
 	selection_edge.connect("toggled", self, "_update_selection_mode", [SelectionMode.EDGE])
