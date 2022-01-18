@@ -1,14 +1,14 @@
 # ![icon](./addons/ply/icons/plugin.svg) godot-ply ![icon](./addons/ply/icons/plugin.svg)
-Godot plugin for in-editor box modeling for grayboxing or prototyping 3d levels.
+Godot plugin for in-editor box modelling for gray boxing or prototyping 3d levels.
 
 ![Editor Screenshot](./editor.png)
 
-Only tested in Godot 3.4. Icons are only good for dark mode.
+Only tested in Godot 3.4. Icons are only suitable for dark mode.
 
 See demos [on youtube](https://www.youtube.com/channel/UCf1IV6ABf3a4nW1wEyPwmMQ).
 
 ## Installation
-- Copy the contents of the plugin directory in this repository into your `addons` folder for your godot project.
+- Copy the contents of the plugin directory in this repository into your `addons` folder for your Godot project.
 - Activate the plugin in your project settings.
 
 ## Usage
@@ -26,17 +26,17 @@ Shift + Clicking will add and subtract from the set of selections.
 
 And three gizmo modes:
 - Global - Translate/Rotate/Scale along global coordinates
-- Local - Translate/Rotate/Scale along model local coordinates
+- Local - Translate/Rotate/Scale along local model coordinates
 - Normal - Translate/Rotate/Scale along coordinates aligned to the average normal of the selected geometry
 
-The gizmo behaves much like the standard Godot gizmo, however it includes scale handles by default.
+The gizmo behaves much like the standard Godot gizmo; however, it includes scale handles by default.
 - Translate Axis: Arrows
 - Translate Plane: Squares
 - Rotate Around Axis: Arcs
 - Scale Axis: Cubes
 - Scale Plane: Triangles
 
-The inspector includes translate/rotate/scale tools for fine tuning, which respect the selected gizmo mode.
+The inspector includes translate/rotate/scale tools for fine-tuning, respecting the selected gizmo mode.
 
 There are tools for each selection mode:
 - Mesh
@@ -46,15 +46,15 @@ There are tools for each selection mode:
 		- Invert Normals: Inverts the normals of all faces
     - Mesh Utilities
         - Export to OBJ: Exports the selected mesh to an OBJ file
-            - Currently just exports basic geometry, excluding normals, materials, etc
+            - Currently exports basic geometry, excluding normals, materials, etc
         - Quick Generators
             - Plane: Generate a two-sided unit plane
             - Cube: Generate a unit cube
         - Generate: Opens a modal for more advanced generation
-            - Plane: Generate a plane with specified size and subdivisions
-            - Cube: Generate a cube with specified size and subdivisions
-            - Isosphere: Generate a isosphere with specified radius and subdivisions
-            - Cylinder: Generate a cylinder with specified radius, depth, circle vertex count, and 
+            - Plane: Generate a plane with a specified size and subdivision count
+            - Cube: Generate a cube with a specified size and subdivision count
+            - Isosphere: Generate an isosphere with a specified radius and subdivisions
+            - Cylinder: Generate a cylinder with a specified radius, depth, and circle vertex count
 
 - Face
     - Select Faces
@@ -62,10 +62,10 @@ There are tools for each selection mode:
         - ![loopicon2](./addons/ply/icons/face_loop_2.svg) Loop: a quad loop in the other direction
     - Face Tools
         - ![extrudeicon](./addons/ply/icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
-        - Connect: Remove the two selected faces, creating a new face between edges. Tries to select an edge pairing that works.. but not always.
+        - Connect: Remove the two selected faces, creating a new face between edges. Tries to choose an edge pairing that works.. but not always.
         - Subdivide: Subdivide a quad or a tri into 4 quads or 4 tris
         - Triangulate: Triangulates a face using an ear clipping algorithm
-    - Paint Faces: Moves the selected face to the selected surface, allowing multiple materials per Ply Instance. Assign materials to the parent MeshInstance.
+    - Paint Faces: Moves the selected face to the chosen surface, allowing multiple materials per mesh. Assign materials to the parent MeshInstance or in the Ply Editor materials array.
 - Edge
     - Select Edges
         - ![loopicon](./addons/ply/icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
@@ -77,14 +77,14 @@ There are tools for each selection mode:
     - None, yet!
 
 ### Collisions
-Collision meshes are updated automatically if there is a CollisionShape child of the parent MeshInstance node at `$StaticBody/CollsionShape`. This is the default naming if you use the `Create Trimesh Static Body` tool in the .
+Collision meshes are updated if there is a CollisionShape child of the parent MeshInstance node at `$StaticBody/CollsionShape`. This is the default naming if you use the `Create Trimesh Static Body` tool.
 
 ## Details
 Meshes are meant to only be oriented manifolds. Some properties:
-- Each edge has one or two faces (although we generally use exactly 2)
-- All of an edge's faces have compatible orientation -- that is the edge origin and destination are in opposite order for opposite faces.
+- Each edge has one or two faces (although we generally use precisely 2)
+- All of an edge's faces have compatible orientation -- that is, the edge origin and destination are in the opposite order for opposite faces.
 
-Ply uses a winged edge representation for edges, but omit counterclockwise navigation:
+Ply uses a winged edge representation for edges but omits counterclockwise navigation:
 ```
 omitted
 left ccw        right cw
@@ -106,7 +106,7 @@ left cw          right ccw
 
 ### Implications
 Given this representation, a few limitations occur that are representable in other tools:
-- One cannot abritrarily extrude edges into one-sided faces, or one edge would be incident with >2 faces.
+- One cannot arbitrarily extrude edges into one-sided faces, or one edge would be incident with >2 faces.
 - One cannot flip individual faces, as the faces would no longer have compatible orientation.
 
 ### Plugin Interop
