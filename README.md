@@ -51,8 +51,8 @@ There are tools for each selection mode:
             - Plane: Generate a two-sided unit plane
             - Cube: Generate a unit cube
         - Generate: Opens a modal for more advanced generation
-            - Plane: Generate a plane with specified size and subdivisions
-            - Cube: Generate a cube with specified size and subdivisions
+            - Plane: Generate a plane with a specified size and subdivision count
+            - Cube: Generate a cube with a specified size and subdivision count
             - Isosphere: Generate an isosphere with a specified radius and subdivisions
             - Cylinder: Generate a cylinder with a specified radius, depth, and circle vertex count
 
