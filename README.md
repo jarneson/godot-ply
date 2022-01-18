@@ -54,7 +54,7 @@ There are tools for each selection mode:
             - Plane: Generate a plane with specified size and subdivisions
             - Cube: Generate a cube with specified size and subdivisions
             - Isosphere: Generate an isosphere with a specified radius and subdivisions
-            - Cylinder: Generate a cylinder with a specified radius, depth, circle vertex count, and 
+            - Cylinder: Generate a cylinder with a specified radius, depth, and circle vertex count
 
 - Face
     - Select Faces
