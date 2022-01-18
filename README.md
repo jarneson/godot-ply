@@ -25,7 +25,7 @@ Shift + Clicking will add and subtract from the set of selections.
 <br>Alt + Clicking in edge or face mode will select loops.
 
 And three gizmo modes:
-- Global - Translate/Rotate/Scale along with global coordinates
+- Global - Translate/Rotate/Scale along global coordinates
 - Local - Translate/Rotate/Scale along local model coordinates
 - Normal - Translate/Rotate/Scale along coordinates aligned to the average normal of the selected geometry
 
