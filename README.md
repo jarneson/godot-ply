@@ -84,7 +84,7 @@ Meshes are meant to only be oriented manifolds. Some properties:
 - Each edge has one or two faces (although we generally use precisely 2)
 - All of an edge's faces have compatible orientation -- that is, the edge origin and destination are in the opposite order for opposite faces.
 
-Ply uses a winged edge representation for edges but omit counterclockwise navigation:
+Ply uses a winged edge representation for edges but omits counterclockwise navigation:
 ```
 omitted
 left ccw        right cw
