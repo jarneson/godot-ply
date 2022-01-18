@@ -65,7 +65,7 @@ There are tools for each selection mode:
         - Connect: Remove the two selected faces, creating a new face between edges. Tries to choose an edge pairing that works.. but not always.
         - Subdivide: Subdivide a quad or a tri into 4 quads or 4 tris
         - Triangulate: Triangulates a face using an ear clipping algorithm
-    - Paint Faces: Moves the selected face to the chosen surface, allowing multiple materials per Ply Instance. Assign materials to the parent MeshInstance.
+    - Paint Faces: Moves the selected face to the chosen surface, allowing multiple materials per mesh. Assign materials to the parent MeshInstance or in the Ply Editor materials array.
 - Edge
     - Select Edges
         - ![loopicon](./addons/ply/icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
