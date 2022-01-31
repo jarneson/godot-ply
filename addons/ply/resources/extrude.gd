@@ -35,7 +35,7 @@ static func faces(ply_mesh, faces, undo_redo = null, distance = 1) -> void:
 			var face = ply_mesh.edge_face(curr_edge, side)
 			curr_edge = ply_mesh.edge_cw(curr_edge, side)
 			while internal_edges.has(curr_edge):
-				side = Side.invert(ply_mesh.edge_side(curr_edge, face))
+				side = Side.reverse(ply_mesh.edge_side(curr_edge, face))
 				face = ply_mesh.edge_face(curr_edge, side)
 				curr_edge = ply_mesh.edge_cw(curr_edge, side)
 			if not search.has(curr_edge):

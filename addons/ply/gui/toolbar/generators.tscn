@@ -15,10 +15,10 @@ __meta__ = {
 [node name="C" type="MarginContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 8.0
-margin_top = 8.0
-margin_right = -8.0
-margin_bottom = -36.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -36.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 __meta__ = {
@@ -26,221 +26,221 @@ __meta__ = {
 }
 
 [node name="C" type="HBoxContainer" parent="C"]
-margin_right = 1008.0
-margin_bottom = 556.0
+offset_right = 1008.0
+offset_bottom = 556.0
 custom_constants/separation = 10
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Generators" type="PanelContainer" parent="C/C"]
-margin_right = 250.0
-margin_bottom = 556.0
+offset_right = 250.0
+offset_bottom = 556.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="C" type="VBoxContainer" parent="C/C/Generators"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 243.0
-margin_bottom = 549.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 243.0
+offset_bottom = 549.0
 
 [node name="Plane" type="CheckBox" parent="C/C/Generators/C"]
-margin_right = 236.0
-margin_bottom = 24.0
+offset_right = 236.0
+offset_bottom = 24.0
 group = ExtResource( 1 )
 text = "Plane"
 
 [node name="Cube" type="CheckBox" parent="C/C/Generators/C"]
-margin_top = 28.0
-margin_right = 236.0
-margin_bottom = 52.0
+offset_top = 28.0
+offset_right = 236.0
+offset_bottom = 52.0
 group = ExtResource( 1 )
 text = "Cube"
 
 [node name="Icosphere" type="CheckBox" parent="C/C/Generators/C"]
-margin_top = 56.0
-margin_right = 236.0
-margin_bottom = 80.0
+offset_top = 56.0
+offset_right = 236.0
+offset_bottom = 80.0
 group = ExtResource( 1 )
 text = "Icosphere"
 
 [node name="Cylinder" type="CheckBox" parent="C/C/Generators/C"]
-margin_top = 84.0
-margin_right = 236.0
-margin_bottom = 108.0
+offset_top = 84.0
+offset_right = 236.0
+offset_bottom = 108.0
 group = ExtResource( 1 )
 text = "Cylinder"
 
 [node name="Settings" type="PanelContainer" parent="C/C"]
-margin_left = 260.0
-margin_right = 1008.0
-margin_bottom = 556.0
+offset_left = 260.0
+offset_right = 1008.0
+offset_bottom = 556.0
 size_flags_horizontal = 3
 
 [node name="PlaneSettings" type="GridContainer" parent="C/C/Settings"]
 visible = false
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 737.0
-margin_bottom = 533.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 737.0
+offset_bottom = 533.0
 columns = 2
 
 [node name="Size" type="Label" parent="C/C/Settings/PlaneSettings"]
-margin_top = 5.0
-margin_right = 80.0
-margin_bottom = 19.0
+offset_top = 5.0
+offset_right = 80.0
+offset_bottom = 19.0
 text = "Size"
 
 [node name="SizeInput" type="LineEdit" parent="C/C/Settings/PlaneSettings"]
-margin_left = 84.0
-margin_right = 730.0
-margin_bottom = 24.0
+offset_left = 84.0
+offset_right = 730.0
+offset_bottom = 24.0
 size_flags_horizontal = 3
 text = "1"
 
 [node name="Subdivisions" type="Label" parent="C/C/Settings/PlaneSettings"]
-margin_top = 33.0
-margin_right = 80.0
-margin_bottom = 47.0
+offset_top = 33.0
+offset_right = 80.0
+offset_bottom = 47.0
 text = "Subdivisions"
 
 [node name="SubdivisionsInput" type="LineEdit" parent="C/C/Settings/PlaneSettings"]
-margin_left = 84.0
-margin_top = 28.0
-margin_right = 730.0
-margin_bottom = 52.0
+offset_left = 84.0
+offset_top = 28.0
+offset_right = 730.0
+offset_bottom = 52.0
 size_flags_horizontal = 3
 text = "0"
 
 [node name="CubeSettings" type="GridContainer" parent="C/C/Settings"]
 visible = false
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 737.0
-margin_bottom = 533.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 737.0
+offset_bottom = 533.0
 columns = 2
 
 [node name="Size" type="Label" parent="C/C/Settings/CubeSettings"]
-margin_top = 5.0
-margin_right = 80.0
-margin_bottom = 19.0
+offset_top = 5.0
+offset_right = 80.0
+offset_bottom = 19.0
 text = "Size"
 
 [node name="SizeInput" type="LineEdit" parent="C/C/Settings/CubeSettings"]
-margin_left = 84.0
-margin_right = 730.0
-margin_bottom = 24.0
+offset_left = 84.0
+offset_right = 730.0
+offset_bottom = 24.0
 size_flags_horizontal = 3
 text = "1"
 
 [node name="Subdivisions" type="Label" parent="C/C/Settings/CubeSettings"]
-margin_top = 33.0
-margin_right = 80.0
-margin_bottom = 47.0
+offset_top = 33.0
+offset_right = 80.0
+offset_bottom = 47.0
 text = "Subdivisions"
 
 [node name="SubdivisionsInput" type="LineEdit" parent="C/C/Settings/CubeSettings"]
-margin_left = 84.0
-margin_top = 28.0
-margin_right = 730.0
-margin_bottom = 52.0
+offset_left = 84.0
+offset_top = 28.0
+offset_right = 730.0
+offset_bottom = 52.0
 size_flags_horizontal = 3
 text = "0"
 
 [node name="IcosphereSettings" type="GridContainer" parent="C/C/Settings"]
 visible = false
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 737.0
-margin_bottom = 533.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 737.0
+offset_bottom = 533.0
 columns = 2
 
 [node name="Radius" type="Label" parent="C/C/Settings/IcosphereSettings"]
-margin_top = 5.0
-margin_right = 80.0
-margin_bottom = 19.0
+offset_top = 5.0
+offset_right = 80.0
+offset_bottom = 19.0
 text = "Radius"
 
 [node name="RadiusInput" type="LineEdit" parent="C/C/Settings/IcosphereSettings"]
-margin_left = 84.0
-margin_right = 730.0
-margin_bottom = 24.0
+offset_left = 84.0
+offset_right = 730.0
+offset_bottom = 24.0
 size_flags_horizontal = 3
 text = "1"
 
 [node name="Subdivisions" type="Label" parent="C/C/Settings/IcosphereSettings"]
-margin_top = 33.0
-margin_right = 80.0
-margin_bottom = 47.0
+offset_top = 33.0
+offset_right = 80.0
+offset_bottom = 47.0
 text = "Subdivisions"
 
 [node name="SubdivisionsInput" type="LineEdit" parent="C/C/Settings/IcosphereSettings"]
-margin_left = 84.0
-margin_top = 28.0
-margin_right = 730.0
-margin_bottom = 52.0
+offset_left = 84.0
+offset_top = 28.0
+offset_right = 730.0
+offset_bottom = 52.0
 size_flags_horizontal = 3
 text = "1"
 
 [node name="CylinderSettings" type="GridContainer" parent="C/C/Settings"]
 visible = false
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 741.0
-margin_bottom = 549.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 741.0
+offset_bottom = 549.0
 columns = 2
 
 [node name="Radius" type="Label" parent="C/C/Settings/CylinderSettings"]
-margin_top = 5.0
-margin_right = 63.0
-margin_bottom = 19.0
+offset_top = 5.0
+offset_right = 63.0
+offset_bottom = 19.0
 text = "Radius"
 
 [node name="RadiusInput" type="LineEdit" parent="C/C/Settings/CylinderSettings"]
-margin_left = 67.0
-margin_right = 734.0
-margin_bottom = 24.0
+offset_left = 67.0
+offset_right = 734.0
+offset_bottom = 24.0
 size_flags_horizontal = 3
 text = "1"
 
 [node name="Depth" type="Label" parent="C/C/Settings/CylinderSettings"]
-margin_top = 33.0
-margin_right = 63.0
-margin_bottom = 47.0
+offset_top = 33.0
+offset_right = 63.0
+offset_bottom = 47.0
 text = "Depth"
 
 [node name="DepthInput" type="LineEdit" parent="C/C/Settings/CylinderSettings"]
-margin_left = 67.0
-margin_top = 28.0
-margin_right = 734.0
-margin_bottom = 52.0
+offset_left = 67.0
+offset_top = 28.0
+offset_right = 734.0
+offset_bottom = 52.0
 size_flags_horizontal = 3
 text = "1"
 
 [node name="Vertices" type="Label" parent="C/C/Settings/CylinderSettings"]
-margin_top = 61.0
-margin_right = 63.0
-margin_bottom = 75.0
+offset_top = 61.0
+offset_right = 63.0
+offset_bottom = 75.0
 text = "Vertices"
 
 [node name="VerticesInput" type="LineEdit" parent="C/C/Settings/CylinderSettings"]
-margin_left = 67.0
-margin_top = 56.0
-margin_right = 734.0
-margin_bottom = 80.0
+offset_left = 67.0
+offset_top = 56.0
+offset_right = 734.0
+offset_bottom = 80.0
 size_flags_horizontal = 3
 text = "8"
 
 [node name="Segments" type="Label" parent="C/C/Settings/CylinderSettings"]
-margin_top = 89.0
-margin_right = 63.0
-margin_bottom = 103.0
+offset_top = 89.0
+offset_right = 63.0
+offset_bottom = 103.0
 text = "Segments"
 
 [node name="SegmentsInput" type="LineEdit" parent="C/C/Settings/CylinderSettings"]
-margin_left = 67.0
-margin_top = 84.0
-margin_right = 734.0
-margin_bottom = 108.0
+offset_left = 67.0
+offset_top = 84.0
+offset_right = 734.0
+offset_bottom = 108.0
 size_flags_horizontal = 3
 text = "1"

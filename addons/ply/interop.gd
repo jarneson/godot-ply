@@ -1,28 +1,26 @@
-"""
-MIT License
+#MIT License
+#
+#Copyright (c) 2021 Jeffrey Arneson, Sólyom Zoltán
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
 
-Copyright (c) 2021 Jeffrey Arneson, Sólyom Zoltán
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
-tool
+@tool
 extends Node
 
 # Notification when a plugin starts doing something which will be in progress until
@@ -65,7 +63,7 @@ static func register(plugin: EditorPlugin, plugin_name: String):
 	if plugins == null:
 		plugins = {}
 		plugin_names = {}
-	assert(!plugins.has(plugin_name), 'Plugin "%s" already registered for interop' % [plugin_name])
+	assert(!plugins.has(plugin_name)) #,'Plugin "%s" already registered for interop' % [plugin_name])
 	plugins[plugin_name] = plugin
 	plugin_names[plugin] = plugin_name
 	n.set_meta(_PLUGIN_DICTIONARY, plugins)
@@ -76,7 +74,7 @@ static func ___get_interop_node(plugin: EditorPlugin):
 	var n: Node = plugin.get_editor_interface().get_base_control().get_node_or_null(
 		_PLUGIN_NODE_NAME
 	)
-	assert(n != null, "Interop node does not exist. Make sure to register your plugin first.")
+	assert(n != null) #,"Interop node does not exist. Make sure to register your plugin first.")
 	return n
 
 
@@ -104,14 +102,13 @@ static func deregister(plugin: EditorPlugin):
 		if n.has_meta(_PLUGIN_DICTIONARY_NAMES)
 		else null
 	)
-	assert(
-		plugin_names != null && plugin_names.has(plugin),
-		"Your plugin is not registered, cannot deregister"
-	)
+	if !(plugin_names != null && plugin_names.has(plugin)):
+		push_error("Your plugin is not registered, cannot deregister")
+		assert(false)
 	var plugin_name = plugin_names[plugin]
 	plugins.erase(plugin_name)
 	plugin_names.erase(plugin)
-	if plugins.empty():
+	if plugins.is_empty():
 		n.queue_free()
 	else:
 		n.set_meta(_PLUGIN_DICTIONARY, plugins)
@@ -135,7 +132,7 @@ static func notify_plugins(plugin: EditorPlugin, code: int, id: String = String(
 	if plugin_names == null:
 		return
 	var plugin_name = plugin_names.get(plugin)
-	assert(plugin_name != null, "Your plugin is not registered, cannot broadcast notification")
+	assert(plugin_name != null) #,"Your plugin is not registered, cannot broadcast notification")
 	if plugin_name == null:
 		return
 	for p in plugin_names:

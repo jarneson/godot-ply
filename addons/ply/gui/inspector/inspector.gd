@@ -1,27 +1,27 @@
-tool
+@tool
 extends VBoxContainer
 
 const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
 const SpinSlider = preload("res://addons/ply/gui/inspector/spin_slider.gd")
 
-onready var tool_grid = $"G"
-onready var translate_container = $"G/TranslateInputs"
+@onready var tool_grid = $"G"
+@onready var translate_container = $"G/TranslateInputs"
 var translate_x
 var translate_y
 var translate_z
-onready var rotate_container = $"G/RotateInputs"
+@onready var rotate_container = $"G/RotateInputs"
 var rotate_x
 var rotate_y
 var rotate_z
-onready var scale_container = $"G/ScaleInputs"
+@onready var scale_container = $"G/ScaleInputs"
 var scale_x
 var scale_y
 var scale_z
 
-onready var vertex_count = $"V/VertexCount"
-onready var edge_count = $"V/EdgeCount"
-onready var face_count = $"V/FaceCount"
-onready var selection_text = $"V/Selection"
+@onready var vertex_count = $"V/VertexCount"
+@onready var edge_count = $"V/EdgeCount"
+@onready var face_count = $"V/FaceCount"
+@onready var selection_text = $"V/Selection"
 
 var plugin = null
 var gizmo_transform
@@ -36,9 +36,9 @@ func _prep_slider(s, l, mn, mx, st, mod, axis) -> void:
 	s.allow_greater = true
 	s.allow_lesser = true
 
-	s.connect("edit_started", self, "_transform_axis_edit_started", [s, mod, axis])
-	s.connect("value_changed", self, "_transform_axis_value_changed", [s, mod, axis])
-	s.connect("edit_committed", self, "_transform_axis_edit_committed", [s, mod, axis])
+	s.connect("edit_started",Callable(self,"_transform_axis_edit_started"),[s,mod,axis])
+	s.connect("value_changed",Callable(self,"_transform_axis_value_changed"),[s,mod,axis])
+	s.connect("edit_committed",Callable(self,"_transform_axis_edit_committed"),[s,mod,axis])
 
 
 func _ready() -> void:
@@ -74,8 +74,8 @@ func _ready() -> void:
 	scale_container.add_child(scale_y)
 	scale_container.add_child(scale_z)
 
-	plugin.connect("selection_changed", self, "_on_selection_changed")
-	plugin.toolbar.connect("gizmo_mode_changed", self, "_on_gizmo_mode_changed")
+	plugin.connect("selection_changed",Callable(self,"_on_selection_changed"))
+	plugin.toolbar.connect("gizmo_mode_changed",Callable(self,"_on_gizmo_mode_changed"))
 
 	rotate_x.value = 0
 	rotate_y.value = 0
@@ -92,7 +92,7 @@ func _get_origin() -> Vector3:
 		GizmoMode.GLOBAL:
 			return gizmo_transform.origin
 		GizmoMode.LOCAL:
-			return current_selection.parent.global_transform.inverse().xform(gizmo_transform.origin)
+			return current_selection.parent.global_transform.inverse() * gizmo_transform.origin
 		GizmoMode.NORMAL:
 			return Vector3.ZERO
 	return gizmo_transform.origin
@@ -141,13 +141,13 @@ var current_selection
 
 func _on_selection_changed(selection) -> void:
 	if current_selection:
-		current_selection.disconnect("selection_changed", self, "_on_selected_geometry_changed")
-		current_selection.disconnect("selection_mutated", self, "_on_selected_geometry_mutated")
+		current_selection.disconnect("selection_changed",Callable(self,"_on_selected_geometry_changed"))
+		current_selection.disconnect("selection_mutated",Callable(self,"_on_selected_geometry_mutated"))
 	current_selection = selection
 	gizmo_transform = null
 	if current_selection:
-		current_selection.connect("selection_changed", self, "_on_selected_geometry_changed")
-		current_selection.connect("selection_mutated", self, "_on_selected_geometry_mutated")
+		current_selection.connect("selection_changed",Callable(self,"_on_selected_geometry_changed"))
+		current_selection.connect("selection_mutated",Callable(self,"_on_selected_geometry_mutated"))
 		_on_selected_geometry_changed()
 
 
@@ -187,7 +187,7 @@ func _transform_axis_value_changed(val, s, mode, axis) -> void:
 			var v = Vector3(translate_x.value, translate_y.value, translate_z.value)
 			match current_gizmo_mode:
 				GizmoMode.LOCAL:
-					v = current_selection.parent.global_transform.xform(v)
+					v = current_selection.parent.global_transform * v
 				GizmoMode.NORMAL:
 					v = (
 						gizmo_transform.origin

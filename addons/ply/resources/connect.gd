@@ -48,7 +48,7 @@ static func faces(ply_mesh, f1, f2, undo_redo = null) -> bool:
 
 	f1_edges = ply_mesh.get_face_edges_starting_at(min_pair[0], ply_mesh.edge_side(min_pair[0], f1))
 	f2_edges = ply_mesh.get_face_edges_starting_at(min_pair[1], ply_mesh.edge_side(min_pair[1], f2))
-	f2_edges.invert()
+	f2_edges.reverse()
 	f2_edges.push_front(f2_edges.pop_back())
 
 	var pre_edit = ply_mesh.begin_edit()

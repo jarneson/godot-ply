@@ -104,7 +104,7 @@ static func sfme(m, f, v1, v2):
 	var iters = 0
 	while true:
 		if iters > 100:
-			assert(false, "exhausted iters")
+			assert(false) #,"exhausted iters")
 		var s = m.edge_side(u, f)
 		m.set_edge_face(u, s, nf)
 		if u == v1e[0]:

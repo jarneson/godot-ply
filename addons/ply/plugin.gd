@@ -1,16 +1,8 @@
-tool
+@tool
 extends EditorPlugin
 
 signal selection_changed(selection)
 
-"""
-██████╗ ██████╗ ███████╗██╗      ██████╗  █████╗ ██████╗ ███████╗
-██╔══██╗██╔══██╗██╔════╝██║     ██╔═══██╗██╔══██╗██╔══██╗██╔════╝
-██████╔╝██████╔╝█████╗  ██║     ██║   ██║███████║██║  ██║███████╗
-██╔═══╝ ██╔══██╗██╔══╝  ██║     ██║   ██║██╔══██║██║  ██║╚════██║
-██║     ██║  ██║███████╗███████╗╚██████╔╝██║  ██║██████╔╝███████║
-╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝
-"""
 const Selector = preload("res://addons/ply/plugin/selector.gd")
 
 const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
@@ -22,7 +14,7 @@ const Interop = preload("res://addons/ply/interop.gd")
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 
 
-func get_plugin_name() -> String:
+func _get_plugin_name() -> String:
 	return "Ply"
 
 
@@ -30,7 +22,7 @@ var selector: Selector
 var transform_gizmo: TransformGizmo
 var inspector: Inspector
 
-var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instance()
+var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instantiate()
 
 
 func _enter_tree() -> void:
@@ -106,10 +98,10 @@ func _interop_notification(caller_plugin_id: String, code: int, _id, _args) -> v
 				ignore_inputs = false
 
 
-var last_camera: Camera
+var last_camera: Camera3D
 
 
-func forward_spatial_gui_input(camera: Camera, event: InputEvent) -> bool:
+func _forward_3d_gui_input(camera: Camera3D, event: InputEvent) -> bool:
 	last_camera = camera
 	return selector.handle_input(camera, event)
 

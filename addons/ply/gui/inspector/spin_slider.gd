@@ -1,11 +1,15 @@
-tool
+@tool
 extends Control
 
 signal edit_started
 signal value_changed(value)
 signal edit_committed(value)
 
-var value: float setget set_value
+var value: float :
+	get:
+		return value # TODOConverter40 Non existent get function 
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_value
 
 
 func set_value(v):
@@ -25,20 +29,20 @@ var value_input_just_closed: bool
 
 
 func _ready() -> void:
-	connect("focus_entered", self, "_on_focus_entered")
+	connect("focus_entered",Callable(self,"_on_focus_entered"))
 	value_input = LineEdit.new()
-	value_input.set_as_toplevel(true)
+	value_input.set_as_top_level(true)
 	value_input.focus_mode = Control.FOCUS_CLICK
 	value_input.hide()
-	value_input.connect("modal_closed", self, "_on_value_input_closed")
-	value_input.connect("text_entered", self, "_on_value_input_entered")
-	value_input.connect("focus_exited", self, "_on_value_input_focus_exited")
+	value_input.connect("modal_closed",Callable(self,"_on_value_input_closed"))
+	value_input.connect("text_submitted",Callable(self,"_on_value_input_entered"))
+	value_input.connect("focus_exited",Callable(self,"_on_value_input_focus_exited"))
 	add_child(value_input)
 	focus_mode = FOCUS_ALL
 
 
 func get_text_value() -> String:
-	return str(stepify(value, step))
+	return str(snapped(value, step))
 
 
 func _on_value_input_entered(_text) -> void:
@@ -99,21 +103,20 @@ func _handle_focus() -> void:
 
 
 func _draw() -> void:
-	var sb = get_stylebox("normal", "LineEdit")
+	var sb = get_theme_stylebox("normal", "LineEdit")
 	draw_style_box(sb, Rect2(Vector2(), rect_size))
-	var font = get_font("font", "LineEdit")
+	var font = get_theme_font("font", "LineEdit")
 	var sep_base = 4
 	var sep = sep_base + sb.get_offset().x
 	var string_width = font.get_string_size(label).x
 	var number_width = rect_size.x - sb.get_minimum_size().x - string_width - sep
 	var vofs = (rect_size.y - font.get_height()) / 2 + font.get_ascent()
-	var fc = get_color("font_color", "LineEdit")
+	var fc = get_theme_color("font_color", "LineEdit")
 	var numstr = get_text_value()
-	draw_string(font, Vector2(round(sb.get_offset().x), vofs), label, fc * Color(1, 1, 1, 0.5))
+	draw_string(font, Vector2(round(sb.get_offset().x), vofs), label, 0, -1, 16, fc * Color(1, 1, 1, 0.5))
 	draw_string(
-		font, Vector2(round(sb.get_offset().x + string_width + sep), vofs), numstr, fc, number_width
+		font, Vector2(round(sb.get_offset().x + string_width + sep), vofs), numstr, -1, 16, 0, fc, number_width
 	)
-
 
 var grabbing_spinner_mouse_pos: Vector2
 var grabbing_spinner_attempt: bool
@@ -124,7 +127,7 @@ var pre_grab_value: float
 
 func _gui_input(evt) -> void:
 	if evt is InputEventMouseButton:
-		if evt.button_index == BUTTON_LEFT:
+		if evt.button_index == MOUSE_BUTTON_LEFT:
 			if evt.pressed:
 				grabbing_spinner_attempt = true
 				grabbing_spinner_dist_cache = 0

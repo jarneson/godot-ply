@@ -1,4 +1,4 @@
-tool
+@tool
 extends Resource
 class_name PlyMesh
 
@@ -12,15 +12,15 @@ func emit_change_signal() -> void:
 	emit_signal("mesh_updated")
 
 
-export var vertexes = PoolVector3Array()
-export var vertex_edges = PoolIntArray()
+@export var vertexes = PackedVector3Array()
+@export var vertex_edges = PackedInt32Array()
 
-export var edge_vertexes = PoolIntArray()
-export var edge_faces = PoolIntArray()
-export var edge_edges = PoolIntArray()
+@export var edge_vertexes = PackedInt32Array()
+@export var edge_faces = PackedInt32Array()
+@export var edge_edges = PackedInt32Array()
 
-export var face_edges = PoolIntArray()
-export var face_surfaces = PoolIntArray()
+@export var face_edges = PackedInt32Array()
+@export var face_surfaces = PackedInt32Array()
 
 #########################################
 # Primary API
@@ -62,9 +62,9 @@ func face_count() -> int:
 	return face_edges.size()
 
 
-func face_vertices(idx) -> Array:
+func face_vertices(idx) -> PackedVector3Array:
 	var vert_idxs = face_vertex_indexes(idx)
-	var verts = PoolVector3Array()
+	var verts = PackedVector3Array()
 	for idx in vert_idxs:
 		verts.push_back(vertexes[idx])
 	return verts
@@ -229,7 +229,7 @@ func commit_edit(name: String, undo_redo: UndoRedo, pre_edits: Array) -> void:
 	emit_change_signal()
 
 
-func transform_faces(faces: Array, new_xf: Transform) -> void:
+func transform_faces(faces: Array, new_xf: Transform3D) -> void:
 	var v_idxs = []
 	for f in faces:
 		for idx in face_vertex_indexes(f):
@@ -239,7 +239,7 @@ func transform_faces(faces: Array, new_xf: Transform) -> void:
 	transform_vertexes(v_idxs, new_xf)
 
 
-func transform_edges(edges: Array, new_xf: Transform) -> void:
+func transform_edges(edges: Array, new_xf: Transform3D) -> void:
 	var v_idxs = []
 	for e in edges:
 		if not v_idxs.has(edge_origin_idx(e)):
@@ -249,7 +249,7 @@ func transform_edges(edges: Array, new_xf: Transform) -> void:
 	transform_vertexes(v_idxs, new_xf)
 
 
-func transform_vertexes(vtxs: Array, new_xf: Transform) -> void:
+func transform_vertexes(vtxs: Array, new_xf: Transform3D) -> void:
 	var center = Vector3.ZERO
 	for v in vtxs:
 		center = center + vertexes[v]
@@ -257,7 +257,7 @@ func transform_vertexes(vtxs: Array, new_xf: Transform) -> void:
 
 	var dict = {}
 	for idx in vtxs:
-		vertexes[idx] = new_xf.basis.xform(vertexes[idx] - center) + center + new_xf.origin
+		vertexes[idx] = new_xf.basis * vertexes[idx] - center + center + new_xf.origin
 
 
 func scale_faces(faces: Array, plane_normal: Vector3, axes: Array, scale_factor: float) -> void:
@@ -370,17 +370,16 @@ func is_manifold() -> String:
 
 func evict_vertices(idxs, ignore_edges = []) -> void:
 	idxs.sort()
-	idxs.invert()
+	idxs.reverse()
 	for idx in idxs:
 		vertexes.remove(idx)
 		vertex_edges.remove(idx)
 		for e_idx in range(edge_vertexes.size()):
 			if ignore_edges.has(e_idx / 2):
 				continue
-			assert(
-				edge_vertexes[e_idx] != idx,
-				"trying to evict vertex %s in use by edge %s" % [idx, e_idx / 2]
-			)
+			if edge_vertexes[e_idx] == idx:
+				push_error("trying to evict vertex %s in use by edge %s" % [idx, e_idx / 2])
+				assert(false)
 			if edge_vertexes[e_idx] > idx:
 				edge_vertexes[e_idx] -= 1
 
@@ -434,7 +433,8 @@ func get_vertex_edges(v_idx, start = null) -> Array:
 		elif edge_destination_idx(e) == v_idx:
 			e = edge_right_cw(e)
 		else:
-			assert(false, "edge %s does not include vertex %s" % [start, v_idx])
+			push_error("edge %s does not include vertex %s" % [start, v_idx])
+			assert(false)
 
 	return out
 
@@ -454,7 +454,7 @@ func get_vertex_faces(v_idx) -> Array:
 #         origin,       destination
 func evict_edges(idxs) -> void:
 	idxs.sort()
-	idxs.invert()
+	idxs.reverse()
 	var ignore = idxs.duplicate()
 	for idx in idxs:
 		ignore.erase(idx)
@@ -470,21 +470,23 @@ func evict_edges(idxs) -> void:
 		for i in range(edge_edges.size()):
 			if ignore.has(i / 2):
 				continue
-			assert(
-				edge_edges[i] != idx, "attempting to evict edge %s in use by edge %s" % [idx, i / 2]
-			)
+			if edge_edges[i] == idx:
+				push_error("attempting to evict edge %s in use by edge %s" % [idx, i / 2])
+				assert(false)
 			if edge_edges[i] > idx:
 				edge_edges[i] -= 1
 
 		for i in range(vertex_edges.size()):
-			assert(
-				vertex_edges[i] != idx, "attempting to evict edge %s in use by vertex %s" % [idx, i]
-			)
+			if vertex_edges[i] == idx:
+				push_error( "attempting to evict edge %s in use by vertex %s" % [idx, i])
+				assert(false)
 			if vertex_edges[i] > idx:
 				vertex_edges[i] -= 1
 
 		for i in range(face_edges.size()):
-			assert(face_edges[i] != idx, "attempting to evict edge %s in use by face %s" % [idx, i])
+			if face_edges[i] == idx:
+				push_error("attempting to evict edge %s in use by face %s" % [idx, i])
+				assert(false)
 			if face_edges[i] > idx:
 				face_edges[i] -= 1
 
@@ -495,11 +497,11 @@ func expand_edges(more) -> void:
 	edge_edges.resize(edge_edges.size() + more * 2)
 
 
-func set_edge_vertexes(arr: PoolIntArray) -> void:
+func set_edge_vertexes(arr: PackedInt32Array) -> void:
 	edge_vertexes = arr
 
 
-func set_edge_edges(arr: PoolIntArray) -> void:
+func set_edge_edges(arr: PackedInt32Array) -> void:
 	edge_edges = arr
 
 
@@ -508,7 +510,8 @@ func edge_side(e_idx, f_idx) -> int:
 		return Side.LEFT
 	if edge_face_right(e_idx) == f_idx:
 		return Side.RIGHT
-	assert(false, "edge %s does not touch face %s" % [e_idx, f_idx])
+	push_error("edge %s does not touch face %s" % [e_idx, f_idx])
+	assert(false)
 	return Side.UNKNOWN
 
 
@@ -629,7 +632,7 @@ func set_edge_destination(e, v):
 
 func evict_faces(idxs, ignore_edges = []):
 	idxs.sort()
-	idxs.invert()
+	idxs.reverse()
 	for f_idx in idxs:
 		face_edges.remove(f_idx)
 		face_surfaces.remove(f_idx)
@@ -637,10 +640,9 @@ func evict_faces(idxs, ignore_edges = []):
 		for i in range(edge_faces.size()):
 			if ignore_edges.has(i / 2):
 				continue
-			assert(
-				edge_faces[i] != f_idx,
-				"attempting to evict face %s in use by edge %s" % [f_idx, i / 2]
-			)
+			if edge_faces[i] == f_idx:
+				push_error("attempting to evict face %s in use by edge %s" % [f_idx, i / 2])
+				assert(false)
 			if edge_faces[i] > f_idx:
 				edge_faces[i] -= 1
 
@@ -660,15 +662,16 @@ func get_face_edges(idx):
 
 func face_vertex_indexes(idx):
 	var edges = get_face_edges(idx)
-	assert(edges.size() > 0, "face %s has no edges" % [idx])
-	var verts = PoolIntArray()
+	assert(edges.size() > 0) #,"face %s has no edges" % [idx])
+	var verts = PackedInt32Array()
 	for e in edges:
 		if edge_face_left(e) == idx:
 			verts.push_back(edge_origin_idx(e))
 		elif edge_face_right(e) == idx:
 			verts.push_back(edge_destination_idx(e))
 		else:
-			assert(false, "edge %s retured does not include face %s" % [e, idx])
+			push_error("edge %s retured does not include face %s" % [e, idx])
+			assert(false)
 	return verts
 
 
@@ -692,13 +695,13 @@ func render_face(st, f_idx, offset = Vector3.ZERO, num_verts = 0):
 
 
 func set_mesh(vs, ves, fes, fss, evs, efs, ees):
-	vertexes = PoolVector3Array(vs)
-	vertex_edges = PoolIntArray(ves)
-	face_edges = PoolIntArray(fes)
-	face_surfaces = PoolIntArray(fss)
-	edge_vertexes = PoolIntArray(evs)
-	edge_faces = PoolIntArray(efs)
-	edge_edges = PoolIntArray(ees)
+	vertexes = PackedVector3Array(vs)
+	vertex_edges = PackedInt32Array(ves)
+	face_edges = PackedInt32Array(fes)
+	face_surfaces = PackedInt32Array(fss)
+	edge_vertexes = PackedInt32Array(evs)
+	edge_faces = PackedInt32Array(efs)
+	edge_edges = PackedInt32Array(ees)
 	emit_signal("mesh_updated")
 
 

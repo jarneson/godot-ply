@@ -1,10 +1,11 @@
-extends ImmediateGeometry
+extends MeshInstance3D
 
-onready var editor = get_parent()
+@onready var editor = get_parent()
 
+var m = StandardMaterial3D.new()
 
 func _ready() -> void:
-	var m = SpatialMaterial.new()
+	mesh = ImmediateMesh.new()
 	m.albedo_color = Color(1, 1, 1, 0.5)
 	m.flags_use_point_size = true
 	m.flags_unshaded = true
@@ -14,15 +15,14 @@ func _ready() -> void:
 	m.params_grow = true
 	m.params_grow_amount = 1.0
 	# m.flags_no_depth_test = true # enable for xray
-	# m.params_cull_mode = SpatialMaterial.CULL_DISABLED # enable for xray
-	set_material_override(m)
+	# m.params_cull_mode = StandardMaterial3D.CULL_DISABLED # enable for xray
 
 
 func _process(_delta) -> void:
 	global_transform = editor.parent.global_transform
-	clear()
-	begin(Mesh.PRIMITIVE_TRIANGLES)
-	set_color(Color(0, 1, 0, 0.5))
+	mesh.clear_surfaces()
+	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
+	mesh.surface_set_color(Color(0, 1, 0, 0.5))
 	for f in range(editor.ply_mesh.face_count()):
 		if not editor.selected_faces.has(f):
 			continue
@@ -33,7 +33,7 @@ func _process(_delta) -> void:
 		if verts.size() == 0:
 			continue
 		for tri in tris:
-			add_vertex(verts[tri[0]][0] + normal * 0.001)
-			add_vertex(verts[tri[1]][0] + normal * 0.001)
-			add_vertex(verts[tri[2]][0] + normal * 0.001)
-	end()
+			mesh.surface_add_vertex(verts[tri[0]][0] + normal * 0.001)
+			mesh.surface_add_vertex(verts[tri[1]][0] + normal * 0.001)
+			mesh.surface_add_vertex(verts[tri[2]][0] + normal * 0.001)
+	mesh.surface_end()

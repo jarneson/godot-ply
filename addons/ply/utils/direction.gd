@@ -1,7 +1,7 @@
 enum { UNKNOWN, LEFT, RIGHT }
 
 
-static func invert(dir) -> int:
+static func reverse(dir) -> int:
 	match dir:
 		LEFT:
 			return RIGHT

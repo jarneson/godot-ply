@@ -61,7 +61,8 @@ static func edges(ply_mesh, edge_indices, undo_redo = null) -> bool:
 				elif ply_mesh.edge_destination_idx(neighbor) == v_idx:
 					ply_mesh.set_edge_destination_idx(neighbor, new_vertex)
 				else:
-					assert(false, "edge %s does not include vertex %s" % [neighbor, v_idx])
+					push_error("edge %s does not include vertex %s" % [neighbor, v_idx])
+					assert(false)
 
 		# for each edge
 		for edge_idx in group:
@@ -84,23 +85,23 @@ static func edges(ply_mesh, edge_indices, undo_redo = null) -> bool:
 					ply_mesh.set_edge_cw(
 						winner,
 						ply_mesh.edge_side(winner, f_idx),
-						ply_mesh.edge_cw(loser, Side.invert(ply_mesh.edge_side(loser, f_idx)))
+						ply_mesh.edge_cw(loser, Side.reverse(ply_mesh.edge_side(loser, f_idx)))
 					)
 
 					ply_mesh.set_edge_face(
 						winner,
 						ply_mesh.edge_side(winner, f_idx),
-						ply_mesh.edge_face(loser, Side.invert(ply_mesh.edge_side(loser, f_idx)))
+						ply_mesh.edge_face(loser, Side.reverse(ply_mesh.edge_side(loser, f_idx)))
 					)
 
 					ply_mesh.set_vertex_edge(ply_mesh.edge_origin_idx(winner), winner)
 					ply_mesh.set_vertex_edge(ply_mesh.edge_destination_idx(winner), winner)
 
 					var fix_face = ply_mesh.edge_face(
-						loser, Side.invert(ply_mesh.edge_side(loser, f_idx))
+						loser, Side.reverse(ply_mesh.edge_side(loser, f_idx))
 					)
 
-					var fix_edge = ply_mesh.get_face_edges_starting_at(loser, Side.invert(ply_mesh.edge_side(loser, f_idx))).back()
+					var fix_edge = ply_mesh.get_face_edges_starting_at(loser, Side.reverse(ply_mesh.edge_side(loser, f_idx))).back()
 					ply_mesh.set_edge_cw(fix_edge, ply_mesh.edge_side(fix_edge, fix_face), winner)
 					ply_mesh.set_face_edge(fix_face, winner)
 					continue

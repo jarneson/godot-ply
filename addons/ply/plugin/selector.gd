@@ -1,4 +1,4 @@
-tool
+@tool
 extends Object
 
 const Loop = preload("res://addons/ply/resources/loop.gd")
@@ -10,16 +10,16 @@ var _plugin: EditorPlugin
 var selection: PlyEditor
 
 
-func _init(p: EditorPlugin) -> void:
+func _init(p: EditorPlugin):
 	_plugin = p
 
 
 func startup() -> void:
-	_plugin.toolbar.connect("selection_mode_changed", self, "_on_selection_mode_changed")
+	_plugin.toolbar.connect("selection_mode_changed",Callable(self,"_on_selection_mode_changed"))
 
 
 func teardown() -> void:
-	_plugin.toolbar.disconnect("selection_mode_changed", self, "_on_selection_mode_changed")
+	_plugin.toolbar.disconnect("selection_mode_changed",Callable(self,"_on_selection_mode_changed"))
 
 
 func _on_selection_mode_changed(_mode) -> void:
@@ -37,7 +37,7 @@ func _point_to_segment_dist(v, a, b) -> Vector3:
 	return ab.cross(av).length() / ab.length()
 
 
-func _scan_selection(camera: Camera, event: InputEventMouseButton) -> void:
+func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 	var ray = camera.project_ray_normal(event.position)
 	var ray_pos = camera.project_ray_origin(event.position)
 	var selection_mode = _plugin.toolbar.selection_mode
@@ -76,12 +76,12 @@ func _scan_selection(camera: Camera, event: InputEventMouseButton) -> void:
 		_plugin.selection.select_geometry([], false)
 
 
-func handle_input(camera: Camera, event: InputEvent) -> bool:
+func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	if _plugin.ignore_inputs:
 		return false
 	if event is InputEventMouseButton:
 		match event.button_index:
-			BUTTON_LEFT:
+			MOUSE_BUTTON_LEFT:
 				if event.pressed:
 					if _plugin.transform_gizmo.select(camera, event.position):
 						return true
@@ -90,10 +90,10 @@ func handle_input(camera: Camera, event: InputEvent) -> bool:
 						return true
 				else:
 					_plugin.transform_gizmo.end_edit()
-			BUTTON_RIGHT:
+			MOUSE_BUTTON_RIGHT:
 				_plugin.transform_gizmo.abort_edit()
 	if event is InputEventMouseMotion:
-		if event.button_mask & BUTTON_MASK_LEFT:
+		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
 			var snap = null
 			if event.control:
 				match _plugin.transform_gizmo.edit_mode:
