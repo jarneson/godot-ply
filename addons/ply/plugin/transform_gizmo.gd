@@ -37,7 +37,7 @@ const GIZMO_RING_HALF_WIDTH = 0.1
 
 const ROTATE_SHADER_CODE = """
 shader_type spatial;
-render_mode unshaded, depth_test_disable; 
+render_mode unshaded, depth_draw_never; 
 uniform vec4 albedo; 
 
 mat3 orthonormalize(mat3 m) { 
@@ -111,26 +111,26 @@ func _init_materials() -> void:
 	rotate_shader.code = ROTATE_SHADER_CODE
 	for i in range(3):
 		var mat = StandardMaterial3D.new()
-		mat.flags_unshaded = true
-		mat.flags_transparent = true
-		mat.flags_no_depth_test = true
-		mat.params_cull_mode = StandardMaterial3D.CULL_DISABLED
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		mat.render_priority = 127
 		mat.albedo_color = axis_colors[i]
 		axis_materials[i] = mat
 
 		mat = StandardMaterial3D.new()
-		mat.flags_unshaded = true
-		mat.flags_transparent = true
-		mat.flags_no_depth_test = true
-		mat.params_cull_mode = StandardMaterial3D.CULL_DISABLED
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+		mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		mat.render_priority = 127
 		mat.albedo_color = axis_colors_selected[i]
 		axis_materials_selected[i] = mat
 
 		var rotate_mat = ShaderMaterial.new()
 		rotate_mat.render_priority = 127
-		rotate_mat.gdshader = rotate_shader
+		rotate_mat.shader = rotate_shader
 		rotate_mat.set_shader_param("albedo", axis_colors[i])
 		rotation_materials[i] = rotate_mat
 
@@ -195,7 +195,7 @@ func _init_meshes() -> void:
 			]
 			var ma = Basis(ivec, PI / 2)
 			var points = [
-				ma * plane[0], ma.xform(plane[1]), ma.xform(plane[2]), ma.xform(plane[3])
+				ma * plane[0], ma * plane[1], ma * plane[2], ma * plane[3]
 			]
 			st.add_vertex(points[0])
 			st.add_vertex(points[1])
@@ -217,7 +217,7 @@ func _init_meshes() -> void:
 				for k in range(m):
 					var ofs = Vector2(cos((PI * 2 * k) / m), sin((PI * 2 * k) / m))
 					var normal = ivec * ofs.x + ivec2 * ofs.y
-					st.add_normal(basis * normal)
+					st.set_normal(basis * normal)
 					st.add_vertex(vertex)
 			for j in range(n):
 				for k in range(m):
@@ -276,7 +276,7 @@ func _init_meshes() -> void:
 			]
 			var ma = Basis(ivec, PI / 2)
 			var points = [
-				ma * plane[0], ma.xform(plane[1]), ma.xform(plane[2]), ma.xform(plane[3])
+				ma * plane[0], ma * plane[1], ma * plane[2], ma * plane[3]
 			]
 			st.add_vertex(points[0])
 			st.add_vertex(points[1])
@@ -293,7 +293,7 @@ func _init_instance() -> void:
 		move_gizmo_instances[i] = RenderingServer.instance_create()
 		RenderingServer.instance_set_base(move_gizmo_instances[i], move_gizmo[i])
 		RenderingServer.instance_set_scenario(
-			move_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+			move_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
 		RenderingServer.instance_set_visible(move_gizmo_instances[i], false)
 		RenderingServer.instance_geometry_set_cast_shadows_setting(
@@ -304,7 +304,7 @@ func _init_instance() -> void:
 		move_plane_gizmo_instances[i] = RenderingServer.instance_create()
 		RenderingServer.instance_set_base(move_plane_gizmo_instances[i], move_plane_gizmo[i])
 		RenderingServer.instance_set_scenario(
-			move_plane_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+			move_plane_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
 		RenderingServer.instance_set_visible(move_plane_gizmo_instances[i], false)
 		RenderingServer.instance_geometry_set_cast_shadows_setting(
@@ -315,7 +315,7 @@ func _init_instance() -> void:
 		rotate_gizmo_instances[i] = RenderingServer.instance_create()
 		RenderingServer.instance_set_base(rotate_gizmo_instances[i], rotate_gizmo[i])
 		RenderingServer.instance_set_scenario(
-			rotate_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+			rotate_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
 		RenderingServer.instance_set_visible(rotate_gizmo_instances[i], false)
 		RenderingServer.instance_geometry_set_cast_shadows_setting(
@@ -326,7 +326,7 @@ func _init_instance() -> void:
 		scale_gizmo_instances[i] = RenderingServer.instance_create()
 		RenderingServer.instance_set_base(scale_gizmo_instances[i], scale_gizmo[i])
 		RenderingServer.instance_set_scenario(
-			scale_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+			scale_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
 		RenderingServer.instance_set_visible(scale_gizmo_instances[i], false)
 		RenderingServer.instance_geometry_set_cast_shadows_setting(
@@ -337,7 +337,7 @@ func _init_instance() -> void:
 		scale_plane_gizmo_instances[i] = RenderingServer.instance_create()
 		RenderingServer.instance_set_base(scale_plane_gizmo_instances[i], scale_plane_gizmo[i])
 		RenderingServer.instance_set_scenario(
-			scale_plane_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+			scale_plane_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
 		RenderingServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
 		RenderingServer.instance_geometry_set_cast_shadows_setting(
