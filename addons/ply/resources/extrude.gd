@@ -1,7 +1,7 @@
 const Side = preload("res://addons/ply/utils/direction.gd")
 
 
-static func faces(ply_mesh, faces, undo_redo = null, distance = 1) -> void:
+static func faces(ply_mesh: PlyMesh, faces, undo_redo = null, distance = 1) -> void:
 	# walk the outside of the faces:
 	# get face edges
 	var face_edges = []
@@ -48,6 +48,9 @@ static func faces(ply_mesh, faces, undo_redo = null, distance = 1) -> void:
 	for f_idx in faces:
 		sum = sum + ply_mesh.face_normal(f_idx)
 	var extrude_direction = distance * sum / faces.size()
+	print(sum)
+	print(faces.size())
+	print(extrude_direction)
 
 	var pre_edit
 	if undo_redo:

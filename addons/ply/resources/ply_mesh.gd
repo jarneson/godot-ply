@@ -65,8 +65,8 @@ func face_count() -> int:
 func face_vertices(idx) -> PackedVector3Array:
 	var vert_idxs = face_vertex_indexes(idx)
 	var verts = PackedVector3Array()
-	for idx in vert_idxs:
-		verts.push_back(vertexes[idx])
+	for v_idx in vert_idxs:
+		verts.push_back(vertexes[v_idx])
 	return verts
 
 
