@@ -1,3 +1,4 @@
+@tool
 extends MeshInstance3D
 
 @onready var editor = get_parent()
@@ -21,6 +22,8 @@ func _ready() -> void:
 func _process(_delta) -> void:
 	global_transform = editor.parent.global_transform
 	mesh.clear_surfaces()
+	if editor.selected_faces == null or editor.selected_faces.size() == 0:
+		return
 	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	mesh.surface_set_color(Color(0, 1, 0, 0.5))
 	for f in range(editor.ply_mesh.face_count()):

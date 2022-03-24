@@ -28,33 +28,25 @@ const Faces = preload("res://addons/ply/nodes/ply_faces.gd")
 @export var parent_property: String = "mesh"
 @export var ply_mesh: Resource :
 	get:
-		return ply_mesh # TODOConverter40 Copy here content of get_ply_mesh
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_ply_mesh
+		return _ply_mesh # TODOConverter40 Copy here content of get_ply_mesh
+	set(v):
+		if v == null:
+			if _ply_mesh && _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
+				_ply_mesh.disconnect("mesh_updated",Callable(self,"_on_mesh_updated"))
+			_ply_mesh = v
+			_clear_parent()
+		if v is PlyMesh:
+			if _ply_mesh && _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
+				_ply_mesh.disconnect("mesh_updated",Callable(self,"_on_mesh_updated"))
+			_ply_mesh = v
+			_ply_mesh.connect("mesh_updated",Callable(self,"_on_mesh_updated"))
+			_on_mesh_updated()
+		else:
+			print("assigned resource that is not a ply_mesh to ply editor")
 @export var materials : Array[BaseMaterial3D]:
 	set=set_materials # (Array, Material)
 
 var _ply_mesh: PlyMesh
-
-
-func get_ply_mesh() -> Resource:
-	return _ply_mesh
-
-
-func set_ply_mesh(v: Resource) -> void:
-	if v == null:
-		if _ply_mesh && _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
-			_ply_mesh.disconnect("mesh_updated",Callable(self,"_on_mesh_updated"))
-		_ply_mesh = v
-		_clear_parent()
-	if v is PlyMesh:
-		if _ply_mesh && _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
-			_ply_mesh.disconnect("mesh_updated",Callable(self,"_on_mesh_updated"))
-		_ply_mesh = v
-		_ply_mesh.connect("mesh_updated",Callable(self,"_on_mesh_updated"))
-		_on_mesh_updated()
-	else:
-		print("assigned resource that is not a ply_mesh to ply editor")
 
 
 func set_materials(v) -> void:
@@ -71,7 +63,7 @@ func _ready() -> void:
 
 	if false and parent and parent.is_class("MeshInstance3D") and parent.mesh:
 		var generate = load("res://addons/ply/resources/generate.gd")
-		_ply_mesh = PlyMesh.new()
+		ply_mesh = PlyMesh.new()
 		for surface_i in parent.mesh.get_surface_count():
 			var mdt = MeshDataTool.new()
 			mdt.create_from_surface(parent.mesh, surface_i)
@@ -111,15 +103,14 @@ func _ready() -> void:
 			break
 		_on_mesh_updated()
 	elif not _ply_mesh:
-		_ply_mesh = PlyMesh.new()
-		_ply_mesh.connect("mesh_updated",Callable(self,"_on_mesh_updated"))
+		ply_mesh = PlyMesh.new()
 	_compute_materials()
 
 
 func _compute_materials() -> void:
 	materials = default_materials
 	var paints = _ply_mesh.face_paint_indices()
-	if parent is MeshInstance3D:
+	if parent is MeshInstance3D and parent.mesh:
 		for surface in parent.mesh.get_surface_count():
 			var mat = parent.get_surface_override_material(surface)
 			if mat:
@@ -180,7 +171,10 @@ func _on_mesh_updated() -> void:
 	for f in remove:
 		selected_faces.erase(f)
 	if parent:
-		parent.set(parent_property, _ply_mesh.get_mesh(parent.get(parent_property)))
+		var m = parent.get(parent_property)
+		if not m:
+			m = ArrayMesh.new()
+		parent.set(parent_property, _ply_mesh.get_mesh(m))
 		if parent is MeshInstance3D:
 			var collision_shape = parent.get_node_or_null("StaticBody3D/CollisionShape3D")
 			if collision_shape:
@@ -188,37 +182,29 @@ func _on_mesh_updated() -> void:
 	_paint_faces()
 	emit_signal("selection_mutated")
 
-
-var selected: bool :
+var _selected: bool
+var selected: bool:
 	get:
-		return selected # TODOConverter40 Copy here content of _get_selected
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of _set_selected
+		return _selected # TODOConverter40 Copy here content of _get_selected
+	set(v):
+		if _selected == v:
+			return
+		_selected = v
+		if not _selected:
+			_vertices.queue_free()
+			_wireframe.queue_free()
+			_faces.queue_free()
+		if _selected:
+			_compute_materials()
+			_vertices = Vertices.new()
+			add_child(_vertices)
+			_wireframe = Wireframe.new()
+			add_child(_wireframe)
+			_faces = Faces.new()
+			add_child(_faces)
 var _wireframe: Wireframe
 var _vertices: Vertices
 var _faces: Faces
-
-
-func _set_selected(v: bool) -> void:
-	if selected == v:
-		return
-	selected = v
-	if not selected:
-		_vertices.queue_free()
-		_wireframe.queue_free()
-		_faces.queue_free()
-	if selected:
-		_compute_materials()
-		_vertices = Vertices.new()
-		add_child(_vertices)
-		_wireframe = Wireframe.new()
-		add_child(_wireframe)
-		_faces = Faces.new()
-		add_child(_faces)
-
-
-func _get_selected() -> bool:
-	return selected
 
 
 class IntersectSorter:
@@ -234,7 +220,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 		for v in range(_ply_mesh.vertex_count()):
 			var pos = parent.global_transform * _ply_mesh.vertexes[v]
 			var dist = pos.distance_to(origin)
-			var hit = Geometry2D.segment_intersects_sphere(
+			var hit = Geometry3D.segment_intersects_sphere(
 				origin, origin + direction * 1000, pos, sqrt(dist) / 32.0
 			)
 			if hit:
@@ -258,7 +244,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 
 				var r_o = t * origin
 				var r_d = t.basis * direction
-				var hit = Geometry2D.segment_intersects_cylinder(
+				var hit = Geometry3D.segment_intersects_cylinder(
 					r_o, r_o + r_d * 1000.0, dist, sqrt(e_midpoint.distance_to(origin)) / 32.0
 				)
 				if hit:
@@ -276,7 +262,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 			var verts = ft[0]
 			var tris = ft[1]
 			for tri in tris:
-				var hit = Geometry2D.segment_intersects_triangle(
+				var hit = Geometry3D.segment_intersects_triangle(
 					ai_origin,
 					ai_origin + ai_direction * 1000.0,
 					verts[tri[0]][0],

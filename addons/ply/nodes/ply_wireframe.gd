@@ -1,3 +1,4 @@
+@tool
 extends MeshInstance3D
 
 @onready var editor = get_parent()

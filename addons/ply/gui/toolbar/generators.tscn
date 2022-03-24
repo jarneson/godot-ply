@@ -1,13 +1,11 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://dr3ixmwe8ascj"]
 
-[ext_resource path="res://addons/ply/gui/toolbar/generator_button_group.tres" type="ButtonGroup" id=1]
-[ext_resource path="res://addons/ply/gui/toolbar/generators.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://addons/ply/gui/toolbar/generators.gd" id="2"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_tn634"]
 
 [node name="Generators" type="AcceptDialog"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-window_title = "Ply: Generators"
-script = ExtResource( 2 )
+script = ExtResource( "2" )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -28,15 +26,14 @@ __meta__ = {
 [node name="C" type="HBoxContainer" parent="C"]
 offset_right = 1008.0
 offset_bottom = 556.0
-custom_constants/separation = 10
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Generators" type="PanelContainer" parent="C/C"]
+rect_min_size = Vector2(250, 0)
 offset_right = 250.0
 offset_bottom = 556.0
-rect_min_size = Vector2( 250, 0 )
 
 [node name="C" type="VBoxContainer" parent="C/C/Generators"]
 offset_left = 7.0
@@ -47,28 +44,28 @@ offset_bottom = 549.0
 [node name="Plane" type="CheckBox" parent="C/C/Generators/C"]
 offset_right = 236.0
 offset_bottom = 24.0
-group = ExtResource( 1 )
+button_group = SubResource( "ButtonGroup_tn634" )
 text = "Plane"
 
 [node name="Cube" type="CheckBox" parent="C/C/Generators/C"]
 offset_top = 28.0
 offset_right = 236.0
 offset_bottom = 52.0
-group = ExtResource( 1 )
+button_group = SubResource( "ButtonGroup_tn634" )
 text = "Cube"
 
 [node name="Icosphere" type="CheckBox" parent="C/C/Generators/C"]
 offset_top = 56.0
 offset_right = 236.0
 offset_bottom = 80.0
-group = ExtResource( 1 )
+button_group = SubResource( "ButtonGroup_tn634" )
 text = "Icosphere"
 
 [node name="Cylinder" type="CheckBox" parent="C/C/Generators/C"]
 offset_top = 84.0
 offset_right = 236.0
 offset_bottom = 108.0
-group = ExtResource( 1 )
+button_group = SubResource( "ButtonGroup_tn634" )
 text = "Cylinder"
 
 [node name="Settings" type="PanelContainer" parent="C/C"]

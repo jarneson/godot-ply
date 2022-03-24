@@ -432,7 +432,7 @@ func select(camera: Camera3D, screen_position: Vector2, only_highlight: bool = f
 				+ gt.basis[i] * (GIZMO_ARROW_OFFSET + (GIZMO_ARROW_SIZE * 0.5))
 			)
 			var grabber_radius = gs * GIZMO_ARROW_SIZE
-			var res = Geometry2D.segment_intersects_sphere(
+			var res = Geometry3D.segment_intersects_sphere(
 				ray_pos, ray_pos + ray * 1000, grabber_pos, grabber_radius
 			)
 			if res.size() > 0:
@@ -480,7 +480,7 @@ func select(camera: Camera3D, screen_position: Vector2, only_highlight: bool = f
 			var normal = gt.basis[i].normalized()
 			var plane = Plane(normal, normal.dot(gt.origin))
 			var r = plane.intersects_ray(ray_pos, ray)
-			if not r:
+			if r == null:
 				continue
 			var dist = r.distance_to(gt.origin)
 			var r_dir = (r - gt.origin).normalized()
@@ -518,7 +518,7 @@ func select(camera: Camera3D, screen_position: Vector2, only_highlight: bool = f
 			var grabber_radius = gs * GIZMO_SCALE_SIZE
 			var r: Vector3
 
-			var res = Geometry2D.segment_intersects_sphere(
+			var res = Geometry3D.segment_intersects_sphere(
 				ray_pos, ray_pos + ray * 1000, grabber_pos, grabber_radius
 			)
 			if res.size() > 0:

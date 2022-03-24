@@ -62,19 +62,19 @@ func _update_display() -> void:
 func get_selection() -> Array:
 	match current_selection:
 		"Plane":
-			return ["Plane", [float(plane_size.text), int(plane_subdivisions.text)]]
+			return ["Plane", [plane_size.text.to_float(), plane_subdivisions.text.to_int()]]
 		"Cube":
-			return ["Cube", [float(cube_size.text), int(cube_subdivisions.text)]]
+			return ["Cube", [cube_size.text.to_float(), cube_subdivisions.text.to_int()]]
 		"Icosphere":
-			return ["Icosphere", [float(icosphere_radius.text), int(icosphere_subdivisions.text)]]
+			return ["Icosphere", [icosphere_radius.text.to_float(), icosphere_subdivisions.text.to_int()]]
 		"Cylinder":
 			return [
 				"Cylinder",
 				[
-					float(cylinder_radius.text),
-					float(cylinder_depth.text),
-					int(cylinder_vertices.text),
-					int(cylinder_segments.text)
+					cylinder_radius.text.to_float(),
+					cylinder_depth.text.to_float(),
+					cylinder_vertices.text.to_int(),
+					cylinder_segments.text.to_int()
 				]
 			]
 	return []

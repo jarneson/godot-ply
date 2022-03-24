@@ -124,7 +124,7 @@ func face_tris(f_idx: int) -> Array:
 		if next >= remaining.size():
 			next = 0
 		tris.push_back([remaining[prev], remaining[curr], remaining[next]])
-		remaining.remove(min_idx)
+		remaining.remove_at(min_idx)
 
 	if remaining.size() == 3:
 		tris.push_back([remaining[0], remaining[1], remaining[2]])
@@ -190,8 +190,7 @@ func get_mesh(mesh: ArrayMesh = null) -> ArrayMesh:
 	surfaces.resize(max_surface + 1)
 	if not mesh:
 		mesh = ArrayMesh.new()
-	while mesh.get_surface_count() > 0:
-		mesh.surface_remove(0)
+	mesh.clear_surfaces()
 	for s_idx in range(surfaces.size()):
 		var st = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -545,13 +544,13 @@ func get_face_edges_starting_at(start, side) -> Array:
 	return out
 
 
-func edge_cw(idx, side) -> Array:
+func edge_cw(idx, side) -> int:
 	match side:
 		Side.LEFT:
 			return edge_left_cw(idx)
 		Side.RIGHT:
 			return edge_right_cw(idx)
-	return []
+	return -1
 
 
 func set_edge_cw(idx, side, e) -> void:
@@ -562,11 +561,11 @@ func set_edge_cw(idx, side, e) -> void:
 			set_edge_right_cw(idx, e)
 
 
-func edge_next_cw(edge, face) -> Array:
+func edge_next_cw(edge, face) -> int:
 	return edge_cw(edge, edge_side(edge, face))
 
 
-func edge_left_cw(idx) -> Array:
+func edge_left_cw(idx) -> int:
 	return edge_edges[2 * idx]
 
 
@@ -574,7 +573,7 @@ func set_edge_left_cw(idx, cw) -> void:
 	edge_edges[2 * idx] = cw
 
 
-func edge_right_cw(idx) -> Array:
+func edge_right_cw(idx) -> int:
 	return edge_edges[2 * idx + 1]
 
 
@@ -614,11 +613,11 @@ func set_edge_destination_idx(e, v) -> void:
 	edge_vertexes[2 * e + 1] = v
 
 
-func edge_origin(idx) -> int:
+func edge_origin(idx) -> Vector3:
 	return vertexes[edge_origin_idx(idx)]
 
 
-func edge_destination(idx):
+func edge_destination(idx) -> Vector3:
 	return vertexes[edge_destination_idx(idx)]
 
 

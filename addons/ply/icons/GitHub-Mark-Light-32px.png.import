@@ -1,9 +1,9 @@
 [remap]
 
 importer="texture"
-type="StreamTexture2D"
+type="CompressedTexture2D"
 uid="uid://bdi6gpvnfxm6u"
-path="res://.godot/imported/GitHub-Mark-Light-32px.png-174dc966f639bd7c480c9a93d477eabd.stex"
+path="res://.godot/imported/GitHub-Mark-Light-32px.png-174dc966f639bd7c480c9a93d477eabd.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/ply/icons/GitHub-Mark-Light-32px.png"
-dest_files=["res://.godot/imported/GitHub-Mark-Light-32px.png-174dc966f639bd7c480c9a93d477eabd.stex"]
+dest_files=["res://.godot/imported/GitHub-Mark-Light-32px.png-174dc966f639bd7c480c9a93d477eabd.ctex"]
 
 [params]
 
@@ -29,6 +29,6 @@ roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
-process/HDR_as_SRGB=false
+process/hdr_as_srgb=false
 process/size_limit=0
 detect_3d/compress_to=1

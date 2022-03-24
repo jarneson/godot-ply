@@ -1,10 +1,10 @@
 [remap]
 
 importer="texture"
-type="StreamTexture2D"
+type="CompressedTexture2D"
 uid="uid://bb6kjype86gts"
-path.s3tc="res://.godot/imported/debug.png-6e6d0767cdffbb8e09bb41fa079b9a59.s3tc.stex"
-path.etc2="res://.godot/imported/debug.png-6e6d0767cdffbb8e09bb41fa079b9a59.etc2.stex"
+path.s3tc="res://.godot/imported/debug.png-6e6d0767cdffbb8e09bb41fa079b9a59.s3tc.ctex"
+path.etc2="res://.godot/imported/debug.png-6e6d0767cdffbb8e09bb41fa079b9a59.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc", "etc2"],
 "vram_texture": true
@@ -13,7 +13,7 @@ metadata={
 [deps]
 
 source_file="res://addons/ply/materials/debug.png"
-dest_files=["res://.godot/imported/debug.png-6e6d0767cdffbb8e09bb41fa079b9a59.s3tc.stex", "res://.godot/imported/debug.png-6e6d0767cdffbb8e09bb41fa079b9a59.etc2.stex"]
+dest_files=["res://.godot/imported/debug.png-6e6d0767cdffbb8e09bb41fa079b9a59.s3tc.ctex", "res://.godot/imported/debug.png-6e6d0767cdffbb8e09bb41fa079b9a59.etc2.ctex"]
 
 [params]
 
@@ -31,6 +31,6 @@ roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
-process/HDR_as_SRGB=false
+process/hdr_as_srgb=false
 process/size_limit=0
 detect_3d/compress_to=0

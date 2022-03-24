@@ -1,9 +1,9 @@
 [remap]
 
 importer="texture"
-type="StreamTexture2D"
+type="CompressedTexture2D"
 uid="uid://tisqy0c8hsce"
-path="res://.godot/imported/loop_cut.svg-3e7d9517fd3957b557e72b57c5e1f714.stex"
+path="res://.godot/imported/loop_cut.svg-3e7d9517fd3957b557e72b57c5e1f714.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/ply/icons/loop_cut.svg"
-dest_files=["res://.godot/imported/loop_cut.svg-3e7d9517fd3957b557e72b57c5e1f714.stex"]
+dest_files=["res://.godot/imported/loop_cut.svg-3e7d9517fd3957b557e72b57c5e1f714.ctex"]
 
 [params]
 
@@ -29,7 +29,7 @@ roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
-process/HDR_as_SRGB=false
+process/hdr_as_srgb=false
 process/size_limit=0
 detect_3d/compress_to=1
 svg/scale=4.0

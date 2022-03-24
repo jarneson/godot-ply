@@ -40,41 +40,41 @@ The inspector includes translate/rotate/scale tools for fine-tuning, respecting 
 
 There are tools for each selection mode:
 - Mesh
-    - Mesh Tools
-        - Subdivide: Subdivide all quads/tris into four quads/tris
-        - Triangulate: Triangulate all faces using an ear clipping algorithm
+	- Mesh Tools
+		- Subdivide: Subdivide all quads/tris into four quads/tris
+		- Triangulate: Triangulate all faces using an ear clipping algorithm
 		- Invert Normals: Inverts the normals of all faces
-    - Mesh Utilities
-        - Export to OBJ: Exports the selected mesh to an OBJ file
-            - Currently exports basic geometry, excluding normals, materials, etc
-        - Quick Generators
-            - Plane: Generate a two-sided unit plane
-            - Cube: Generate a unit cube
-        - Generate: Opens a modal for more advanced generation
-            - Plane: Generate a plane with a specified size and subdivision count
-            - Cube: Generate a cube with a specified size and subdivision count
-            - Isosphere: Generate an isosphere with a specified radius and subdivisions
-            - Cylinder: Generate a cylinder with a specified radius, depth, and circle vertex count
+	- Mesh Utilities
+		- Export to OBJ: Exports the selected mesh to an OBJ file
+			- Currently exports basic geometry, excluding normals, materials, etc
+		- Quick Generators
+			- Plane: Generate a two-sided unit plane
+			- Cube: Generate a unit cube
+		- Generate: Opens a modal for more advanced generation
+			- Plane: Generate a plane with a specified size and subdivision count
+			- Cube: Generate a cube with a specified size and subdivision count
+			- Isosphere: Generate an isosphere with a specified radius and subdivisions
+			- Cylinder: Generate a cylinder with a specified radius, depth, and circle vertex count
 
 - Face
-    - Select Faces
-        - ![loopicon1](./addons/ply/icons/face_loop.svg) Loop: a quad loop in one direction
-        - ![loopicon2](./addons/ply/icons/face_loop_2.svg) Loop: a quad loop in the other direction
-    - Face Tools
-        - ![extrudeicon](./addons/ply/icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
-        - Connect: Remove the two selected faces, creating a new face between edges. Tries to choose an edge pairing that works.. but not always.
-        - Subdivide: Subdivide a quad or a tri into 4 quads or 4 tris
-        - Triangulate: Triangulates a face using an ear clipping algorithm
-    - Paint Faces: Moves the selected face to the chosen surface, allowing multiple materials per mesh. Assign materials to the parent MeshInstance or in the Ply Editor materials array.
+	- Select Faces
+		- ![loopicon1](./addons/ply/icons/face_loop.svg) Loop: a quad loop in one direction
+		- ![loopicon2](./addons/ply/icons/face_loop_2.svg) Loop: a quad loop in the other direction
+	- Face Tools
+		- ![extrudeicon](./addons/ply/icons/extrude_face.svg) ` ctrl-e ` Extrude: Extrudes the selected face(s) along their mean normal by 1 unit
+		- Connect: Remove the two selected faces, creating a new face between edges. Tries to choose an edge pairing that works.. but not always.
+		- Subdivide: Subdivide a quad or a tri into 4 quads or 4 tris
+		- Triangulate: Triangulates a face using an ear clipping algorithm
+	- Paint Faces: Moves the selected face to the chosen surface, allowing multiple materials per mesh. Assign materials to the parent MeshInstance or in the Ply Editor materials array.
 - Edge
-    - Select Edges
-        - ![loopicon](./addons/ply/icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
-    - Edge Tools
-        - ![loopcuticon](./addons/ply/icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
-        - ![subdivideicon](./addons/ply/icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
-        - ![collapseicon](./addons/ply/icons/edge_collapse.svg) Collapse: Collapses an edge into a single vertex at its midpoint
+	- Select Edges
+		- ![loopicon](./addons/ply/icons/edge_select_loop.svg) Loop: Select an edge loop from the given edge
+	- Edge Tools
+		- ![loopcuticon](./addons/ply/icons/loop_cut.svg) ` ctrl-r ` Cut Loop: Add a loop cut perpindicular to the selected edge
+		- ![subdivideicon](./addons/ply/icons/edge_subdivide.svg) Subdivide: Splits the selected edge into two parallel edges
+		- ![collapseicon](./addons/ply/icons/edge_collapse.svg) Collapse: Collapses an edge into a single vertex at its midpoint
 - Vertex
-    - None, yet!
+	- None, yet!
 
 ### Collisions
 Collision meshes are updated if there is a CollisionShape child of the parent MeshInstance node at `$StaticBody/CollsionShape`. This is the default naming if you use the `Create Trimesh Static Body` tool.
@@ -88,20 +88,20 @@ Ply uses a winged edge representation for edges but omits counterclockwise navig
 ```
 omitted
 left ccw        right cw
-         \     /
-          \   /
-           \ /
-            o destination
-            ^
-            |
+		 \     /
+		  \   /
+		   \ /
+			o destination
+			^
+			|
 left face   |   right face
-            |
-            o origin
-           / \
-          /   \
-         /     \
+			|
+			o origin
+		   / \
+		  /   \
+		 /     \
 left cw          right ccw
-                 omitted
+				 omitted
 ```
 
 ### Implications
