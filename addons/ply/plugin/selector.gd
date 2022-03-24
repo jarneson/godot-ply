@@ -47,7 +47,7 @@ func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 	if hits.size() > 0:
 		deselect = false
 		var handled = false
-		if event.alt and selection_mode == SelectionMode.FACE:
+		if event.alt_pressed and selection_mode == SelectionMode.FACE:
 			var hit_pos = hits[0][3]
 			var f = hits[0][1]
 			var edges = _plugin.selection._ply_mesh.get_face_edges(f)
@@ -66,13 +66,13 @@ func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 				var loop = Loop.get_face_loop(_plugin.selection._ply_mesh, hits[0][1], min_idx)[0]
 				_plugin.selection.selected_faces = loop
 				handled = true
-		elif event.alt and selection_mode == SelectionMode.EDGE:
+		elif event.alt_pressed and selection_mode == SelectionMode.EDGE:
 			var loop = Loop.get_edge_loop(_plugin.selection._ply_mesh, hits[0][1])
 			_plugin.selection.selected_edges = loop
 			handled = true
 		if not handled:
-			_plugin.selection.select_geometry([hits[0]], event.shift)
-	if deselect and not event.shift:
+			_plugin.selection.select_geometry([hits[0]], event.shift_pressed)
+	if deselect and not event.shift_pressed:
 		_plugin.selection.select_geometry([], false)
 
 
@@ -95,7 +95,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	if event is InputEventMouseMotion:
 		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
 			var snap = null
-			if event.control:
+			if event.ctrl_pressed:
 				match _plugin.transform_gizmo.edit_mode:
 					1:  # translate
 						snap = 1.0
