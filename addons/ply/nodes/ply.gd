@@ -240,13 +240,15 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 				var b_z = dir.normalized()
 				var b_y = direction.cross(b_z).normalized()
 				var b_x = b_z.cross(b_y)
-				var t = Transform3D(Basis(b_x, b_y, b_z), e_midpoint).inverse()
+				var t = Transform3D(Basis(b_x, b_y, b_z), e_midpoint).affine_inverse()
 
 				var r_o = t * origin
 				var r_d = t.basis * direction
 				var hit = Geometry3D.segment_intersects_cylinder(
 					r_o, r_o + r_d * 1000.0, dist, sqrt(e_midpoint.distance_to(origin)) / 32.0
 				)
+				if e == 27:
+					print("%s -> %s = %s" % [e_origin, e_destination, dist])
 				if hit:
 					print("hit edge: %s" % [e])
 					var distance = origin.distance_to(t.affine_inverse() * hit[0])
@@ -341,9 +343,9 @@ func abort_edit() -> void:
 	_current_edit = null
 
 
-func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null) -> Transform3D:
+func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null):
 	if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
-		return Transform3D()
+		return null
 
 	var verts = {}
 	var normals = []

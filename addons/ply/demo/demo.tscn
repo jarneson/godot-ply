@@ -1,7 +1,7 @@
 [gd_scene load_steps=15 format=3 uid="uid://beai1g7bgm5vu"]
 
 [ext_resource type="Script" path="res://addons/ply/nodes/ply.gd" id="1_mrvif"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_light.tres" id="2_fi5te"]
+[ext_resource type="Material" uid="uid://b4i0cps0lllg8" path="res://addons/ply/materials/debug_material_light.tres" id="2_fi5te"]
 [ext_resource type="Script" path="res://addons/ply/resources/ply_mesh.gd" id="2_tn2jh"]
 [ext_resource type="Material" path="res://addons/ply/materials/debug_material_medium.tres" id="3_xnde4"]
 [ext_resource type="Material" path="res://addons/ply/materials/debug_material_dark.tres" id="4_bv8y0"]
@@ -18,18 +18,18 @@ ambient_light_sky_contribution = 0.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_jwrg5"]
 _surfaces = [{
-"aabb": AABB(-0.5, 0, -1.29468, 2.50496, 1.00001, 2.58936),
+"aabb": AABB(-0.5, 0, -0.760021, 1.00001, 1.00763, 1.52004),
 "format": 4099,
 "index_count": 36,
-"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 6, 0, 7, 0, 4, 0, 5, 0, 1, 0, 0, 0, 6, 0, 5, 0, 0, 0, 4, 0, 2, 0, 1, 0, 5, 0, 4, 0, 1, 0, 3, 0, 2, 0, 4, 0, 4, 0, 7, 0, 3, 0, 0, 0, 3, 0, 7, 0, 7, 0, 6, 0, 0, 0),
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 2, 0, 3, 0, 0, 0, 4, 0, 5, 0, 6, 0, 4, 0, 6, 0, 7, 0, 2, 0, 4, 0, 7, 0, 7, 0, 3, 0, 2, 0, 0, 0, 3, 0, 7, 0, 7, 0, 6, 0, 0, 0, 6, 0, 5, 0, 1, 0, 6, 0, 1, 0, 0, 0, 5, 0, 4, 0, 2, 0, 5, 0, 2, 0, 1, 0),
 "primitive": 3,
 "vertex_count": 8,
-"vertex_data": PackedByteArray(126, 158, 244, 190, 0, 0, 128, 63, 30, 119, 45, 191, 164, 92, 92, 16, 177, 230, 180, 63, 0, 0, 128, 63, 6, 184, 165, 191, 47, 187, 195, 12, 60, 81, 0, 64, 0, 0, 128, 63, 32, 119, 45, 63, 86, 63, 140, 48, 112, 66, 233, 61, 0, 0, 128, 63, 6, 184, 165, 63, 89, 185, 24, 62, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 155, 182, 208, 40, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191, 78, 218, 17, 12, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 191, 56, 73, 177, 19, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 63, 124, 248, 83, 45)
+"vertex_data": PackedByteArray(0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 63, 87, 75, 141, 42, 243, 255, 255, 190, 44, 250, 128, 63, 217, 94, 4, 63, 99, 17, 172, 57, 23, 156, 246, 190, 44, 250, 128, 63, 77, 66, 247, 190, 252, 48, 221, 13, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 191, 36, 159, 124, 13, 36, 156, 246, 190, 0, 0, 0, 0, 187, 144, 66, 191, 73, 109, 177, 17, 0, 0, 0, 191, 0, 0, 0, 0, 187, 144, 66, 63, 88, 20, 181, 45, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 220, 34, 67, 53, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191, 118, 11, 166, 11)
 }]
 
 [sub_resource type="Resource" id="Resource_mrqsq"]
 script = ExtResource( "2_tn2jh" )
-vertexes = PackedVector3Array(-0.5, 0, -0.5, 0.5, 0, -0.5, 0.5, 0, 0.5, -0.5, 0, 0.5, -0.477772, 1, -0.677599, 1.41329, 1, -1.29468, 2.00496, 1, 0.677599, 0.113896, 1, 1.29468)
+vertexes = PackedVector3Array(-0.48166, 0, -0.760021, 0.5, 0, -0.5, 0.5, 0, 0.5, -0.5, 0, 0.760021, -0.48166, 1.00763, -0.482928, 0.5, 1, -0.5, 0.5, 1, 0.5, -0.5, 1.00763, 0.517072)
 vertex_edges = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
 edge_vertexes = PackedInt32Array(0, 1, 1, 2, 2, 3, 3, 0, 4, 0, 5, 1, 6, 2, 7, 3, 5, 4, 6, 5, 7, 6, 4, 7)
 edge_faces = PackedInt32Array(1, 2, 1, 3, 1, 4, 1, 5, 5, 2, 2, 3, 3, 4, 4, 5, 0, 2, 0, 3, 0, 4, 0, 5)
@@ -43,6 +43,7 @@ face_surfaces = PackedInt32Array(0, 0, 0, 0, 0, 0)
 environment = SubResource( "10" )
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0185518, 0, -0.999828, 0, 1, 0, 0.999828, 0, 0.0185518, 0, 0, 0)
 mesh = SubResource( "ArrayMesh_jwrg5" )
 surface_material_override/0 = ExtResource( "2_fi5te" )
 
