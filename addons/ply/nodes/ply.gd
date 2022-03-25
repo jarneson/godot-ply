@@ -237,9 +237,12 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 			var dir = (e_destination - e_origin).normalized()
 			var dist = e_destination.distance_to(e_origin)
 
-			var b_z = dir.normalized()
-			var b_y = direction.cross(b_z).normalized()
-			var b_x = b_z.cross(b_y)
+			var v_z = dir.normalized()
+			var v_y = direction.cross(v_z).normalized()
+			var v_x = v_z.cross(v_y)
+			var b_x = Vector3(v_x.x,v_y.x,v_z.x)
+			var b_y = Vector3(v_x.y,v_y.y,v_z.y)
+			var b_z = Vector3(v_x.z,v_y.z,v_z.z)
 			var t = Transform3D(Basis(b_x, b_y, b_z), e_midpoint).inverse()
 
 			print("%s -> %s = %s / %s" % [e_origin, e_destination, e_midpoint, dir])
