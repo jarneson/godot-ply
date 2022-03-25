@@ -242,10 +242,6 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 			var b_x = b_z.cross(b_y)
 			var t = Transform3D(Basis(b_x, b_y, b_z).transposed(), e_midpoint).inverse()
 
-			print("%s -> %s = %s / %s" % [e_origin, e_destination, e_midpoint, dir])
-			print(t*e_origin)
-			# print("%s ==> %s->%s :: %s->%s" % [t, e_origin, t*e_origin, e_destination, t*e_destination])
-
 			var r_o = t * origin
 			var r_d = t.basis * direction
 			var hit = Geometry3D.segment_intersects_cylinder(

@@ -8,10 +8,8 @@ var m = StandardMaterial3D.new()
 func _ready() -> void:
 	mesh = ImmediateMesh.new()
 	m.albedo_color = Color.WHITE
-	m.flags_use_point_size = true
 	# m.flags_no_depth_test = true # enable for xray
 	m.flags_unshaded = true
-	m.params_point_size = 10
 	m.vertex_color_use_as_albedo = true
 
 

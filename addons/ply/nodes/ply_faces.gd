@@ -7,14 +7,10 @@ var m = StandardMaterial3D.new()
 
 func _ready() -> void:
 	mesh = ImmediateMesh.new()
-	m.albedo_color = Color(1, 1, 1, 0.5)
-	m.flags_use_point_size = true
+	m.albedo_color = Color(0, 1, 0, 0.5)
 	m.flags_unshaded = true
 	m.flags_transparent = true
-	m.params_point_size = 10
 	m.vertex_color_use_as_albedo = true
-	m.params_grow = true
-	m.params_grow_amount = 1.0
 	# m.flags_no_depth_test = true # enable for xray
 	# m.params_cull_mode = StandardMaterial3D.CULL_DISABLED # enable for xray
 
@@ -24,8 +20,7 @@ func _process(_delta) -> void:
 	mesh.clear_surfaces()
 	if editor.selected_faces == null or editor.selected_faces.size() == 0:
 		return
-	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
-	mesh.surface_set_color(Color(0, 1, 0, 0.5))
+	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, m)
 	for f in range(editor.ply_mesh.face_count()):
 		if not editor.selected_faces.has(f):
 			continue
