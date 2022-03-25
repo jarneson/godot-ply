@@ -327,6 +327,7 @@ var _current_edit
 
 
 func begin_edit() -> void:
+	print("begin edit")
 	_current_edit = _ply_mesh.begin_edit()
 
 
@@ -390,7 +391,7 @@ func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override =
 
 
 func translate_selection(global_dir: Vector3) -> void:
-	if not _current_edit:
+	if _current_edit == null:
 		return
 	var dir = parent.global_transform.basis.inverse() * global_dir
 	_ply_mesh.reject_edit(_current_edit, false)
@@ -401,9 +402,9 @@ func translate_selection(global_dir: Vector3) -> void:
 
 
 func rotate_selection(axis: Vector3, rad: float) -> void:
-	if not _current_edit:
+	if _current_edit == null:
 		return
-	axis = parent.global_transform.basis.inverse() * axis.normalized()
+	axis = (parent.global_transform.basis.inverse() * axis).normalized()
 	var new_basis = Basis(axis, rad)
 	_ply_mesh.reject_edit(_current_edit, false)
 	_ply_mesh.transform_faces(selected_faces, Transform3D(new_basis, Vector3.ZERO))
@@ -413,11 +414,11 @@ func rotate_selection(axis: Vector3, rad: float) -> void:
 
 
 func scale_selection_along_plane(plane_normal: Vector3, axes: Array, scale_factor: float) -> void:
-	if not _current_edit:
+	if _current_edit == null:
 		return
 	var b = parent.global_transform.basis.orthonormalized().inverse()
 	plane_normal = b * plane_normal.normalized()
-	axes = [b * axes[0].normalized(), b.xform(axes[1]).normalized()]
+	axes = [b * axes[0].normalized(), (b*axes[1]).normalized()]
 	_ply_mesh.reject_edit(_current_edit, false)
 	_ply_mesh.scale_faces(selected_faces, plane_normal, axes, scale_factor)
 	_ply_mesh.scale_edges(selected_edges, plane_normal, axes, scale_factor)
@@ -426,9 +427,9 @@ func scale_selection_along_plane(plane_normal: Vector3, axes: Array, scale_facto
 
 
 func scale_selection_along_plane_normal(plane_normal: Vector3, scale_factor: float) -> void:
-	if not _current_edit:
+	if _current_edit == null:
 		return
-	plane_normal = parent.global_transform.basis.orthonormalized().inverse() * plane_normal.normalized()
+	plane_normal = (parent.global_transform.basis.orthonormalized().inverse() * plane_normal).normalized()
 	_ply_mesh.reject_edit(_current_edit, false)
 	_ply_mesh.scale_faces_along_axis(selected_faces, plane_normal, scale_factor)
 	_ply_mesh.scale_edges_along_axis(selected_edges, plane_normal, scale_factor)

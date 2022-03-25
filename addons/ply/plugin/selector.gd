@@ -94,7 +94,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 				_plugin.transform_gizmo.abort_edit()
 	if event is InputEventMouseMotion:
 		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
-			var snap = null
+			var snap = 0.0
 			if event.ctrl_pressed:
 				match _plugin.transform_gizmo.edit_mode:
 					1:  # translate

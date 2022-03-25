@@ -574,7 +574,7 @@ var in_edit: bool = false
 var original_intersect  # nullable vector3
 
 
-func compute_edit(camera: Camera3D, screen_position: Vector2, snap = 0) -> void:
+func compute_edit(camera: Camera3D, screen_position: Vector2, snap: float = 0.0) -> void:
 	if transform == null:
 		return
 	if not in_edit:
@@ -609,10 +609,10 @@ func compute_edit(camera: Camera3D, screen_position: Vector2, snap = 0) -> void:
 					var normal = xb.z
 					p = Plane(normal, normal.dot(transform.origin))
 			var intersection = p.intersects_ray(ray_pos, ray)
-			if not intersection:
+			if intersection == null:
 				return
 
-			if not original_intersect:
+			if original_intersect == null:
 				original_intersect = intersection
 
 			var motion = intersection - original_intersect
@@ -640,9 +640,9 @@ func compute_edit(camera: Camera3D, screen_position: Vector2, snap = 0) -> void:
 					axis = xb.z
 
 			var intersection = plane.intersects_ray(ray_pos, ray)
-			if not intersection:
+			if intersection == null:
 				return
-			if not original_intersect:
+			if original_intersect == null:
 				original_intersect = intersection
 
 			var y_axis = (original_intersect - transform.origin).normalized()
@@ -685,10 +685,10 @@ func compute_edit(camera: Camera3D, screen_position: Vector2, snap = 0) -> void:
 						var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
 						p = Plane(normal, normal.dot(transform.origin))
 				var intersection = p.intersects_ray(ray_pos, ray)
-				if not intersection:
+				if intersection == null:
 					return
 
-				if not original_intersect:
+				if original_intersect == null:
 					original_intersect = intersection
 
 				var motion = intersection - original_intersect
@@ -729,10 +729,10 @@ func compute_edit(camera: Camera3D, screen_position: Vector2, snap = 0) -> void:
 						p = Plane(normal, normal.dot(transform.origin))
 				var motion_mask = axis_1 + axis_2
 				var intersection = p.intersects_ray(ray_pos, ray)
-				if not intersection:
+				if intersection == null:
 					return
 
-				if not original_intersect:
+				if original_intersect == null:
 					original_intersect = intersection
 
 				var motion = intersection - original_intersect

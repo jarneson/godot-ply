@@ -52,10 +52,10 @@ func edge(i: int) -> Array:
 	return [edge_origin(i), edge_destination(i)]
 
 
-func edge_normal(e: int) -> Array:
+func edge_normal(e: int) -> Vector3:
 	var face_normal_left = face_normal(edge_face_left(e))
 	var face_normal_right = face_normal(edge_face_right(e))
-	return [(face_normal_left + face_normal_right) / 2]
+	return (face_normal_left + face_normal_right) / 2
 
 
 func face_count() -> int:
@@ -146,18 +146,18 @@ func set_face_surface(idx: int, s: int):
 
 func begin_edit() -> Array:
 	return [
-		vertexes, vertex_edges, edge_vertexes, edge_faces, edge_edges, face_edges, face_surfaces
+		vertexes.duplicate(), vertex_edges.duplicate(), edge_vertexes.duplicate(), edge_faces.duplicate(), edge_edges.duplicate(), face_edges.duplicate(), face_surfaces.duplicate()
 	]
 
 
 func reject_edit(pre_edits: Array, emit: bool = true) -> void:
-	vertexes = pre_edits[0]
-	vertex_edges = pre_edits[1]
-	edge_vertexes = pre_edits[2]
-	edge_faces = pre_edits[3]
-	edge_edges = pre_edits[4]
-	face_edges = pre_edits[5]
-	face_surfaces = pre_edits[6]
+	vertexes = pre_edits[0].duplicate()
+	vertex_edges = pre_edits[1].duplicate()
+	edge_vertexes = pre_edits[2].duplicate()
+	edge_faces = pre_edits[3].duplicate()
+	edge_edges = pre_edits[4].duplicate()
+	face_edges = pre_edits[5].duplicate()
+	face_surfaces = pre_edits[6].duplicate()
 	if emit:
 		emit_change_signal()
 
@@ -256,7 +256,7 @@ func transform_vertexes(vtxs: Array, new_xf: Transform3D) -> void:
 
 	var dict = {}
 	for idx in vtxs:
-		vertexes[idx] = new_xf.basis * vertexes[idx] - center + center + new_xf.origin
+		vertexes[idx] = new_xf.basis * (vertexes[idx] - center) + center + new_xf.origin
 
 
 func scale_faces(faces: Array, plane_normal: Vector3, axes: Array, scale_factor: float) -> void:
