@@ -104,13 +104,13 @@ func _handle_focus() -> void:
 
 func _draw() -> void:
 	var sb = get_theme_stylebox("normal", "LineEdit")
-	draw_style_box(sb, Rect2(Vector2(), rect_size))
+	draw_style_box(sb, Rect2(Vector2(), size))
 	var font = get_theme_font("font", "LineEdit")
 	var sep_base = 4
 	var sep = sep_base + sb.get_offset().x
 	var string_width = font.get_string_size(label).x
-	var number_width = rect_size.x - sb.get_minimum_size().x - string_width - sep
-	var vofs = (rect_size.y - font.get_height()) / 2 + font.get_ascent()
+	var number_width = size.x - sb.get_minimum_size().x - string_width - sep
+	var vofs = (size.y - font.get_height()) / 2 + font.get_ascent()
 	var fc = get_theme_color("font_color", "LineEdit")
 	var numstr = get_text_value()
 	draw_string(font, Vector2(round(sb.get_offset().x), vofs), label, 0, -1, 16, fc * Color(1, 1, 1, 0.5))

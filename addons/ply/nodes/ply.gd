@@ -28,7 +28,7 @@ const Faces = preload("res://addons/ply/nodes/ply_faces.gd")
 @export var parent_property: String = "mesh"
 @export var ply_mesh: Resource :
 	get:
-		return _ply_mesh # TODOConverter40 Copy here content of get_ply_mesh
+		return _ply_mesh
 	set(v):
 		if v == null:
 			if _ply_mesh && _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
@@ -144,7 +144,7 @@ func _paint_faces() -> void:
 	if parent is MeshInstance3D and parent.mesh:
 		var paints = _ply_mesh.face_paint_indices()
 		for i in range(parent.mesh.get_surface_count()):
-			if materials.size() > paints[i]:
+			if paints.size() < i and materials.size() > paints[i]:
 				parent.set_surface_override_material(i, materials[paints[i]])
 
 	if parent is CSGMesh3D:
