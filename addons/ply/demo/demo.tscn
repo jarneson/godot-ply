@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://beai1g7bgm5vu"]
+[gd_scene load_steps=15 format=3 uid="uid://beai1g7bgm5vu"]
 
 [ext_resource type="Script" path="res://addons/ply/nodes/ply.gd" id="1_mrvif"]
 [ext_resource type="Material" uid="uid://b4i0cps0lllg8" path="res://addons/ply/materials/debug_material_light.tres" id="2_fi5te"]
+[ext_resource type="Script" path="res://addons/ply/resources/ply_mesh.gd" id="2_tn2jh"]
 [ext_resource type="Material" path="res://addons/ply/materials/debug_material_medium.tres" id="3_xnde4"]
 [ext_resource type="Material" path="res://addons/ply/materials/debug_material_dark.tres" id="4_bv8y0"]
 [ext_resource type="Material" path="res://addons/ply/materials/debug_material_red.tres" id="5_n8che"]
@@ -26,6 +27,16 @@ _surfaces = [{
 "vertex_data": PackedByteArray(196, 202, 141, 63, 51, 111, 28, 64, 196, 202, 141, 63, 196, 10, 156, 56, 196, 202, 141, 191, 51, 111, 28, 64, 196, 202, 141, 63, 57, 0, 41, 46, 196, 202, 141, 191, 51, 111, 28, 64, 196, 202, 141, 191, 58, 9, 92, 7, 196, 202, 141, 63, 51, 111, 28, 64, 196, 202, 141, 191, 197, 3, 201, 17, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 28, 191, 225, 40, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191, 178, 6, 147, 9, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 191, 226, 188, 1, 23, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 63, 76, 5, 83, 54)
 }]
 
+[sub_resource type="Resource" id="Resource_mrqsq"]
+script = ExtResource( "2_tn2jh" )
+vertexes = PackedVector3Array(-0.5, 0, -0.5, 0.5, 0, -0.5, 0.5, 0, 0.5, -0.5, 0, 0.5, -1.10775, 2.44429, -1.10775, 1.10775, 2.44429, -1.10775, 1.10775, 2.44429, 1.10775, -1.10775, 2.44429, 1.10775)
+vertex_edges = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+edge_vertexes = PackedInt32Array(0, 1, 1, 2, 2, 3, 3, 0, 4, 0, 5, 1, 6, 2, 7, 3, 5, 4, 6, 5, 7, 6, 4, 7)
+edge_faces = PackedInt32Array(1, 2, 1, 3, 1, 4, 1, 5, 5, 2, 2, 3, 3, 4, 4, 5, 0, 2, 0, 3, 0, 4, 0, 5)
+edge_edges = PackedInt32Array(3, 5, 0, 6, 1, 7, 2, 4, 11, 0, 8, 1, 9, 2, 10, 3, 9, 4, 10, 5, 11, 6, 8, 7)
+face_edges = PackedInt32Array(11, 0, 4, 5, 6, 7)
+face_surfaces = PackedInt32Array(0, 0, 0, 0, 0, 0)
+
 [node name="Demo" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -37,4 +48,5 @@ surface_material_override/0 = ExtResource( "2_fi5te" )
 
 [node name="PlyEditor" type="Node" parent="MeshInstance3D"]
 script = ExtResource( "1_mrvif" )
+ply_mesh = SubResource( "Resource_mrqsq" )
 materials = [ExtResource( "2_fi5te" ), ExtResource( "3_xnde4" ), ExtResource( "4_bv8y0" ), ExtResource( "5_n8che" ), ExtResource( "6_208lt" ), ExtResource( "7_7v0r6" ), ExtResource( "8_7sfpg" ), ExtResource( "9_anqur" ), ExtResource( "10_wta51" )]
