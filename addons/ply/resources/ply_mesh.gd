@@ -188,16 +188,9 @@ func get_mesh(mesh: Mesh = null) -> ArrayMesh:
 			surface_map[s] = [f_idx]
 	var surfaces = []
 	surfaces.resize(max_surface + 1)
-	if not mesh is ArrayMesh and mesh is Mesh:
-		var st = SurfaceTool.new()
-		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		print("Plymesh get_mesh surface count %d" % mesh.get_surface_count())
-		for c in mesh.get_surface_count():
-			st.append_from(mesh, c, Transform3D())
-		mesh = st.commit()
-		
 	if not mesh:
 		mesh = ArrayMesh.new()
+	mesh.clear_surfaces()
 	for s_idx in range(surfaces.size()):
 		var st = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
