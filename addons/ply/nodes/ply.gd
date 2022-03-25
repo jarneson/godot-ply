@@ -232,30 +232,30 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 		for e in range(_ply_mesh.edge_count()):
 			var e_origin = parent.global_transform * _ply_mesh.edge_origin(e)
 			var e_destination = parent.global_transform * _ply_mesh.edge_destination(e)
-			if true:
-				var e_midpoint = (e_origin + e_destination) / 2.0
-				var dir = (e_destination - e_origin).normalized()
-				var dist = e_destination.distance_to(e_origin)
 
-				var b_z = dir.normalized()
-				var b_y = direction.cross(b_z).normalized()
-				var b_x = b_z.cross(b_y)
-				var t = Transform3D(Basis(b_x, b_y, b_z), e_midpoint).affine_inverse()
+			var e_midpoint = (e_origin + e_destination) / 2.0
+			var dir = (e_destination - e_origin).normalized()
+			var dist = e_destination.distance_to(e_origin)
 
-				print("%s ==> %s->%s :: %s->%s" % [t, e_origin, t*e_origin, e_destination, t*e_destination])
+			var b_z = dir.normalized()
+			var b_y = direction.cross(b_z).normalized()
+			var b_x = b_z.cross(b_y)
+			var t = Transform3D(Basis(b_x, b_y, b_z), e_midpoint).inverse()
 
-				var r_o = t * origin
-				var r_d = t.basis * direction
-				var hit = Geometry3D.segment_intersects_cylinder(
-					r_o, r_o + r_d * 1000.0, dist, sqrt(e_midpoint.distance_to(origin)) / 32.0
-				)
-				if e == 27:
-					print("%s -> %s = %s" % [e_origin, e_destination, dist])
-				if hit:
-					print("hit edge: %s" % [e])
-					var distance = origin.distance_to(t.affine_inverse() * hit[0])
-					print("edge distance: %s" % [distance])
-					scan_results.push_back(["E", e, distance])
+			print("%s -> %s = %s / %s" % [e_origin, e_destination, e_midpoint, dir])
+			print(t*e_origin)
+			# print("%s ==> %s->%s :: %s->%s" % [t, e_origin, t*e_origin, e_destination, t*e_destination])
+
+			var r_o = t * origin
+			var r_d = t.basis * direction
+			var hit = Geometry3D.segment_intersects_cylinder(
+				r_o, r_o + r_d * 1000.0, dist, sqrt(e_midpoint.distance_to(origin)) / 32.0
+			)
+			if hit:
+				print("hit edge: %s" % [e])
+				var distance = origin.distance_to(t.affine_inverse() * hit[0])
+				print("edge distance: %s" % [distance])
+				scan_results.push_back(["E", e, distance])
 
 	if mode == SelectionMode.FACE:
 		var ai = parent.global_transform.affine_inverse()
