@@ -66,10 +66,10 @@ static func mesh(p: PlyMesh, m: ArrayMesh):
 		for ii in 3:
 			var e_idx = edge_map[mdt.get_face_edge(face_idx, ii)]
 			var v_idx = vert_map[mdt.get_face_vertex(face_idx, ii)]
-			if edge_vertexes[2*e_idx] == v_idx:
+			if edge_vertexes[2*e_idx+1] == v_idx:
 				edge_faces[2*e_idx] = face_idx
 				edge_edges[2*e_idx] = edge_map[mdt.get_face_edge(face_idx, (ii+1)%3)]
-			elif edge_vertexes[2*e_idx+1] == v_idx:
+			elif edge_vertexes[2*e_idx] == v_idx:
 				edge_faces[2*e_idx+1] = face_idx
 				edge_edges[2*e_idx+1] = edge_map[mdt.get_face_edge(face_idx, (ii+1)%3)]
 			else:
