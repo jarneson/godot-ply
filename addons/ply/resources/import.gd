@@ -41,7 +41,11 @@ static func mesh(p: PlyMesh, m: ArrayMesh):
 	for edge_idx in mdt.get_edge_count():
 		var o_idx = vert_map[mdt.get_edge_vertex(edge_idx, 0)]
 		var d_idx = vert_map[mdt.get_edge_vertex(edge_idx, 1)]
-		var hash = "%s-%s" % [o_idx, d_idx]
+		var hash = ""
+		if o_idx < d_idx:
+			hash = "%s-%s" % [o_idx, d_idx]
+		else:
+			hash = "%s-%s" % [d_idx, o_idx]
 		if seen_edges.has(hash):
 			edge_map[edge_idx] = seen_edges[hash]
 			continue
@@ -58,7 +62,7 @@ static func mesh(p: PlyMesh, m: ArrayMesh):
 
 	for face_idx in mdt.get_face_count():
 		face_surfaces[face_idx] = 0
-		face_edges[face_idx] = mdt.get_face_edge(face_idx, 0)
+		face_edges[face_idx] = edge_map[mdt.get_face_edge(face_idx, 0)]
 		for ii in 3:
 			var e_idx = edge_map[mdt.get_face_edge(face_idx, ii)]
 			var v_idx = vert_map[mdt.get_face_vertex(face_idx, ii)]
@@ -73,8 +77,10 @@ static func mesh(p: PlyMesh, m: ArrayMesh):
 
 	print("ok...")
 	print(edge_edges)
+	print(edge_faces)
+	print(face_edges)
 
-	if false:
+	if true:
 		p.set_mesh(
-			vertices, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, []
+			vertices, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, edge_edges
 		)
