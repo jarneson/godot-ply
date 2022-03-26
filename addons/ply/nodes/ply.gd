@@ -61,9 +61,11 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		return
 
-	if false and parent and parent.is_class("MeshInstance3D") and parent.mesh:
+	if parent and parent.is_class("MeshInstance3D") and parent.mesh:
+		_ply_mesh = PlyMesh.new()
+		if _ply_mesh and not _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
+			_ply_mesh.connect("mesh_updated",Callable(self,"_on_mesh_updated"))
 		var generate = load("res://addons/ply/resources/generate.gd")
-		ply_mesh = PlyMesh.new()
 		for surface_i in parent.mesh.get_surface_count():
 			var mdt = MeshDataTool.new()
 			mdt.create_from_surface(parent.mesh, surface_i)
@@ -77,18 +79,13 @@ func _ready() -> void:
 			var edge_edges: PackedInt32Array
 			for vert_i in mdt.get_vertex_count():
 				vertices[vert_i] = mdt.get_vertex(vert_i)
-				var curr = vert_i
-				var prev = vert_i - 1
-				if prev < 0:
-					prev = mdt.get_vertex_count() - 1
-				var next = vert_i + 1
-				if next >= mdt.get_vertex_count():
-					next = 0
-				vertex_edges.push_back(curr)
-				edge_vertexes.push_back(curr)
-				edge_vertexes.push_back(next)
-				edge_edges.push_back(prev)
-				edge_edges.push_back(next)
+				var new_vertex_edges = mdt.get_vertex_edges(vert_i)
+				vertex_edges.append_array(new_vertex_edges)
+				for edge in new_vertex_edges:
+					var new_edge_vertex = mdt.get_edge_vertex(edge, 0)
+					edge_vertexes.push_back(new_edge_vertex)
+					new_edge_vertex = mdt.get_edge_vertex(edge, 1)
+					edge_vertexes.push_back(new_edge_vertex)
 
 			for face_i in mdt.get_face_count():
 				face_edges.push_back(mdt.get_face_edge(face_i, 0))
