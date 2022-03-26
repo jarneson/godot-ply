@@ -82,17 +82,20 @@ func _ready() -> void:
 				var new_vertex_edges = mdt.get_vertex_edges(vert_i)
 				vertex_edges.append_array(new_vertex_edges)
 				for edge in new_vertex_edges:
-					var new_edge_vertex = mdt.get_edge_vertex(edge, 0)
-					edge_vertexes.push_back(new_edge_vertex)
-					new_edge_vertex = mdt.get_edge_vertex(edge, 1)
-					edge_vertexes.push_back(new_edge_vertex)
-
-			for face_i in mdt.get_face_count():
-				face_edges.push_back(mdt.get_face_edge(face_i, 0))
-				face_edges.push_back(mdt.get_face_edge(face_i, 1))
-				face_edges.push_back(mdt.get_face_edge(face_i, 2))
-				face_surfaces.push_back(surface_i)
-				edge_faces.append_array(mdt.get_edge_faces(face_i))
+					for vert_i in 2:
+						var new_edge_vertex = mdt.get_edge_vertex(edge, vert_i)
+						edge_vertexes.push_back(new_edge_vertex)
+						for edge_i in mdt.get_vertex_edges(new_edge_vertex):
+							if edge_i == edge:
+								edge_edges.push_back(edge_i)
+								break
+			for edge_i in edge_edges:
+				for face_i in mdt.get_edge_faces(edge_i):
+					face_edges.push_back(mdt.get_face_edge(face_i, 2))
+					face_edges.push_back(mdt.get_face_edge(face_i, 1))
+					face_edges.push_back(mdt.get_face_edge(face_i, 0))
+					edge_faces.push_back(face_i)
+			face_surfaces.push_back(surface_i)
 
 			_ply_mesh.set_mesh(
 				vertices, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, []
