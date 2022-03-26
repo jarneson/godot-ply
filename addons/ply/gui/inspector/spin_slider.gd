@@ -34,7 +34,7 @@ func _ready() -> void:
 	value_input.set_as_top_level(true)
 	value_input.focus_mode = Control.FOCUS_CLICK
 	value_input.hide()
-	value_input.connect("modal_closed",Callable(self,"_on_value_input_closed"))
+	value_input.connect("popup_hide",Callable(self,"_on_value_input_closed"))
 	value_input.connect("text_submitted",Callable(self,"_on_value_input_entered"))
 	value_input.connect("focus_exited",Callable(self,"_on_value_input_focus_exited"))
 	add_child(value_input)

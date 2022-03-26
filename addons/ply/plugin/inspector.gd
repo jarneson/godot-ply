@@ -9,13 +9,18 @@ var plugin
 
 func _init(p):
 	plugin = p
+	print("inspector plugin created")
 
 
-func can_handle(o: Object) -> bool:
+func _can_handle(o: Variant) -> bool:
+	print("inspector plugin can handle ", o is PlyEditor)
 	return o is PlyEditor
 
 
-func parse_begin(o: Object) -> void:
+func _parse_begin(o: Object) -> void:
+	print("inspector plugin parse begin ")
 	var inst = InspectorControl.instantiate()
+	print("instanced ", inst)
 	inst.plugin = plugin
 	add_custom_control(inst)
+	print("added ", inst)
