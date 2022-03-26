@@ -16,6 +16,7 @@ const Collapse = preload("res://addons/ply/resources/collapse.gd")
 const Connect = preload("res://addons/ply/resources/connect.gd")
 const Generate = preload("res://addons/ply/resources/generate.gd")
 const ExportMesh = preload("res://addons/ply/resources/export.gd")
+const Import = preload("res://addons/ply/resources/import.gd")
 
 var plugin: EditorPlugin
 
@@ -32,6 +33,7 @@ var plugin: EditorPlugin
 @onready var mesh_subdivide = $MeshTools/Subdivide
 @onready var mesh_triangulate = $MeshTools/Triangulate
 @onready var mesh_invert_normals = $MeshTools/InvertNormals
+@onready var mesh_import = $MeshTools/Import
 @onready var mesh_export_to_obj = $MeshTools/ExportOBJ
 @onready var mesh_generators = $MeshTools/Generators
 @onready var generators_modal = $GeneratorsModal
@@ -79,6 +81,7 @@ func _ready() -> void:
 	gizmo_normal.connect("toggled",Callable(self,"_update_gizmo_mode"),[GizmoMode.NORMAL])
 
 	mesh_export_to_obj.connect("pressed",Callable(self,"_export_to_obj"))
+	mesh_import.connect("pressed",Callable(self,"_import_mesh"))
 	mesh_subdivide.connect("pressed",Callable(self,"_mesh_subdivide"))
 	mesh_triangulate.connect("pressed",Callable(self,"_mesh_triangulate"))
 	mesh_invert_normals.connect("pressed",Callable(self,"_mesh_invert_normals"))
@@ -424,6 +427,24 @@ func _export_to_obj():
 	var obj_file = File.new()
 	obj_file.open(file_name, File.WRITE)
 	ExportMesh.export_to_obj(plugin.selection.ply_mesh, obj_file)
+
+
+func _import_mesh():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.MESH:
+		return
+	var fd = FileDialog.new()
+	fd.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	fd.set_filters(PackedStringArray(["*.res,*.tres; Resources"]))
+	var base_control = plugin.get_editor_interface().get_base_control()
+	base_control.add_child(fd)
+	fd.popup_centered(Vector2(480, 600))
+	var file_name = await fd.file_selected
+	var resource = load(file_name)
+	print(resource)
+	if resource is ArrayMesh:
+		Import.mesh(plugin.selection.ply_mesh, resource)
 
 
 func _mesh_subdivide():
