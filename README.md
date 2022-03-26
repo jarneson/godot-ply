@@ -7,6 +7,8 @@ The `main` branch is active development for Godot 4. See releases for stable rel
 
 See demos [on youtube](https://www.youtube.com/channel/UCf1IV6ABf3a4nW1wEyPwmMQ).
 
+Join our [Discord](https://discord.gg/zQdTkeb6TC)
+
 ## Installation
 - Copy the contents of the plugin directory in this repository into your `addons` folder for your Godot project.
 - Activate the plugin in your project settings.
