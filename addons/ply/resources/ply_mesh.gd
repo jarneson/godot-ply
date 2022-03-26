@@ -371,8 +371,8 @@ func evict_vertices(idxs, ignore_edges = []) -> void:
 	idxs.sort()
 	idxs.reverse()
 	for idx in idxs:
-		vertexes.remove(idx)
-		vertex_edges.remove(idx)
+		vertexes.remove_at(idx)
+		vertex_edges.remove_at(idx)
 		for e_idx in range(edge_vertexes.size()):
 			if ignore_edges.has(e_idx / 2):
 				continue
@@ -459,12 +459,12 @@ func evict_edges(idxs) -> void:
 		ignore.erase(idx)
 		var l = 2 * idx
 		var r = 2 * idx + 1
-		edge_vertexes.remove(r)
-		edge_vertexes.remove(l)
-		edge_faces.remove(r)
-		edge_faces.remove(l)
-		edge_edges.remove(r)
-		edge_edges.remove(l)
+		edge_vertexes.remove_at(r)
+		edge_vertexes.remove_at(l)
+		edge_faces.remove_at(r)
+		edge_faces.remove_at(l)
+		edge_edges.remove_at(r)
+		edge_edges.remove_at(l)
 
 		for i in range(edge_edges.size()):
 			if ignore.has(i / 2):
@@ -633,8 +633,8 @@ func evict_faces(idxs, ignore_edges = []):
 	idxs.sort()
 	idxs.reverse()
 	for f_idx in idxs:
-		face_edges.remove(f_idx)
-		face_surfaces.remove(f_idx)
+		face_edges.remove_at(f_idx)
+		face_surfaces.remove_at(f_idx)
 
 		for i in range(edge_faces.size()):
 			if ignore_edges.has(i / 2):

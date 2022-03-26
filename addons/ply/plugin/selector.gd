@@ -26,7 +26,7 @@ func _on_selection_mode_changed(_mode) -> void:
 	_plugin.selection.select_geometry([], false)
 
 
-func _point_to_segment_dist(v, a, b) -> Vector3:
+func _point_to_segment_dist(v, a, b) -> float:
 	var ab = b - a
 	var av = v - a
 	if av.dot(ab) <= 0.0:

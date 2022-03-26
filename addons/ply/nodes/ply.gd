@@ -61,7 +61,7 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		return
 
-	if parent and parent.is_class("MeshInstance3D") and parent.mesh:
+	if false and parent and parent.is_class("MeshInstance3D") and parent.mesh:
 		_ply_mesh = PlyMesh.new()
 		if _ply_mesh and not _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
 			_ply_mesh.connect("mesh_updated",Callable(self,"_on_mesh_updated"))

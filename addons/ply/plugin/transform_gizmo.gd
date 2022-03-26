@@ -114,6 +114,7 @@ func _init_materials() -> void:
 		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		mat.no_depth_test = true
 		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		mat.render_priority = 127
 		mat.albedo_color = axis_colors[i]
@@ -123,6 +124,7 @@ func _init_materials() -> void:
 		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
 		mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		mat.no_depth_test = true
 		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		mat.render_priority = 127
 		mat.albedo_color = axis_colors_selected[i]
