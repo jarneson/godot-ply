@@ -16,7 +16,7 @@
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_sky_contribution = 0.0
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_d6bwu"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_ui03m"]
 _surfaces = [{
 "aabb": AABB(-0.5, 0, -0.5, 1.00001, 1.00001, 1.00001),
 "format": 4099,
@@ -43,7 +43,7 @@ face_surfaces = PackedInt32Array(0, 0, 0, 0, 0, 0)
 environment = SubResource( "10" )
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource( "ArrayMesh_d6bwu" )
+mesh = SubResource( "ArrayMesh_ui03m" )
 surface_material_override/0 = ExtResource( "2_fi5te" )
 
 [node name="PlyEditor" type="Node" parent="MeshInstance3D"]

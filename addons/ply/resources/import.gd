@@ -1,38 +1,53 @@
 const PlyMesh = preload("res://addons/ply/resources/ply_mesh.gd")
 
-# ahhh
-
+#TODO: undo/redo
 static func mesh(p: PlyMesh, m: ArrayMesh):
 	var mdt = MeshDataTool.new()
 	mdt.create_from_surface(m, 0)
-	var vertices: PackedVector3Array = []
+	print(mdt.get_vertex_count())
+	var vertices = PackedVector3Array()
 	vertices.resize(mdt.get_vertex_count())
-	var vertex_edges: PackedInt32Array
-	var edge_vertexes: PackedInt32Array
-	var face_edges: PackedInt32Array
-	var face_surfaces: PackedInt32Array
-	var edge_faces: PackedInt32Array
-	var edge_edges: PackedInt32Array
-	for vert_i in mdt.get_vertex_count():
-		vertices[vert_i] = mdt.get_vertex(vert_i)
-		var new_vertex_edges = mdt.get_vertex_edges(vert_i)
-		vertex_edges.append_array(new_vertex_edges)
-		for edge in new_vertex_edges:
-			for vert_i in 2:
-				var new_edge_vertex = mdt.get_edge_vertex(edge, vert_i)
-				edge_vertexes.push_back(new_edge_vertex)
-				for edge_i in mdt.get_vertex_edges(new_edge_vertex):
-					if edge_i == edge:
-						edge_edges.push_back(edge_i)
-						break
-	for edge_i in edge_edges:
-		for face_i in mdt.get_edge_faces(edge_i):
-			face_edges.push_back(mdt.get_face_edge(face_i, 2))
-			face_edges.push_back(mdt.get_face_edge(face_i, 1))
-			face_edges.push_back(mdt.get_face_edge(face_i, 0))
-			edge_faces.push_back(face_i)
-	face_surfaces.push_back(0)
+	var vertex_edges = PackedInt32Array()
+	vertex_edges.resize(mdt.get_vertex_count())
+	var edge_vertexes = PackedInt32Array()
+	edge_vertexes.resize(mdt.get_edge_count()*2)
+	var edge_faces = PackedInt32Array()
+	edge_faces.resize(mdt.get_edge_count()*2)
+	var edge_edges = PackedInt32Array()
+	edge_edges.resize(mdt.get_edge_count()*2)
+	var face_edges = PackedInt32Array()
+	face_edges.resize(mdt.get_face_count())
+	var face_surfaces = PackedInt32Array()
+	face_surfaces.resize(mdt.get_face_count())
 
-	p.set_mesh(
-		vertices, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, []
-	)
+	for vert_idx in mdt.get_vertex_count():
+		vertices[vert_idx] = mdt.get_vertex(vert_idx)
+		print(mdt.get_vertex_meta(vert_idx))
+
+	for edge_idx in mdt.get_edge_count():
+		vertex_edges[mdt.get_edge_vertex(edge_idx, 0)] = edge_idx
+		edge_vertexes[edge_idx*2] = mdt.get_edge_vertex(edge_idx, 0)
+		edge_vertexes[edge_idx*2+1] = mdt.get_edge_vertex(edge_idx, 1)
+
+	for face_idx in mdt.get_face_count():
+		face_surfaces[face_idx] = 0
+		face_edges[face_idx] = mdt.get_face_edge(face_idx, 0)
+		for ii in 3:
+			var e_idx = mdt.get_face_edge(face_idx, ii)
+			var v_idx = mdt.get_face_vertex(face_idx, ii)
+			if edge_vertexes[2*e_idx] == v_idx:
+				edge_faces[2*e_idx] = face_idx
+				edge_edges[2*e_idx] = mdt.get_face_edge(face_idx, (ii+1)%3)
+			elif edge_vertexes[2*e_idx+1] == v_idx:
+				edge_faces[2*e_idx+1] = face_idx
+				edge_edges[2*e_idx+1] = mdt.get_face_edge(face_idx, (ii+1)%3)
+			else:
+				assert(false, "bomb")
+
+	print("ok...")
+	print(edge_edges)
+
+	if false:
+		p.set_mesh(
+			vertices, vertex_edges, face_edges, face_surfaces, edge_vertexes, edge_faces, []
+		)
