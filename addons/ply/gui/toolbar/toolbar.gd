@@ -33,7 +33,6 @@ var plugin: EditorPlugin
 @onready var mesh_triangulate = $MeshTools/Triangulate
 @onready var mesh_invert_normals = $MeshTools/InvertNormals
 @onready var mesh_export_to_obj = $MeshTools/ExportOBJ
-@onready var mesh_quick_generators = $MeshTools/QuickGenerators
 @onready var mesh_generators = $MeshTools/Generators
 @onready var generators_modal = $GeneratorsModal
 
@@ -83,7 +82,6 @@ func _ready() -> void:
 	mesh_subdivide.connect("pressed",Callable(self,"_mesh_subdivide"))
 	mesh_triangulate.connect("pressed",Callable(self,"_mesh_triangulate"))
 	mesh_invert_normals.connect("pressed",Callable(self,"_mesh_invert_normals"))
-	mesh_quick_generators.get_popup().connect("id_pressed",Callable(self,"_on_generators_id_pressed"))
 	mesh_generators.connect("pressed",Callable(self,"_open_generators_modal"))
 	generators_modal.connect("confirmed",Callable(self,"_on_generators_modal_confirmed"))
 
@@ -149,14 +147,6 @@ func set_selection_mode(mode) -> void:
 			selection_edge.pressed = true
 		SelectionMode.VERTEX:
 			selection_vertex.pressed = true
-
-
-func _on_generators_id_pressed(idx):
-	match mesh_quick_generators.get_popup().get_item_text(idx):
-		"Plane":
-			_generate_plane()
-		"Cube":
-			_generate_cube()
 
 
 func _open_generators_modal():

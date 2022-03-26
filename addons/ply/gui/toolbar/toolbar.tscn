@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://bb7qnjnl0y2lf"]
+[gd_scene load_steps=30 format=3 uid="uid://bb7qnjnl0y2lf"]
 
 [ext_resource type="Texture2D" uid="uid://dnxot6av6ij1y" path="res://addons/ply/icons/select_edge.svg" id="1"]
 [ext_resource type="Texture2D" uid="uid://c0o8qss4o643l" path="res://addons/ply/icons/select_face.svg" id="2"]
@@ -17,19 +17,45 @@
 [ext_resource type="Texture2D" uid="uid://bdi6gpvnfxm6u" path="res://addons/ply/icons/GitHub-Mark-Light-32px.png" id="17"]
 [ext_resource type="Script" path="res://addons/ply/gui/toolbar/github_link.gd" id="18"]
 
-[sub_resource type="Shortcut" id="4"]
+[sub_resource type="InputEventKey" id="InputEventKey_wa7sa"]
+keycode = 49
+
+[sub_resource type="Shortcut" id="Shortcut_3n0xq"]
+events = [SubResource( "InputEventKey_wa7sa" )]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_jgq6o"]
 
+[sub_resource type="InputEventKey" id="InputEventKey_477mp"]
+keycode = 50
+
 [sub_resource type="Shortcut" id="6"]
+events = [SubResource( "InputEventKey_477mp" )]
+
+[sub_resource type="InputEventKey" id="InputEventKey_g51mm"]
+keycode = 51
 
 [sub_resource type="Shortcut" id="8"]
+events = [SubResource( "InputEventKey_g51mm" )]
+
+[sub_resource type="InputEventKey" id="InputEventKey_xgrna"]
+keycode = 52
 
 [sub_resource type="Shortcut" id="10"]
+events = [SubResource( "InputEventKey_xgrna" )]
+
+[sub_resource type="InputEventKey" id="InputEventKey_qn4mv"]
+command_pressed = true
+keycode = 69
 
 [sub_resource type="Shortcut" id="12"]
+events = [SubResource( "InputEventKey_qn4mv" )]
+
+[sub_resource type="InputEventKey" id="InputEventKey_ubopt"]
+command_pressed = true
+keycode = 82
 
 [sub_resource type="Shortcut" id="14"]
+events = [SubResource( "InputEventKey_ubopt" )]
 
 [node name="Toolbar" type="VBoxContainer"]
 anchor_right = 1.0
@@ -40,26 +66,25 @@ script = ExtResource( "12" )
 
 [node name="TitleLabel" type="MarginContainer" parent="."]
 offset_right = 1024.0
-offset_bottom = 40.0
+offset_bottom = 64.0
 
 [node name="ColorRect" type="ColorRect" parent="TitleLabel"]
 offset_right = 1024.0
-offset_bottom = 40.0
+offset_bottom = 64.0
 color = Color(0, 0, 0, 0.392157)
 
 [node name="MarginContainer" type="MarginContainer" parent="TitleLabel"]
 offset_right = 1024.0
-offset_bottom = 40.0
+offset_bottom = 64.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TitleLabel/MarginContainer"]
 offset_right = 1024.0
-offset_bottom = 40.0
+offset_bottom = 64.0
 
 [node name="Title" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
-rect_min_size = Vector2(0, 32)
-offset_top = 4.0
-offset_right = 919.0
-offset_bottom = 36.0
+offset_top = 19.0
+offset_right = 871.0
+offset_bottom = 45.0
 size_flags_horizontal = 3
 text = "Ply"
 __meta__ = {
@@ -67,20 +92,19 @@ __meta__ = {
 }
 
 [node name="Version" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
-rect_min_size = Vector2(0, 32)
-offset_left = 923.0
-offset_top = 4.0
-offset_right = 960.0
-offset_bottom = 36.0
+offset_left = 875.0
+offset_top = 19.0
+offset_right = 912.0
+offset_bottom = 45.0
 text = "1.0.2"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="GithubLink" type="Button" parent="TitleLabel/MarginContainer/HBoxContainer"]
-offset_left = 964.0
-offset_right = 1004.0
-offset_bottom = 40.0
+offset_left = 916.0
+offset_right = 956.0
+offset_bottom = 64.0
 icon = ExtResource( "17" )
 script = ExtResource( "18" )
 __meta__ = {
@@ -88,35 +112,34 @@ __meta__ = {
 }
 
 [node name="TextureRect" type="TextureRect" parent="TitleLabel/MarginContainer/HBoxContainer"]
-offset_left = 1008.0
+offset_left = 960.0
 offset_right = 1024.0
-offset_bottom = 40.0
+offset_bottom = 64.0
 texture = ExtResource( "15" )
 stretch_mode = 4
 
 [node name="ToolModeLabel" type="MarginContainer" parent="."]
-offset_top = 44.0
+offset_top = 68.0
 offset_right = 1024.0
-offset_bottom = 76.0
+offset_bottom = 94.0
 
 [node name="ColorRect" type="ColorRect" parent="ToolModeLabel"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="ToolModeLabel"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="ToolModeLabel/MarginContainer"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="Mode" type="Label" parent="ToolModeLabel/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 495.0
 offset_right = 529.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Tool"
 __meta__ = {
@@ -124,20 +147,20 @@ __meta__ = {
 }
 
 [node name="Mesh" type="Button" parent="."]
-offset_top = 80.0
+offset_top = 98.0
 offset_right = 1024.0
-offset_bottom = 111.0
+offset_bottom = 170.0
 toggle_mode = true
 button_pressed = true
-shortcut = SubResource( "4" )
+shortcut = SubResource( "Shortcut_3n0xq" )
 button_group = SubResource( "ButtonGroup_jgq6o" )
 text = "Mesh"
 icon = ExtResource( "3" )
 
 [node name="Face" type="Button" parent="."]
-offset_top = 115.0
+offset_top = 174.0
 offset_right = 1024.0
-offset_bottom = 146.0
+offset_bottom = 246.0
 toggle_mode = true
 shortcut = SubResource( "6" )
 button_group = SubResource( "ButtonGroup_jgq6o" )
@@ -145,9 +168,9 @@ text = "Face"
 icon = ExtResource( "2" )
 
 [node name="Edge" type="Button" parent="."]
-offset_top = 150.0
+offset_top = 250.0
 offset_right = 1024.0
-offset_bottom = 181.0
+offset_bottom = 322.0
 toggle_mode = true
 shortcut = SubResource( "8" )
 button_group = SubResource( "ButtonGroup_jgq6o" )
@@ -155,9 +178,9 @@ text = "Edge"
 icon = ExtResource( "1" )
 
 [node name="Vertex" type="Button" parent="."]
-offset_top = 185.0
+offset_top = 326.0
 offset_right = 1024.0
-offset_bottom = 216.0
+offset_bottom = 398.0
 toggle_mode = true
 shortcut = SubResource( "10" )
 button_group = SubResource( "ButtonGroup_jgq6o" )
@@ -165,28 +188,27 @@ text = "Vertex"
 icon = ExtResource( "4" )
 
 [node name="GizmoModeLabel" type="MarginContainer" parent="."]
-offset_top = 220.0
+offset_top = 402.0
 offset_right = 1024.0
-offset_bottom = 252.0
+offset_bottom = 428.0
 
 [node name="ColorRect" type="ColorRect" parent="GizmoModeLabel"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="GizmoModeLabel"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="GizmoModeLabel/MarginContainer"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="Mode" type="Label" parent="GizmoModeLabel/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 463.0
 offset_right = 560.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Gizmo Mode"
 __meta__ = {
@@ -194,59 +216,58 @@ __meta__ = {
 }
 
 [node name="Global" type="Button" parent="."]
-offset_top = 256.0
+offset_top = 432.0
 offset_right = 1024.0
-offset_bottom = 287.0
+offset_bottom = 463.0
 toggle_mode = true
 text = "Global"
 
 [node name="Local" type="Button" parent="."]
-offset_top = 291.0
+offset_top = 467.0
 offset_right = 1024.0
-offset_bottom = 322.0
+offset_bottom = 498.0
 toggle_mode = true
 text = "Local"
 
 [node name="Normal" type="Button" parent="."]
-offset_top = 326.0
+offset_top = 502.0
 offset_right = 1024.0
-offset_bottom = 357.0
+offset_bottom = 533.0
 toggle_mode = true
 text = "Normal"
 
 [node name="Spacer" type="CenterContainer" parent="."]
-offset_top = 361.0
+offset_top = 537.0
 offset_right = 1024.0
-offset_bottom = 361.0
+offset_bottom = 537.0
 size_flags_vertical = 3
 
 [node name="MeshTools" type="VBoxContainer" parent="."]
-offset_top = 365.0
+offset_top = 541.0
 offset_right = 1024.0
-offset_bottom = 643.0
+offset_bottom = 772.0
 
 [node name="Tools" type="MarginContainer" parent="MeshTools"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="ColorRect" type="ColorRect" parent="MeshTools/Tools"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="MeshTools/Tools"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="MeshTools/Tools/MarginContainer"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="MeshTools/Tools/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 468.0
 offset_right = 555.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Mesh Tools"
 __meta__ = {
@@ -254,46 +275,45 @@ __meta__ = {
 }
 
 [node name="Subdivide" type="Button" parent="MeshTools"]
-offset_top = 36.0
+offset_top = 30.0
 offset_right = 1024.0
-offset_bottom = 67.0
+offset_bottom = 61.0
 text = "Subdivide"
 
 [node name="Triangulate" type="Button" parent="MeshTools"]
-offset_top = 71.0
+offset_top = 65.0
 offset_right = 1024.0
-offset_bottom = 102.0
+offset_bottom = 96.0
 text = "Triangulate"
 
 [node name="InvertNormals" type="Button" parent="MeshTools"]
-offset_top = 106.0
+offset_top = 100.0
 offset_right = 1024.0
-offset_bottom = 137.0
+offset_bottom = 131.0
 text = "Invert Normals"
 
 [node name="Utils" type="MarginContainer" parent="MeshTools"]
-offset_top = 141.0
+offset_top = 135.0
 offset_right = 1024.0
-offset_bottom = 173.0
+offset_bottom = 161.0
 
 [node name="ColorRect" type="ColorRect" parent="MeshTools/Utils"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="MeshTools/Utils"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="MeshTools/Utils/MarginContainer"]
 offset_right = 1024.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="MeshTools/Utils/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 459.0
 offset_right = 565.0
-offset_bottom = 32.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Mesh Utilities"
 __meta__ = {
@@ -301,21 +321,15 @@ __meta__ = {
 }
 
 [node name="ExportOBJ" type="Button" parent="MeshTools"]
-offset_top = 177.0
+offset_top = 165.0
 offset_right = 1024.0
-offset_bottom = 208.0
+offset_bottom = 196.0
 text = "Export to OBJ"
 
-[node name="QuickGenerators" type="MenuButton" parent="MeshTools"]
-offset_top = 212.0
-offset_right = 1024.0
-offset_bottom = 243.0
-text = "Quick Generate..."
-
 [node name="Generators" type="Button" parent="MeshTools"]
-offset_top = 247.0
+offset_top = 200.0
 offset_right = 1024.0
-offset_bottom = 278.0
+offset_bottom = 231.0
 text = "Generate"
 
 [node name="FaceTools" type="VBoxContainer" parent="."]
@@ -343,11 +357,10 @@ offset_right = 1024.0
 offset_bottom = 37.0
 
 [node name="Tools" type="Label" parent="FaceTools/SelectTools/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 465.0
-offset_top = 2.0
+offset_top = 5.0
 offset_right = 558.0
-offset_bottom = 34.0
+offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "Select Faces"
 __meta__ = {
@@ -387,11 +400,10 @@ offset_right = 1024.0
 offset_bottom = 37.0
 
 [node name="Tools" type="Label" parent="FaceTools/FaceTools/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 472.0
-offset_top = 2.0
+offset_top = 5.0
 offset_right = 552.0
-offset_bottom = 34.0
+offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "Face Tools"
 __meta__ = {
@@ -443,11 +455,10 @@ offset_right = 1024.0
 offset_bottom = 37.0
 
 [node name="Tools" type="Label" parent="FaceTools/PaintSurfaces/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 468.0
-offset_top = 2.0
+offset_top = 5.0
 offset_right = 555.0
-offset_bottom = 34.0
+offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "Paint Faces"
 __meta__ = {
@@ -551,11 +562,10 @@ offset_right = 1024.0
 offset_bottom = 37.0
 
 [node name="Tools" type="Label" parent="EdgeTools/SelectTools/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 464.0
-offset_top = 2.0
+offset_top = 5.0
 offset_right = 559.0
-offset_bottom = 34.0
+offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "Select Edges"
 __meta__ = {
@@ -588,11 +598,10 @@ offset_right = 1024.0
 offset_bottom = 37.0
 
 [node name="Tools" type="Label" parent="EdgeTools/EdgeTools/MarginContainer/CenterContainer"]
-rect_min_size = Vector2(0, 32)
 offset_left = 470.0
-offset_top = 2.0
+offset_top = 5.0
 offset_right = 553.0
-offset_bottom = 34.0
+offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "Edge Tools"
 __meta__ = {

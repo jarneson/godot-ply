@@ -144,7 +144,7 @@ func _paint_faces() -> void:
 	if parent is MeshInstance3D and parent.mesh:
 		var paints = _ply_mesh.face_paint_indices()
 		for i in range(parent.mesh.get_surface_count()):
-			if paints.size() < i and materials.size() > paints[i]:
+			if paints.size() > i and materials.size() > paints[i]:
 				parent.set_surface_override_material(i, materials[paints[i]])
 
 	if parent is CSGMesh3D:

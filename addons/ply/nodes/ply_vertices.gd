@@ -26,6 +26,5 @@ func _process(_delta) -> void:
 			mesh.surface_set_color(Color.GREEN)
 		else:
 			mesh.surface_set_color(Color.BLUE)
-		print("add vert")
 		mesh.surface_add_vertex(editor.ply_mesh.vertexes[v])
 	mesh.surface_end()
