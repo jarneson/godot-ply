@@ -336,13 +336,19 @@ __meta__ = {
 offset_top = 165.0
 offset_right = 192.0
 offset_bottom = 196.0
-text = "Export to OBJ"
+text = "Generate"
 
 [node name="Generators" type="Button" parent="Scroll/Content/MeshTools"]
 offset_top = 200.0
 offset_right = 192.0
 offset_bottom = 231.0
-text = "Generate"
+text = "Import"
+
+[node name="ExportOBJ" type="Button" parent="MeshTools"]
+offset_top = 235.0
+offset_right = 1024.0
+offset_bottom = 266.0
+text = "Export to OBJ"
 
 [node name="FaceTools" type="VBoxContainer" parent="Scroll/Content"]
 visible = false
