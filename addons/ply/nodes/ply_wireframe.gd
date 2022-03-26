@@ -15,8 +15,8 @@ func _ready() -> void:
 
 func _process(_delta) -> void:
 	global_transform = editor.parent.global_transform
+	mesh.clear_surfaces()
 	if editor.ply_mesh.edge_count():
-		mesh.clear_surfaces()
 		mesh.surface_begin(Mesh.PRIMITIVE_LINES, m)
 		for e in range(editor.ply_mesh.edge_count()):
 			if editor.selected_edges.has(e):
@@ -26,7 +26,6 @@ func _process(_delta) -> void:
 			var verts = editor.ply_mesh.edge(e)
 			if not verts.size():
 				continue
-			if verts.has(0) and verts.has(1):
-				mesh.surface_add_vertex(verts[0])		
-				mesh.surface_add_vertex(verts[1])
+			mesh.surface_add_vertex(verts[0])
+			mesh.surface_add_vertex(verts[1])
 		mesh.surface_end()
