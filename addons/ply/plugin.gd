@@ -38,7 +38,7 @@ func _enter_tree() -> void:
 		preload("res://addons/ply/icons/plugin.svg")
 	)
 
-	gizmo_plugin = GizmoPlugin.new()
+	gizmo_plugin = GizmoPlugin.new(self)
 	add_spatial_gizmo_plugin(gizmo_plugin)
 
 	selector = Selector.new(self)
@@ -112,7 +112,7 @@ var last_camera: Camera3D
 
 func _forward_3d_gui_input(camera: Camera3D, event: InputEvent):
 	last_camera = camera
-	return selector.handle_input(camera, event)
+	return false && selector.handle_input(camera, event)
 
 
 func _process(_delta) -> void:

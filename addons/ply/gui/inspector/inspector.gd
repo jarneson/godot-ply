@@ -44,8 +44,6 @@ func _prep_slider(s, l, mn, mx, st, mod, axis) -> void:
 func _ready() -> void:
 	current_gizmo_mode = plugin.toolbar.gizmo_mode
 	
-	print("inspector ready")
-
 	translate_x = SpinSlider.new()
 	_prep_slider(translate_x, "x", -65535, 65535, 0.001, "Translate", "X")
 	translate_y = SpinSlider.new()
