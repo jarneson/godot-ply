@@ -1,5 +1,5 @@
 @tool
-extends Node
+extends Node3D
 
 signal selection_changed
 signal selection_mutated

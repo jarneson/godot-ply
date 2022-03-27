@@ -13,6 +13,8 @@ const Interop = preload("res://addons/ply/interop.gd")
 
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 
+const GizmoPlugin = preload("res://addons/ply/plugin/gizmo_plugin.gd")
+
 
 func _get_plugin_name() -> String:
 	return "Ply"
@@ -21,6 +23,8 @@ func _get_plugin_name() -> String:
 var selector: Selector
 var transform_gizmo: TransformGizmo
 var inspector: Inspector
+
+var gizmo_plugin: GizmoPlugin
 
 var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instantiate()
 
@@ -33,6 +37,9 @@ func _enter_tree() -> void:
 		preload("res://addons/ply/nodes/ply.gd"),
 		preload("res://addons/ply/icons/plugin.svg")
 	)
+
+	gizmo_plugin = GizmoPlugin.new()
+	add_spatial_gizmo_plugin(gizmo_plugin)
 
 	selector = Selector.new(self)
 	transform_gizmo = TransformGizmo.new(self)
@@ -50,6 +57,8 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	remove_custom_type("PlyInstance")
 	remove_custom_type("PlyEditor")
+
+	remove_spatial_gizmo_plugin(gizmo_plugin)
 
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, toolbar)
 	remove_inspector_plugin(inspector)
