@@ -47,5 +47,11 @@ func _get_subgizmo_transform(gizmo: EditorNode3DGizmo, subgizmo_id: int):
 			verts.push_back(_plugin.selection._ply_mesh.vertexes[subgizmo_id])
 
 	var pos = Median.geometric_median(verts)
-	print(verts, "->", pos)
 	return Transform3D(Basis.IDENTITY, pos)
+
+func _commit_subgizmos(gizmo: EditorNode3DGizmo, ids: PackedInt32Array, restores: Array[Transform3D], cancel: bool):
+	print("commit subgizmos: ", ids)
+
+func _set_subgizmo_transform(gizmo: EditorNode3DGizmo, id: int, transform: Transform3D):
+	print(id, ": ", transform.origin)
+	pass
