@@ -3,7 +3,9 @@ Godot plugin for in-editor box modelling for gray boxing or prototyping 3d level
 
 ![Editor Screenshot](./editor.png)
 
-Only tested in Godot 3.4. Icons are only suitable for dark mode.
+The `main` branch is active development for Godot 4. See releases for stable releases.
+
+Icons are only suitable for dark mode.
 
 See demos [on youtube](https://www.youtube.com/channel/UCf1IV6ABf3a4nW1wEyPwmMQ).
 
