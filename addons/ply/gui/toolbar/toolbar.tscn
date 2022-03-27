@@ -1,21 +1,25 @@
-[gd_scene load_steps=30 format=3 uid="uid://bb7qnjnl0y2lf"]
+[gd_scene load_steps=34 format=3 uid="uid://bb7qnjnl0y2lf"]
 
-[ext_resource type="Texture2D" uid="uid://dnxot6av6ij1y" path="res://addons/ply/icons/select_edge.svg" id="1"]
-[ext_resource type="Texture2D" uid="uid://c0o8qss4o643l" path="res://addons/ply/icons/select_face.svg" id="2"]
-[ext_resource type="Texture2D" uid="uid://dg56732a5vxsx" path="res://addons/ply/icons/select_mesh.svg" id="3"]
-[ext_resource type="Texture2D" uid="uid://lll4e32g31aq" path="res://addons/ply/icons/select_vertex.svg" id="4"]
-[ext_resource type="Texture2D" uid="uid://cdlf7hndjptjy" path="res://addons/ply/icons/face_loop.svg" id="5"]
-[ext_resource type="Texture2D" uid="uid://8le0ldldnk7" path="res://addons/ply/icons/face_loop_2.svg" id="6"]
-[ext_resource type="Texture2D" uid="uid://e0jkku1aydn6" path="res://addons/ply/icons/extrude_face.svg" id="7"]
-[ext_resource type="Texture2D" uid="uid://tisqy0c8hsce" path="res://addons/ply/icons/loop_cut.svg" id="9"]
-[ext_resource type="Texture2D" uid="uid://d0no0j87v8bed" path="res://addons/ply/icons/edge_subdivide.svg" id="10"]
+[ext_resource type="Texture2D" uid="uid://da0i0pbup2umf" path="res://addons/ply/icons/dark/select_mesh_dark.png" id="5_5m67v"]
+[ext_resource type="Texture2D" uid="uid://cb212rtjh5ric" path="res://addons/ply/icons/dark/select_face_dark.png" id="6_yuw87"]
+[ext_resource type="Texture2D" uid="uid://cuqyivml41005" path="res://addons/ply/icons/dark/select_edge_dark.png" id="7_j2iu8"]
+[ext_resource type="Texture2D" uid="uid://dasr7mfh0yhgx" path="res://addons/ply/icons/dark/select_vertex_dark.png" id="8_0w4vc"]
+[ext_resource type="Texture2D" uid="uid://bv8i2653hhoq5" path="res://addons/ply/icons/dark/select_face_ring_v_dark.png" id="9_khceo"]
+[ext_resource type="Texture2D" uid="uid://rbw8snfqran1" path="res://addons/ply/icons/dark/select_face_ring_h_dark.png" id="10_r3rjd"]
+[ext_resource type="Texture2D" uid="uid://d31hw6p785i60" path="res://addons/ply/icons/dark/flip_normals_dark.png" id="10_uborc"]
+[ext_resource type="Texture2D" uid="uid://o4n86wk5elwe" path="res://addons/ply/icons/dark/extrude_face_dark.png" id="11_ods2w"]
 [ext_resource type="Script" path="res://addons/ply/gui/toolbar/toolbar.gd" id="12"]
-[ext_resource type="Texture2D" uid="uid://c0jgg7telgqiy" path="res://addons/ply/icons/edge_select_loop.svg" id="13"]
-[ext_resource type="Texture2D" uid="uid://bjt4awyhuhp0o" path="res://addons/ply/icons/edge_collapse.svg" id="14"]
+[ext_resource type="Texture2D" uid="uid://bea5uloqyd4rq" path="res://addons/ply/icons/dark/merge_face_dark.png" id="12_t4tf1"]
+[ext_resource type="Texture2D" uid="uid://dyivagnwnahle" path="res://addons/ply/icons/dark/subdivide_face_dark.png" id="13_68wte"]
+[ext_resource type="Texture2D" uid="uid://ev2wv282wx0s" path="res://addons/ply/icons/dark/triangulate_dark.png" id="14_8ytvm"]
 [ext_resource type="Texture2D" uid="uid://7i6pl132hx4c" path="res://addons/ply/icons/plugin.svg" id="15"]
+[ext_resource type="Texture2D" uid="uid://bq2ki67at7efh" path="res://addons/ply/icons/dark/select_edge_ring_dark.png" id="15_5b5te"]
 [ext_resource type="PackedScene" uid="uid://dr3ixmwe8ascj" path="res://addons/ply/gui/toolbar/generators.tscn" id="16"]
+[ext_resource type="Texture2D" uid="uid://bg6l4ww3iyp8u" path="res://addons/ply/icons/dark/loopcut_v_dark.png" id="16_nokrw"]
 [ext_resource type="Texture2D" uid="uid://bdi6gpvnfxm6u" path="res://addons/ply/icons/GitHub-Mark-Light-32px.png" id="17"]
+[ext_resource type="Texture2D" uid="uid://cknwf8bxtl5b5" path="res://addons/ply/icons/dark/subdivide_edge_dark.png" id="17_lihy5"]
 [ext_resource type="Script" path="res://addons/ply/gui/toolbar/github_link.gd" id="18"]
+[ext_resource type="Texture2D" uid="uid://cfm8umrb1vs7r" path="res://addons/ply/icons/dark/collapse_edge_dark.png" id="18_b8383"]
 
 [sub_resource type="InputEventKey" id="InputEventKey_wa7sa"]
 keycode = 49
@@ -127,7 +131,7 @@ follow_focus = true
 
 [node name="Content" type="VBoxContainer" parent="Scroll"]
 offset_right = 192.0
-offset_bottom = 739.0
+offset_bottom = 575.0
 size_flags_horizontal = 3
 
 [node name="ToolModeLabel" type="MarginContainer" parent="Scroll/Content"]
@@ -160,48 +164,52 @@ __meta__ = {
 [node name="Mesh" type="Button" parent="Scroll/Content"]
 offset_top = 30.0
 offset_right = 192.0
-offset_bottom = 102.0
+offset_bottom = 61.0
 toggle_mode = true
 button_pressed = true
 shortcut = SubResource( "Shortcut_3n0xq" )
 button_group = SubResource( "ButtonGroup_jgq6o" )
 text = "Mesh"
-icon = ExtResource( "3" )
+icon = ExtResource( "5_5m67v" )
+expand_icon = true
 
 [node name="Face" type="Button" parent="Scroll/Content"]
-offset_top = 106.0
+offset_top = 65.0
 offset_right = 192.0
-offset_bottom = 178.0
+offset_bottom = 96.0
 toggle_mode = true
 shortcut = SubResource( "6" )
 button_group = SubResource( "ButtonGroup_jgq6o" )
 text = "Face"
-icon = ExtResource( "2" )
+icon = ExtResource( "6_yuw87" )
+expand_icon = true
 
 [node name="Edge" type="Button" parent="Scroll/Content"]
-offset_top = 182.0
+offset_top = 100.0
 offset_right = 192.0
-offset_bottom = 254.0
+offset_bottom = 131.0
 toggle_mode = true
 shortcut = SubResource( "8" )
 button_group = SubResource( "ButtonGroup_jgq6o" )
 text = "Edge"
-icon = ExtResource( "1" )
+icon = ExtResource( "7_j2iu8" )
+expand_icon = true
 
 [node name="Vertex" type="Button" parent="Scroll/Content"]
-offset_top = 258.0
+offset_top = 135.0
 offset_right = 192.0
-offset_bottom = 330.0
+offset_bottom = 166.0
 toggle_mode = true
 shortcut = SubResource( "10" )
 button_group = SubResource( "ButtonGroup_jgq6o" )
 text = "Vertex"
-icon = ExtResource( "4" )
+icon = ExtResource( "8_0w4vc" )
+expand_icon = true
 
 [node name="GizmoModeLabel" type="MarginContainer" parent="Scroll/Content"]
-offset_top = 334.0
+offset_top = 170.0
 offset_right = 192.0
-offset_bottom = 360.0
+offset_bottom = 196.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/GizmoModeLabel"]
 offset_right = 192.0
@@ -227,36 +235,36 @@ __meta__ = {
 }
 
 [node name="Global" type="Button" parent="Scroll/Content"]
-offset_top = 364.0
+offset_top = 200.0
 offset_right = 192.0
-offset_bottom = 395.0
+offset_bottom = 231.0
 toggle_mode = true
 text = "Global"
 
 [node name="Local" type="Button" parent="Scroll/Content"]
-offset_top = 399.0
+offset_top = 235.0
 offset_right = 192.0
-offset_bottom = 430.0
+offset_bottom = 266.0
 toggle_mode = true
 text = "Local"
 
 [node name="Normal" type="Button" parent="Scroll/Content"]
-offset_top = 434.0
+offset_top = 270.0
 offset_right = 192.0
-offset_bottom = 465.0
+offset_bottom = 301.0
 toggle_mode = true
 text = "Normal"
 
 [node name="Spacer" type="CenterContainer" parent="Scroll/Content"]
-offset_top = 469.0
+offset_top = 305.0
 offset_right = 192.0
-offset_bottom = 469.0
+offset_bottom = 305.0
 size_flags_vertical = 3
 
 [node name="MeshTools" type="VBoxContainer" parent="Scroll/Content"]
-offset_top = 473.0
+offset_top = 309.0
 offset_right = 192.0
-offset_bottom = 739.0
+offset_bottom = 575.0
 
 [node name="Tools" type="MarginContainer" parent="Scroll/Content/MeshTools"]
 offset_right = 192.0
@@ -296,12 +304,16 @@ offset_top = 65.0
 offset_right = 192.0
 offset_bottom = 96.0
 text = "Triangulate"
+icon = ExtResource( "14_8ytvm" )
+expand_icon = true
 
 [node name="InvertNormals" type="Button" parent="Scroll/Content/MeshTools"]
 offset_top = 100.0
 offset_right = 192.0
 offset_bottom = 131.0
 text = "Invert Normals"
+icon = ExtResource( "10_uborc" )
+expand_icon = true
 
 [node name="Utils" type="MarginContainer" parent="Scroll/Content/MeshTools"]
 offset_top = 135.0
@@ -351,33 +363,31 @@ text = "Export to OBJ"
 
 [node name="FaceTools" type="VBoxContainer" parent="Scroll/Content"]
 visible = false
-offset_top = 239.0
-offset_right = 1024.0
-offset_bottom = 451.0
+offset_top = 579.0
+offset_right = 192.0
+offset_bottom = 1103.0
 
 [node name="SelectTools" type="MarginContainer" parent="Scroll/Content/FaceTools"]
-offset_top = 248.0
-offset_right = 1024.0
-offset_bottom = 285.0
+offset_right = 192.0
+offset_bottom = 26.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/FaceTools/SelectTools"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/FaceTools/SelectTools"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/FaceTools/SelectTools/MarginContainer"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/FaceTools/SelectTools/MarginContainer/CenterContainer"]
-offset_left = 465.0
-offset_top = 5.0
-offset_right = 558.0
-offset_bottom = 31.0
+offset_left = 49.0
+offset_right = 142.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Select Faces"
 __meta__ = {
@@ -385,42 +395,43 @@ __meta__ = {
 }
 
 [node name="FaceLoop1" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 8.0
-offset_right = 1024.0
-offset_bottom = 32.0
+offset_top = 30.0
+offset_right = 192.0
+offset_bottom = 102.0
 text = "Loop"
-icon = ExtResource( "5" )
+icon = ExtResource( "9_khceo" )
+expand_icon = true
 
 [node name="FaceLoop2" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 36.0
-offset_right = 1024.0
-offset_bottom = 60.0
+offset_top = 106.0
+offset_right = 192.0
+offset_bottom = 178.0
 text = "Loop"
-icon = ExtResource( "6" )
+icon = ExtResource( "10_r3rjd" )
+expand_icon = true
 
 [node name="FaceTools" type="MarginContainer" parent="Scroll/Content/FaceTools"]
-offset_top = 248.0
-offset_right = 1024.0
-offset_bottom = 285.0
+offset_top = 182.0
+offset_right = 192.0
+offset_bottom = 208.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/FaceTools/FaceTools"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/FaceTools/FaceTools"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/FaceTools/FaceTools/MarginContainer"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/FaceTools/FaceTools/MarginContainer/CenterContainer"]
-offset_left = 472.0
-offset_top = 5.0
-offset_right = 552.0
-offset_bottom = 31.0
+offset_left = 56.0
+offset_right = 136.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Face Tools"
 __meta__ = {
@@ -428,54 +439,60 @@ __meta__ = {
 }
 
 [node name="Extrude" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 72.0
-offset_right = 1024.0
-offset_bottom = 96.0
+offset_top = 212.0
+offset_right = 192.0
+offset_bottom = 284.0
 shortcut = SubResource( "12" )
 text = "Extrude"
-icon = ExtResource( "7" )
+icon = ExtResource( "11_ods2w" )
+expand_icon = true
 
 [node name="Connect" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 64.0
-offset_right = 12.0
-offset_bottom = 86.0
+offset_top = 288.0
+offset_right = 192.0
+offset_bottom = 319.0
 text = "Connect"
+icon = ExtResource( "12_t4tf1" )
+expand_icon = true
 
 [node name="Subdivide" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 64.0
-offset_right = 12.0
-offset_bottom = 86.0
+offset_top = 323.0
+offset_right = 192.0
+offset_bottom = 354.0
 text = "Subdivide"
+icon = ExtResource( "13_68wte" )
+expand_icon = true
 
 [node name="Triangulate" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 64.0
-offset_right = 12.0
-offset_bottom = 86.0
+offset_top = 358.0
+offset_right = 192.0
+offset_bottom = 389.0
 text = "Triangulate"
+icon = ExtResource( "14_8ytvm" )
+expand_icon = true
 
 [node name="PaintSurfaces" type="MarginContainer" parent="Scroll/Content/FaceTools"]
-offset_top = 248.0
-offset_right = 1024.0
-offset_bottom = 285.0
+offset_top = 393.0
+offset_right = 192.0
+offset_bottom = 419.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/FaceTools/PaintSurfaces"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/FaceTools/PaintSurfaces"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/FaceTools/PaintSurfaces/MarginContainer"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 192.0
+offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/FaceTools/PaintSurfaces/MarginContainer/CenterContainer"]
-offset_left = 468.0
-offset_top = 5.0
-offset_right = 555.0
-offset_bottom = 31.0
+offset_left = 52.0
+offset_right = 139.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Paint Faces"
 __meta__ = {
@@ -483,74 +500,74 @@ __meta__ = {
 }
 
 [node name="Surfaces" type="GridContainer" parent="Scroll/Content/FaceTools"]
-offset_top = 126.0
-offset_right = 1024.0
-offset_bottom = 194.0
+offset_top = 423.0
+offset_right = 192.0
+offset_bottom = 524.0
 columns = 3
 
 [node name="1" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_right = 338.0
-offset_bottom = 20.0
+offset_right = 61.0
+offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "1"
 
 [node name="2" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 342.0
-offset_right = 680.0
-offset_bottom = 20.0
+offset_left = 65.0
+offset_right = 126.0
+offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "2"
 
 [node name="3" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 684.0
-offset_right = 1022.0
-offset_bottom = 20.0
+offset_left = 130.0
+offset_right = 191.0
+offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "3"
 
 [node name="4" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_top = 24.0
-offset_right = 338.0
-offset_bottom = 44.0
+offset_top = 35.0
+offset_right = 61.0
+offset_bottom = 66.0
 size_flags_horizontal = 3
 text = "4"
 
 [node name="5" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 342.0
-offset_top = 24.0
-offset_right = 680.0
-offset_bottom = 44.0
+offset_left = 65.0
+offset_top = 35.0
+offset_right = 126.0
+offset_bottom = 66.0
 size_flags_horizontal = 3
 text = "5"
 
 [node name="6" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 684.0
-offset_top = 24.0
-offset_right = 1022.0
-offset_bottom = 44.0
+offset_left = 130.0
+offset_top = 35.0
+offset_right = 191.0
+offset_bottom = 66.0
 size_flags_horizontal = 3
 text = "6"
 
 [node name="7" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_top = 48.0
-offset_right = 338.0
-offset_bottom = 68.0
+offset_top = 70.0
+offset_right = 61.0
+offset_bottom = 101.0
 size_flags_horizontal = 3
 text = "7"
 
 [node name="8" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 342.0
-offset_top = 48.0
-offset_right = 680.0
-offset_bottom = 68.0
+offset_left = 65.0
+offset_top = 70.0
+offset_right = 126.0
+offset_bottom = 101.0
 size_flags_horizontal = 3
 text = "8"
 
 [node name="9" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 684.0
-offset_top = 48.0
-offset_right = 1022.0
-offset_bottom = 68.0
+offset_left = 130.0
+offset_top = 70.0
+offset_right = 191.0
+offset_bottom = 101.0
 size_flags_horizontal = 3
 text = "9"
 
@@ -594,7 +611,8 @@ offset_top = 8.0
 offset_right = 1024.0
 offset_bottom = 32.0
 text = "Loop"
-icon = ExtResource( "13" )
+icon = ExtResource( "15_5b5te" )
+expand_icon = true
 
 [node name="EdgeTools" type="MarginContainer" parent="Scroll/Content/EdgeTools"]
 offset_top = 116.0
@@ -631,7 +649,8 @@ offset_right = 1024.0
 offset_bottom = 68.0
 shortcut = SubResource( "14" )
 text = "Cut Loop"
-icon = ExtResource( "9" )
+icon = ExtResource( "16_nokrw" )
+expand_icon = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -641,7 +660,8 @@ offset_top = 72.0
 offset_right = 1024.0
 offset_bottom = 96.0
 text = "Subdivide"
-icon = ExtResource( "10" )
+icon = ExtResource( "17_lihy5" )
+expand_icon = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -651,16 +671,16 @@ offset_top = 108.0
 offset_right = 1024.0
 offset_bottom = 132.0
 text = "Collapse"
-icon = ExtResource( "14" )
+icon = ExtResource( "18_b8383" )
+expand_icon = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VertexTools" type="VBoxContainer" parent="Scroll/Content"]
 visible = false
-offset_left = 956.0
-offset_top = 68.0
-offset_right = 960.0
-offset_bottom = 668.0
+offset_top = 579.0
+offset_right = 192.0
+offset_bottom = 579.0
 
 [node name="GeneratorsModal" parent="Scroll/Content" instance=ExtResource( "16" )]
