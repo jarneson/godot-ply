@@ -111,9 +111,6 @@ Given this representation, a few limitations occur that are representable in oth
 - One cannot arbitrarily extrude edges into one-sided faces, or one edge would be incident with >2 faces.
 - One cannot flip individual faces, as the faces would no longer have compatible orientation.
 
-### Plugin Interop
-Uses [godot-plugin-interop](https://github.com/jarneson/godot-plugin-interop) to allow other plugins to access it.
-
 ## Contributing
 
 Feel free to contribute! Both issues and pull requests are very welcome.
