@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://bb7qnjnl0y2lf"]
+[gd_scene load_steps=35 format=3 uid="uid://bb7qnjnl0y2lf"]
 
 [ext_resource type="Texture2D" uid="uid://da0i0pbup2umf" path="res://addons/ply/icons/dark/select_mesh_dark.png" id="5_5m67v"]
 [ext_resource type="Texture2D" uid="uid://cb212rtjh5ric" path="res://addons/ply/icons/dark/select_face_dark.png" id="6_yuw87"]
@@ -46,6 +46,8 @@ keycode = 52
 
 [sub_resource type="Shortcut" id="10"]
 events = [SubResource( "InputEventKey_xgrna" )]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_xlkoy"]
 
 [sub_resource type="InputEventKey" id="InputEventKey_qn4mv"]
 command_pressed = true
@@ -239,6 +241,7 @@ offset_top = 200.0
 offset_right = 192.0
 offset_bottom = 231.0
 toggle_mode = true
+button_group = SubResource( "ButtonGroup_xlkoy" )
 text = "Global"
 
 [node name="Local" type="Button" parent="Scroll/Content"]
@@ -246,6 +249,7 @@ offset_top = 235.0
 offset_right = 192.0
 offset_bottom = 266.0
 toggle_mode = true
+button_group = SubResource( "ButtonGroup_xlkoy" )
 text = "Local"
 
 [node name="Normal" type="Button" parent="Scroll/Content"]
@@ -253,6 +257,7 @@ offset_top = 270.0
 offset_right = 192.0
 offset_bottom = 301.0
 toggle_mode = true
+button_group = SubResource( "ButtonGroup_xlkoy" )
 text = "Normal"
 
 [node name="Spacer" type="CenterContainer" parent="Scroll/Content"]
