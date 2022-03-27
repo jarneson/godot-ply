@@ -37,7 +37,7 @@ const GIZMO_RING_HALF_WIDTH = 0.1
 
 const ROTATE_SHADER_CODE = """
 shader_type spatial;
-render_mode unshaded, depth_test_disable; 
+render_mode unshaded, depth_draw_never; 
 uniform vec4 albedo; 
 
 mat3 orthonormalize(mat3 m) { 
@@ -66,7 +66,7 @@ void fragment() {
 var _plugin: EditorPlugin
 
 
-func _init(p: EditorPlugin) -> void:
+func _init(p: EditorPlugin):
 	_plugin = p
 
 
@@ -78,11 +78,11 @@ func startup() -> void:
 
 func teardown() -> void:
 	for i in range(3):
-		VisualServer.free_rid(move_gizmo_instances[i])
-		VisualServer.free_rid(move_plane_gizmo_instances[i])
-		VisualServer.free_rid(rotate_gizmo_instances[i])
-		VisualServer.free_rid(scale_gizmo_instances[i])
-		VisualServer.free_rid(scale_plane_gizmo_instances[i])
+		RenderingServer.free_rid(move_gizmo_instances[i])
+		RenderingServer.free_rid(move_plane_gizmo_instances[i])
+		RenderingServer.free_rid(rotate_gizmo_instances[i])
+		RenderingServer.free_rid(scale_gizmo_instances[i])
+		RenderingServer.free_rid(scale_plane_gizmo_instances[i])
 
 
 # 0: x, 1: y, 2: z
@@ -110,20 +110,22 @@ func _init_materials() -> void:
 	var rotate_shader = Shader.new()
 	rotate_shader.code = ROTATE_SHADER_CODE
 	for i in range(3):
-		var mat = SpatialMaterial.new()
-		mat.flags_unshaded = true
-		mat.flags_transparent = true
-		mat.flags_no_depth_test = true
-		mat.params_cull_mode = SpatialMaterial.CULL_DISABLED
+		var mat = StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		mat.no_depth_test = true
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		mat.render_priority = 127
 		mat.albedo_color = axis_colors[i]
 		axis_materials[i] = mat
 
-		mat = SpatialMaterial.new()
-		mat.flags_unshaded = true
-		mat.flags_transparent = true
-		mat.flags_no_depth_test = true
-		mat.params_cull_mode = SpatialMaterial.CULL_DISABLED
+		mat = StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+		mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		mat.no_depth_test = true
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		mat.render_priority = 127
 		mat.albedo_color = axis_colors_selected[i]
 		axis_materials_selected[i] = mat
@@ -169,10 +171,10 @@ func _init_meshes() -> void:
 				var mb = Basis(ivec, PI * 2 * float(k + 1) / arrow_sides)
 				for j in range(arrow_points - 1):
 					var points = [
-						ma.xform(arrow[j]),
-						mb.xform(arrow[j]),
-						ma.xform(arrow[j + 1]),
-						mb.xform(arrow[j + 1]),
+						ma * arrow[j],
+						mb * arrow[j],
+						ma * arrow[j + 1],
+						mb * arrow[j + 1],
 					]
 					st.add_vertex(points[0])
 					st.add_vertex(points[1])
@@ -195,7 +197,7 @@ func _init_meshes() -> void:
 			]
 			var ma = Basis(ivec, PI / 2)
 			var points = [
-				ma.xform(plane[0]), ma.xform(plane[1]), ma.xform(plane[2]), ma.xform(plane[3])
+				ma * plane[0], ma * plane[1], ma * plane[2], ma * plane[3]
 			]
 			st.add_vertex(points[0])
 			st.add_vertex(points[1])
@@ -213,11 +215,11 @@ func _init_meshes() -> void:
 			var m = 3
 			for j in range(n):
 				var basis = Basis(ivec, (PI * 2 * j) / n)
-				var vertex = basis.xform(ivec2 * GIZMO_CIRCLE_SIZE)
+				var vertex = basis * ivec2 * GIZMO_CIRCLE_SIZE
 				for k in range(m):
 					var ofs = Vector2(cos((PI * 2 * k) / m), sin((PI * 2 * k) / m))
 					var normal = ivec * ofs.x + ivec2 * ofs.y
-					st.add_normal(basis.xform(normal))
+					st.set_normal(basis * normal)
 					st.add_vertex(vertex)
 			for j in range(n):
 				for k in range(m):
@@ -250,10 +252,10 @@ func _init_meshes() -> void:
 				var mb = Basis(ivec, PI * 2 * float(k + 1) / arrow_sides)
 				for j in range(arrow.size() - 1):
 					var points = [
-						ma.xform(arrow[j]),
-						mb.xform(arrow[j]),
-						ma.xform(arrow[j + 1]),
-						mb.xform(arrow[j + 1]),
+						ma * arrow[j],
+						mb * arrow[j],
+						ma * arrow[j + 1],
+						mb * arrow[j + 1],
 					]
 					st.add_vertex(points[0])
 					st.add_vertex(points[1])
@@ -276,7 +278,7 @@ func _init_meshes() -> void:
 			]
 			var ma = Basis(ivec, PI / 2)
 			var points = [
-				ma.xform(plane[0]), ma.xform(plane[1]), ma.xform(plane[2]), ma.xform(plane[3])
+				ma * plane[0], ma * plane[1], ma * plane[2], ma * plane[3]
 			]
 			st.add_vertex(points[0])
 			st.add_vertex(points[1])
@@ -290,67 +292,67 @@ func _init_meshes() -> void:
 
 func _init_instance() -> void:
 	for i in range(3):
-		move_gizmo_instances[i] = VisualServer.instance_create()
-		VisualServer.instance_set_base(move_gizmo_instances[i], move_gizmo[i])
-		VisualServer.instance_set_scenario(
-			move_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+		move_gizmo_instances[i] = RenderingServer.instance_create()
+		RenderingServer.instance_set_base(move_gizmo_instances[i], move_gizmo[i])
+		RenderingServer.instance_set_scenario(
+			move_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
-		VisualServer.instance_set_visible(move_gizmo_instances[i], false)
-		VisualServer.instance_geometry_set_cast_shadows_setting(
-			move_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF
+		RenderingServer.instance_set_visible(move_gizmo_instances[i], false)
+		RenderingServer.instance_geometry_set_cast_shadows_setting(
+			move_gizmo_instances[i], RenderingServer.SHADOW_CASTING_SETTING_OFF
 		)
-		VisualServer.instance_set_layer_mask(move_gizmo_instances[i], 100)
+		RenderingServer.instance_set_layer_mask(move_gizmo_instances[i], 100)
 
-		move_plane_gizmo_instances[i] = VisualServer.instance_create()
-		VisualServer.instance_set_base(move_plane_gizmo_instances[i], move_plane_gizmo[i])
-		VisualServer.instance_set_scenario(
-			move_plane_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+		move_plane_gizmo_instances[i] = RenderingServer.instance_create()
+		RenderingServer.instance_set_base(move_plane_gizmo_instances[i], move_plane_gizmo[i])
+		RenderingServer.instance_set_scenario(
+			move_plane_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
-		VisualServer.instance_set_visible(move_plane_gizmo_instances[i], false)
-		VisualServer.instance_geometry_set_cast_shadows_setting(
-			move_plane_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF
+		RenderingServer.instance_set_visible(move_plane_gizmo_instances[i], false)
+		RenderingServer.instance_geometry_set_cast_shadows_setting(
+			move_plane_gizmo_instances[i], RenderingServer.SHADOW_CASTING_SETTING_OFF
 		)
-		VisualServer.instance_set_layer_mask(move_plane_gizmo_instances[i], 100)
+		RenderingServer.instance_set_layer_mask(move_plane_gizmo_instances[i], 100)
 
-		rotate_gizmo_instances[i] = VisualServer.instance_create()
-		VisualServer.instance_set_base(rotate_gizmo_instances[i], rotate_gizmo[i])
-		VisualServer.instance_set_scenario(
-			rotate_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+		rotate_gizmo_instances[i] = RenderingServer.instance_create()
+		RenderingServer.instance_set_base(rotate_gizmo_instances[i], rotate_gizmo[i])
+		RenderingServer.instance_set_scenario(
+			rotate_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
-		VisualServer.instance_set_visible(rotate_gizmo_instances[i], false)
-		VisualServer.instance_geometry_set_cast_shadows_setting(
-			rotate_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF
+		RenderingServer.instance_set_visible(rotate_gizmo_instances[i], false)
+		RenderingServer.instance_geometry_set_cast_shadows_setting(
+			rotate_gizmo_instances[i], RenderingServer.SHADOW_CASTING_SETTING_OFF
 		)
-		VisualServer.instance_set_layer_mask(rotate_gizmo_instances[i], 100)
+		RenderingServer.instance_set_layer_mask(rotate_gizmo_instances[i], 100)
 
-		scale_gizmo_instances[i] = VisualServer.instance_create()
-		VisualServer.instance_set_base(scale_gizmo_instances[i], scale_gizmo[i])
-		VisualServer.instance_set_scenario(
-			scale_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+		scale_gizmo_instances[i] = RenderingServer.instance_create()
+		RenderingServer.instance_set_base(scale_gizmo_instances[i], scale_gizmo[i])
+		RenderingServer.instance_set_scenario(
+			scale_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
-		VisualServer.instance_set_visible(scale_gizmo_instances[i], false)
-		VisualServer.instance_geometry_set_cast_shadows_setting(
-			scale_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF
+		RenderingServer.instance_set_visible(scale_gizmo_instances[i], false)
+		RenderingServer.instance_geometry_set_cast_shadows_setting(
+			scale_gizmo_instances[i], RenderingServer.SHADOW_CASTING_SETTING_OFF
 		)
-		VisualServer.instance_set_layer_mask(scale_gizmo_instances[i], 100)
+		RenderingServer.instance_set_layer_mask(scale_gizmo_instances[i], 100)
 
-		scale_plane_gizmo_instances[i] = VisualServer.instance_create()
-		VisualServer.instance_set_base(scale_plane_gizmo_instances[i], scale_plane_gizmo[i])
-		VisualServer.instance_set_scenario(
-			scale_plane_gizmo_instances[i], _plugin.get_tree().root.world.scenario
+		scale_plane_gizmo_instances[i] = RenderingServer.instance_create()
+		RenderingServer.instance_set_base(scale_plane_gizmo_instances[i], scale_plane_gizmo[i])
+		RenderingServer.instance_set_scenario(
+			scale_plane_gizmo_instances[i], _plugin.get_tree().root.world_3d.scenario
 		)
-		VisualServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
-		VisualServer.instance_geometry_set_cast_shadows_setting(
-			scale_plane_gizmo_instances[i], VisualServer.SHADOW_CASTING_SETTING_OFF
+		RenderingServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
+		RenderingServer.instance_geometry_set_cast_shadows_setting(
+			scale_plane_gizmo_instances[i], RenderingServer.SHADOW_CASTING_SETTING_OFF
 		)
-		VisualServer.instance_set_layer_mask(scale_plane_gizmo_instances[i], 100)
+		RenderingServer.instance_set_layer_mask(scale_plane_gizmo_instances[i], 100)
 
 
-var transform  # Nullable Transform
+var transform  # Nullable Transform3D
 var gizmo_scale: float
 
 
-func _get_transform(camera: Camera) -> Transform:
+func _get_transform(camera: Camera3D) -> Transform3D:
 	var cam_xform = camera.global_transform
 	var xform = transform
 	var camz = -cam_xform.basis.z.normalized()
@@ -391,29 +393,29 @@ func _set_highlight(highlight_axis) -> void:
 func _update_view() -> void:
 	if transform == null:
 		for i in range(3):
-			VisualServer.instance_set_visible(move_gizmo_instances[i], false)
-			VisualServer.instance_set_visible(move_plane_gizmo_instances[i], false)
-			VisualServer.instance_set_visible(rotate_gizmo_instances[i], false)
-			VisualServer.instance_set_visible(scale_gizmo_instances[i], false)
-			VisualServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(move_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(move_plane_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(rotate_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(scale_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
 		return
 
 	var xform = _get_transform(_plugin.last_camera)
 
 	for i in range(3):
-		VisualServer.instance_set_transform(move_gizmo_instances[i], xform)
-		VisualServer.instance_set_visible(move_gizmo_instances[i], true)
-		VisualServer.instance_set_transform(move_plane_gizmo_instances[i], xform)
-		VisualServer.instance_set_visible(move_plane_gizmo_instances[i], true)
-		VisualServer.instance_set_transform(rotate_gizmo_instances[i], xform)
-		VisualServer.instance_set_visible(rotate_gizmo_instances[i], true)
-		VisualServer.instance_set_transform(scale_gizmo_instances[i], xform)
-		VisualServer.instance_set_visible(scale_gizmo_instances[i], true)
-		VisualServer.instance_set_transform(scale_plane_gizmo_instances[i], xform)
-		VisualServer.instance_set_visible(scale_plane_gizmo_instances[i], true)
+		RenderingServer.instance_set_transform(move_gizmo_instances[i], xform)
+		RenderingServer.instance_set_visible(move_gizmo_instances[i], true)
+		RenderingServer.instance_set_transform(move_plane_gizmo_instances[i], xform)
+		RenderingServer.instance_set_visible(move_plane_gizmo_instances[i], true)
+		RenderingServer.instance_set_transform(rotate_gizmo_instances[i], xform)
+		RenderingServer.instance_set_visible(rotate_gizmo_instances[i], true)
+		RenderingServer.instance_set_transform(scale_gizmo_instances[i], xform)
+		RenderingServer.instance_set_visible(scale_gizmo_instances[i], true)
+		RenderingServer.instance_set_transform(scale_plane_gizmo_instances[i], xform)
+		RenderingServer.instance_set_visible(scale_plane_gizmo_instances[i], true)
 
 
-func select(camera: Camera, screen_position: Vector2, only_highlight: bool = false) -> bool:
+func select(camera: Camera3D, screen_position: Vector2, only_highlight: bool = false) -> bool:
 	if transform == null:
 		return false
 
@@ -432,7 +434,7 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
 				+ gt.basis[i] * (GIZMO_ARROW_OFFSET + (GIZMO_ARROW_SIZE * 0.5))
 			)
 			var grabber_radius = gs * GIZMO_ARROW_SIZE
-			var res = Geometry.segment_intersects_sphere(
+			var res = Geometry3D.segment_intersects_sphere(
 				ray_pos, ray_pos + ray * 1000, grabber_pos, grabber_radius
 			)
 			if res.size() > 0:
@@ -480,7 +482,7 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
 			var normal = gt.basis[i].normalized()
 			var plane = Plane(normal, normal.dot(gt.origin))
 			var r = plane.intersects_ray(ray_pos, ray)
-			if not r:
+			if r == null:
 				continue
 			var dist = r.distance_to(gt.origin)
 			var r_dir = (r - gt.origin).normalized()
@@ -518,7 +520,7 @@ func select(camera: Camera, screen_position: Vector2, only_highlight: bool = fal
 			var grabber_radius = gs * GIZMO_SCALE_SIZE
 			var r: Vector3
 
-			var res = Geometry.segment_intersects_sphere(
+			var res = Geometry3D.segment_intersects_sphere(
 				ray_pos, ray_pos + ray * 1000, grabber_pos, grabber_radius
 			)
 			if res.size() > 0:
@@ -574,7 +576,7 @@ var in_edit: bool = false
 var original_intersect  # nullable vector3
 
 
-func compute_edit(camera: Camera, screen_position: Vector2, snap = null) -> void:
+func compute_edit(camera: Camera3D, screen_position: Vector2, snap: float = 0.0) -> void:
 	if transform == null:
 		return
 	if not in_edit:
@@ -609,16 +611,16 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null) -> void
 					var normal = xb.z
 					p = Plane(normal, normal.dot(transform.origin))
 			var intersection = p.intersects_ray(ray_pos, ray)
-			if not intersection:
+			if intersection == null:
 				return
 
-			if not original_intersect:
+			if original_intersect == null:
 				original_intersect = intersection
 
 			var motion = intersection - original_intersect
 			if motion_mask != Vector3.ZERO:
 				motion = motion_mask.dot(motion) * motion_mask
-			if snap:
+			if snap != 0:
 				motion = motion.snapped(Vector3(snap, snap, snap))
 
 			_plugin.selection.translate_selection(motion)
@@ -640,9 +642,9 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null) -> void
 					axis = xb.z
 
 			var intersection = plane.intersects_ray(ray_pos, ray)
-			if not intersection:
+			if intersection == null:
 				return
-			if not original_intersect:
+			if original_intersect == null:
 				original_intersect = intersection
 
 			var y_axis = (original_intersect - transform.origin).normalized()
@@ -685,10 +687,10 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null) -> void
 						var normal = motion_mask.cross(motion_mask.cross(ray)).normalized()
 						p = Plane(normal, normal.dot(transform.origin))
 				var intersection = p.intersects_ray(ray_pos, ray)
-				if not intersection:
+				if intersection == null:
 					return
 
-				if not original_intersect:
+				if original_intersect == null:
 					original_intersect = intersection
 
 				var motion = intersection - original_intersect
@@ -698,7 +700,7 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null) -> void
 				if snap:
 					motion = motion.snapped(Vector3(snap, snap, snap))
 
-				var scale = Vector3(1, 1, 1) + xb.inverse().xform(motion)
+				var scale = Vector3(1, 1, 1) + xb.inverse() * motion
 				_plugin.selection.scale_selection_along_plane_normal(
 					motion_mask, scale[scale_factor_index]
 				)
@@ -729,10 +731,10 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null) -> void
 						p = Plane(normal, normal.dot(transform.origin))
 				var motion_mask = axis_1 + axis_2
 				var intersection = p.intersects_ray(ray_pos, ray)
-				if not intersection:
+				if intersection == null:
 					return
 
-				if not original_intersect:
+				if original_intersect == null:
 					original_intersect = intersection
 
 				var motion = intersection - original_intersect
@@ -742,7 +744,7 @@ func compute_edit(camera: Camera, screen_position: Vector2, snap = null) -> void
 				if snap:
 					motion = motion.snapped(Vector3(snap, snap, snap))
 
-				var scale = Vector3(1, 1, 1) + xb.inverse().xform(motion)
+				var scale = Vector3(1, 1, 1) + xb.inverse() * motion
 				_plugin.selection.scale_selection_along_plane(
 					normal, [axis_1, axis_2], scale[scale_idx]
 				)
@@ -754,7 +756,7 @@ func end_edit() -> void:
 
 	in_edit = false
 	original_intersect = null
-	var name = "Ply: Transform"
+	var name = "Ply: Transform3D"
 	match edit_mode:
 		TransformMode.TRANSLATE:
 			name = "Ply: Translate"

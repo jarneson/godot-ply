@@ -1,4 +1,4 @@
-tool
+@tool
 extends Control
 
 signal selection_mode_changed(mode)
@@ -7,7 +7,7 @@ signal gizmo_mode_changed(mode)
 const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
 const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
 
-const Invert = preload("res://addons/ply/resources/invert.gd")
+const Invert = preload("res://addons/ply/resources/reverse.gd")
 const Extrude = preload("res://addons/ply/resources/extrude.gd")
 const Subdivide = preload("res://addons/ply/resources/subdivide.gd")
 const Triangulate = preload("res://addons/ply/resources/triangulate.gd")
@@ -16,52 +16,53 @@ const Collapse = preload("res://addons/ply/resources/collapse.gd")
 const Connect = preload("res://addons/ply/resources/connect.gd")
 const Generate = preload("res://addons/ply/resources/generate.gd")
 const ExportMesh = preload("res://addons/ply/resources/export.gd")
+const Import = preload("res://addons/ply/resources/import.gd")
 
 var plugin: EditorPlugin
 
-onready var selection_mesh = $Mesh
-onready var selection_face = $Face
-onready var selection_edge = $Edge
-onready var selection_vertex = $Vertex
+@onready var selection_mesh = $Scroll/Content/Mesh
+@onready var selection_face = $Scroll/Content/Face
+@onready var selection_edge = $Scroll/Content/Edge
+@onready var selection_vertex = $Scroll/Content/Vertex
 
-onready var gizmo_global = $Global
-onready var gizmo_local = $Local
-onready var gizmo_normal = $Normal
+@onready var gizmo_global = $Scroll/Content/Global
+@onready var gizmo_local = $Scroll/Content/Local
+@onready var gizmo_normal = $Scroll/Content/Normal
 
-onready var mesh_tools = $MeshTools
-onready var mesh_subdivide = $MeshTools/Subdivide
-onready var mesh_triangulate = $MeshTools/Triangulate
-onready var mesh_invert_normals = $MeshTools/InvertNormals
-onready var mesh_export_to_obj = $MeshTools/ExportOBJ
-onready var mesh_quick_generators = $MeshTools/QuickGenerators
-onready var mesh_generators = $MeshTools/Generators
-onready var generators_modal = $GeneratorsModal
+@onready var mesh_tools = $Scroll/Content/MeshTools
+@onready var mesh_subdivide = $Scroll/Content/MeshTools/Subdivide
+@onready var mesh_triangulate = $Scroll/Content/MeshTools/Triangulate
+@onready var mesh_invert_normals = $Scroll/Content/MeshTools/InvertNormals
+@onready var mesh_import = $Scroll/Content/MeshTools/Import
+@onready var mesh_export_to_obj = $Scroll/Content/MeshTools/ExportOBJ
+@onready var mesh_generators = $Scroll/Content/MeshTools/Generators
+@onready var generators_modal = $Scroll/Content/GeneratorsModal
 
-onready var face_tools = $FaceTools
-onready var face_select_loop_1 = $FaceTools/FaceLoop1
-onready var face_select_loop_2 = $FaceTools/FaceLoop2
-onready var face_extrude = $FaceTools/Extrude
-onready var face_connect = $FaceTools/Connect
-onready var face_subdivide = $FaceTools/Subdivide
-onready var face_triangulate = $FaceTools/Triangulate
+@onready var face_tools = $Scroll/Content/FaceTools
+@onready var face_select_loop_1 = $Scroll/Content/FaceTools/FaceLoop1
+@onready var face_select_loop_2 = $Scroll/Content/FaceTools/FaceLoop2
+@onready var face_extrude = $Scroll/Content/FaceTools/Extrude
+@onready var face_connect = $Scroll/Content/FaceTools/Connect
+@onready var face_subdivide = $Scroll/Content/FaceTools/Subdivide
+@onready var face_triangulate = $Scroll/Content/FaceTools/Triangulate
 
-onready var face_set_shape_1 = $"FaceTools/Surfaces/1"
-onready var face_set_shape_2 = $"FaceTools/Surfaces/2"
-onready var face_set_shape_3 = $"FaceTools/Surfaces/3"
-onready var face_set_shape_4 = $"FaceTools/Surfaces/4"
-onready var face_set_shape_5 = $"FaceTools/Surfaces/5"
-onready var face_set_shape_6 = $"FaceTools/Surfaces/6"
-onready var face_set_shape_7 = $"FaceTools/Surfaces/7"
-onready var face_set_shape_8 = $"FaceTools/Surfaces/8"
-onready var face_set_shape_9 = $"FaceTools/Surfaces/9"
+@onready var face_set_shape_1 = $"Scroll/Content/FaceTools/Surfaces/1"
+@onready var face_set_shape_2 = $"Scroll/Content/FaceTools/Surfaces/2"
+@onready var face_set_shape_3 = $"Scroll/Content/FaceTools/Surfaces/3"
+@onready var face_set_shape_4 = $"Scroll/Content/FaceTools/Surfaces/4"
+@onready var face_set_shape_5 = $"Scroll/Content/FaceTools/Surfaces/5"
+@onready var face_set_shape_6 = $"Scroll/Content/FaceTools/Surfaces/6"
+@onready var face_set_shape_7 = $"Scroll/Content/FaceTools/Surfaces/7"
+@onready var face_set_shape_8 = $"Scroll/Content/FaceTools/Surfaces/8"
+@onready var face_set_shape_9 = $"Scroll/Content/FaceTools/Surfaces/9"
 
-onready var edge_tools = $EdgeTools
-onready var edge_select_loop = $EdgeTools/SelectLoop
-onready var edge_cut_loop = $EdgeTools/CutLoop
-onready var edge_subdivide = $EdgeTools/Subdivide
-onready var edge_collapse = $EdgeTools/Collapse
+@onready var edge_tools = $Scroll/Content/EdgeTools
+@onready var edge_select_loop = $Scroll/Content/EdgeTools/SelectLoop
+@onready var edge_cut_loop = $Scroll/Content/EdgeTools/CutLoop
+@onready var edge_subdivide = $Scroll/Content/EdgeTools/Subdivide
+@onready var edge_collapse = $Scroll/Content/EdgeTools/Collapse
 
-onready var vertex_tools = $VertexTools
+@onready var vertex_tools = $Scroll/Content/VertexTools
 
 
 func _ready() -> void:
@@ -70,44 +71,44 @@ func _ready() -> void:
 	if err == OK:
 		var version = config.get_value("plugin", "version")
 		$TitleLabel/MarginContainer/HBoxContainer/Version.text = version
-	selection_mesh.connect("toggled", self, "_update_selection_mode", [SelectionMode.MESH])
-	selection_face.connect("toggled", self, "_update_selection_mode", [SelectionMode.FACE])
-	selection_edge.connect("toggled", self, "_update_selection_mode", [SelectionMode.EDGE])
-	selection_vertex.connect("toggled", self, "_update_selection_mode", [SelectionMode.VERTEX])
+	selection_mesh.connect("toggled",Callable(self,"_update_selection_mode"),[SelectionMode.MESH])
+	selection_face.connect("toggled",Callable(self,"_update_selection_mode"),[SelectionMode.FACE])
+	selection_edge.connect("toggled",Callable(self,"_update_selection_mode"),[SelectionMode.EDGE])
+	selection_vertex.connect("toggled",Callable(self,"_update_selection_mode"),[SelectionMode.VERTEX])
 
-	gizmo_global.connect("toggled", self, "_update_gizmo_mode", [GizmoMode.GLOBAL])
-	gizmo_local.connect("toggled", self, "_update_gizmo_mode", [GizmoMode.LOCAL])
-	gizmo_normal.connect("toggled", self, "_update_gizmo_mode", [GizmoMode.NORMAL])
+	gizmo_global.connect("toggled",Callable(self,"_update_gizmo_mode"),[GizmoMode.GLOBAL])
+	gizmo_local.connect("toggled",Callable(self,"_update_gizmo_mode"),[GizmoMode.LOCAL])
+	gizmo_normal.connect("toggled",Callable(self,"_update_gizmo_mode"),[GizmoMode.NORMAL])
 
-	mesh_export_to_obj.connect("pressed", self, "_export_to_obj")
-	mesh_subdivide.connect("pressed", self, "_mesh_subdivide")
-	mesh_triangulate.connect("pressed", self, "_mesh_triangulate")
-	mesh_invert_normals.connect("pressed", self, "_mesh_invert_normals")
-	mesh_quick_generators.get_popup().connect("id_pressed", self, "_on_generators_id_pressed")
-	mesh_generators.connect("pressed", self, "_open_generators_modal")
-	generators_modal.connect("confirmed", self, "_on_generators_modal_confirmed")
+	mesh_export_to_obj.connect("pressed",Callable(self,"_export_to_obj"))
+	mesh_import.connect("pressed",Callable(self,"_import_mesh"))
+	mesh_subdivide.connect("pressed",Callable(self,"_mesh_subdivide"))
+	mesh_triangulate.connect("pressed",Callable(self,"_mesh_triangulate"))
+	mesh_invert_normals.connect("pressed",Callable(self,"_mesh_invert_normals"))
+	mesh_generators.connect("pressed",Callable(self,"_open_generators_modal"))
+	generators_modal.connect("confirmed",Callable(self,"_on_generators_modal_confirmed"))
 
-	face_set_shape_1.connect("pressed", self, "_set_face_surface", [0])
-	face_set_shape_2.connect("pressed", self, "_set_face_surface", [1])
-	face_set_shape_3.connect("pressed", self, "_set_face_surface", [2])
-	face_set_shape_4.connect("pressed", self, "_set_face_surface", [3])
-	face_set_shape_5.connect("pressed", self, "_set_face_surface", [4])
-	face_set_shape_6.connect("pressed", self, "_set_face_surface", [5])
-	face_set_shape_7.connect("pressed", self, "_set_face_surface", [6])
-	face_set_shape_8.connect("pressed", self, "_set_face_surface", [7])
-	face_set_shape_9.connect("pressed", self, "_set_face_surface", [8])
+	face_set_shape_1.connect("pressed",Callable(self,"_set_face_surface"),[0])
+	face_set_shape_2.connect("pressed",Callable(self,"_set_face_surface"),[1])
+	face_set_shape_3.connect("pressed",Callable(self,"_set_face_surface"),[2])
+	face_set_shape_4.connect("pressed",Callable(self,"_set_face_surface"),[3])
+	face_set_shape_5.connect("pressed",Callable(self,"_set_face_surface"),[4])
+	face_set_shape_6.connect("pressed",Callable(self,"_set_face_surface"),[5])
+	face_set_shape_7.connect("pressed",Callable(self,"_set_face_surface"),[6])
+	face_set_shape_8.connect("pressed",Callable(self,"_set_face_surface"),[7])
+	face_set_shape_9.connect("pressed",Callable(self,"_set_face_surface"),[8])
 
-	face_select_loop_1.connect("pressed", self, "_face_select_loop", [0])
-	face_select_loop_2.connect("pressed", self, "_face_select_loop", [1])
-	face_extrude.connect("pressed", self, "_face_extrude")
-	face_connect.connect("pressed", self, "_face_connect")
-	face_subdivide.connect("pressed", self, "_face_subdivide")
-	face_triangulate.connect("pressed", self, "_face_triangulate")
+	face_select_loop_1.connect("pressed",Callable(self,"_face_select_loop"),[0])
+	face_select_loop_2.connect("pressed",Callable(self,"_face_select_loop"),[1])
+	face_extrude.connect("pressed",Callable(self,"_face_extrude"))
+	face_connect.connect("pressed",Callable(self,"_face_connect"))
+	face_subdivide.connect("pressed",Callable(self,"_face_subdivide"))
+	face_triangulate.connect("pressed",Callable(self,"_face_triangulate"))
 
-	edge_select_loop.connect("pressed", self, "_edge_select_loop")
-	edge_cut_loop.connect("pressed", self, "_edge_cut_loop")
-	edge_subdivide.connect("pressed", self, "_edge_subdivide")
-	edge_collapse.connect("pressed", self, "_edge_collapse")
+	edge_select_loop.connect("pressed",Callable(self,"_edge_select_loop"))
+	edge_cut_loop.connect("pressed",Callable(self,"_edge_cut_loop"))
+	edge_subdivide.connect("pressed",Callable(self,"_edge_subdivide"))
+	edge_collapse.connect("pressed",Callable(self,"_edge_collapse"))
 
 
 func _process(_delta) -> void:
@@ -133,10 +134,10 @@ func _update_gizmo_mode(selected, mode) -> void:
 
 
 func _update_tool_visibility() -> void:
-	mesh_tools.visible = selection_mesh.pressed
-	face_tools.visible = selection_face.pressed
-	edge_tools.visible = selection_edge.pressed
-	vertex_tools.visible = selection_vertex.pressed
+	mesh_tools.visible = selection_mesh.is_pressed()
+	face_tools.visible = selection_face.is_pressed()
+	edge_tools.visible = selection_edge.is_pressed()
+	vertex_tools.visible = selection_vertex.is_pressed()
 
 
 func set_selection_mode(mode) -> void:
@@ -151,16 +152,8 @@ func set_selection_mode(mode) -> void:
 			selection_vertex.pressed = true
 
 
-func _on_generators_id_pressed(idx):
-	match mesh_quick_generators.get_popup().get_item_text(idx):
-		"Plane":
-			_generate_plane()
-		"Cube":
-			_generate_cube()
-
-
 func _open_generators_modal():
-	generators_modal.popup_centered_minsize(Vector2(800, 600))
+	generators_modal.popup_centered_clamped(Vector2(800, 600))
 
 
 func _on_generators_modal_confirmed():
@@ -178,14 +171,14 @@ func _on_generators_modal_confirmed():
 			_generate_cylinder(params)
 
 
-func _generate_cube(params = null):
+func _generate_cube(params = Array()):
 	if plugin.ignore_inputs:
 		return
 	if not plugin.selection:
 		return
 	var size = 1
 	var subdivisions = 0
-	if params != null:
+	if params != Array():
 		size = params[0]
 		subdivisions = params[1]
 	var pre_edit = plugin.selection.ply_mesh.begin_edit()
@@ -202,7 +195,7 @@ func _generate_cube(params = null):
 	plugin.selection.ply_mesh.commit_edit("Generate Cube", plugin.get_undo_redo(), pre_edit)
 
 
-func _generate_plane(params = null):
+func _generate_plane(params = Array()):
 	if plugin.ignore_inputs:
 		return
 	if not plugin.selection:
@@ -210,7 +203,7 @@ func _generate_plane(params = null):
 
 	var size = 1
 	var subdivisions = 0
-	if params != null:
+	if params != Array():
 		size = params[0]
 		subdivisions = params[1]
 
@@ -228,7 +221,7 @@ func _generate_plane(params = null):
 	plugin.selection.ply_mesh.commit_edit("Generate Plane", plugin.get_undo_redo(), pre_edit)
 
 
-func _generate_cylinder(params = null):
+func _generate_cylinder(params = Array()):
 	if plugin.ignore_inputs:
 		return
 	if not plugin.selection:
@@ -238,7 +231,7 @@ func _generate_cylinder(params = null):
 	var depth = 1
 	var num_points = 8
 	var num_segments = 1
-	if params:
+	if params != Array():
 		radius = params[0]
 		depth = params[1]
 		num_points = params[2]
@@ -261,7 +254,7 @@ func _generate_cylinder(params = null):
 	plugin.selection.ply_mesh.commit_edit("Generate Cylinder", plugin.get_undo_redo(), pre_edit)
 
 
-func _generate_icosphere(params = null):
+func _generate_icosphere(params = Array()):
 	if plugin.ignore_inputs:
 		return
 	if not plugin.selection:
@@ -269,7 +262,7 @@ func _generate_icosphere(params = null):
 
 	var radius = 1.0
 	var subdivides = 0
-	if params:
+	if params != Array():
 		radius = params[0]
 		subdivides = params[1]
 
@@ -426,14 +419,32 @@ func _export_to_obj():
 	if not plugin.selection or selection_mode != SelectionMode.MESH:
 		return
 	var fd = FileDialog.new()
-	fd.set_filters(PoolStringArray(["*.obj ; OBJ Files"]))
+	fd.set_filters(PackedStringArray(["*.obj ; OBJ Files"]))
 	var base_control = plugin.get_editor_interface().get_base_control()
 	base_control.add_child(fd)
 	fd.popup_centered(Vector2(480, 600))
-	var file_name = yield(fd, "file_selected")
+	var file_name = await fd.file_selected
 	var obj_file = File.new()
 	obj_file.open(file_name, File.WRITE)
 	ExportMesh.export_to_obj(plugin.selection.ply_mesh, obj_file)
+
+
+func _import_mesh():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.MESH:
+		return
+	var fd = FileDialog.new()
+	fd.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	fd.set_filters(PackedStringArray(["*.res,*.tres; Resources"]))
+	var base_control = plugin.get_editor_interface().get_base_control()
+	base_control.add_child(fd)
+	fd.popup_centered(Vector2(480, 600))
+	var file_name = await fd.file_selected
+	var resource = load(file_name)
+	print(resource)
+	if resource is ArrayMesh:
+		Import.mesh(plugin.selection.ply_mesh, resource)
 
 
 func _mesh_subdivide():

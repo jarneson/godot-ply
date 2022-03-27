@@ -3,8 +3,8 @@ const Side = preload("res://addons/ply/utils/direction.gd")
 
 static func normals(ply_mesh) -> void:
 	# reverse the winding
-	var new_edge_edges = PoolIntArray()
-	var new_edge_vertexes = PoolIntArray()
+	var new_edge_edges = PackedInt32Array()
+	var new_edge_vertexes = PackedInt32Array()
 	new_edge_edges.resize(ply_mesh.edge_count() * 2)
 	new_edge_vertexes.resize(ply_mesh.edge_count() * 2)
 	for e in range(ply_mesh.edge_count()):
