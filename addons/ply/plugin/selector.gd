@@ -83,7 +83,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT:
 				if event.pressed:
-					if _plugin.transform_gizmo.select(camera, event.position):
+					if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
 						return true
 					if _plugin.selection:
 						_scan_selection(camera, event)
