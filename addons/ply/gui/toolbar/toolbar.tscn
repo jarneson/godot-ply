@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://bb7qnjnl0y2lf"]
+[gd_scene load_steps=34 format=3 uid="uid://bb7qnjnl0y2lf"]
 
 [ext_resource type="Texture2D" uid="uid://da0i0pbup2umf" path="res://addons/ply/icons/dark/select_mesh_dark.png" id="5_5m67v"]
 [ext_resource type="Texture2D" uid="uid://cb212rtjh5ric" path="res://addons/ply/icons/dark/select_face_dark.png" id="6_yuw87"]
@@ -12,7 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://bea5uloqyd4rq" path="res://addons/ply/icons/dark/merge_face_dark.png" id="12_t4tf1"]
 [ext_resource type="Texture2D" uid="uid://dyivagnwnahle" path="res://addons/ply/icons/dark/subdivide_face_dark.png" id="13_68wte"]
 [ext_resource type="Texture2D" uid="uid://ev2wv282wx0s" path="res://addons/ply/icons/dark/triangulate_dark.png" id="14_8ytvm"]
-[ext_resource type="Texture2D" uid="uid://7i6pl132hx4c" path="res://addons/ply/icons/plugin.svg" id="15"]
 [ext_resource type="Texture2D" uid="uid://bq2ki67at7efh" path="res://addons/ply/icons/dark/select_edge_ring_dark.png" id="15_5b5te"]
 [ext_resource type="PackedScene" uid="uid://dr3ixmwe8ascj" path="res://addons/ply/gui/toolbar/generators.tscn" id="16"]
 [ext_resource type="Texture2D" uid="uid://bg6l4ww3iyp8u" path="res://addons/ply/icons/dark/loopcut_v_dark.png" id="16_nokrw"]
@@ -72,25 +71,34 @@ script = ExtResource( "12" )
 
 [node name="TitleLabel" type="MarginContainer" parent="."]
 offset_right = 200.0
-offset_bottom = 64.0
+offset_bottom = 48.0
 
 [node name="ColorRect" type="ColorRect" parent="TitleLabel"]
 offset_right = 200.0
-offset_bottom = 64.0
+offset_bottom = 48.0
 color = Color(0, 0, 0, 0.392157)
 
 [node name="MarginContainer" type="MarginContainer" parent="TitleLabel"]
 offset_right = 200.0
-offset_bottom = 64.0
+offset_bottom = 48.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TitleLabel/MarginContainer"]
 offset_right = 200.0
-offset_bottom = 64.0
+offset_bottom = 48.0
+
+[node name="TextureRect" type="TextureRect" parent="TitleLabel/MarginContainer/HBoxContainer"]
+minimum_size = Vector2(48, 48)
+offset_right = 48.0
+offset_bottom = 48.0
+texture = ExtResource( "8_0w4vc" )
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="Title" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
-offset_top = 19.0
-offset_right = 47.0
-offset_bottom = 45.0
+offset_left = 52.0
+offset_top = 11.0
+offset_right = 115.0
+offset_bottom = 37.0
 size_flags_horizontal = 3
 text = "Ply"
 __meta__ = {
@@ -98,34 +106,27 @@ __meta__ = {
 }
 
 [node name="Version" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
-offset_left = 51.0
-offset_top = 19.0
-offset_right = 88.0
-offset_bottom = 45.0
+offset_left = 119.0
+offset_top = 11.0
+offset_right = 156.0
+offset_bottom = 37.0
 text = "1.0.2"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="GithubLink" type="Button" parent="TitleLabel/MarginContainer/HBoxContainer"]
-offset_left = 92.0
-offset_right = 132.0
-offset_bottom = 64.0
+offset_left = 160.0
+offset_right = 200.0
+offset_bottom = 48.0
 icon = ExtResource( "17" )
 script = ExtResource( "18" )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TextureRect" type="TextureRect" parent="TitleLabel/MarginContainer/HBoxContainer"]
-offset_left = 136.0
-offset_right = 200.0
-offset_bottom = 64.0
-texture = ExtResource( "15" )
-stretch_mode = 4
-
 [node name="Scroll" type="ScrollContainer" parent="."]
-offset_top = 68.0
+offset_top = 52.0
 offset_right = 200.0
 offset_bottom = 68.0
 size_flags_vertical = 3
