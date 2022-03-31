@@ -442,7 +442,6 @@ func _import_mesh():
 	fd.popup_centered(Vector2(480, 600))
 	var file_name = await fd.file_selected
 	var resource = load(file_name)
-	print(resource)
 	if resource is ArrayMesh:
 		Import.mesh(plugin.selection.ply_mesh, resource)
 

@@ -65,7 +65,7 @@ func _handles(o: Variant) -> bool:
 
 
 func _clear() -> void:
-	print("clear")
+	pass
 
 
 var selection	# nullable PlyEditor

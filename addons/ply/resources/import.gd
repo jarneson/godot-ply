@@ -33,7 +33,6 @@ static func mesh(p: PlyMesh, m: ArrayMesh):
 		vertex_edges.push_back(0)
 		seen_verts[hash] = new_idx
 		vert_map[vert_idx] = new_idx
-	print(vertices.size())
 
 	var seen_edges = {}
 	var edge_map = {}
@@ -74,11 +73,6 @@ static func mesh(p: PlyMesh, m: ArrayMesh):
 				edge_edges[2*e_idx+1] = edge_map[mdt.get_face_edge(face_idx, (ii+1)%3)]
 			else:
 				assert(false, "bomb")
-
-	print("ok...")
-	print(edge_edges)
-	print(edge_faces)
-	print(face_edges)
 
 	if true:
 		p.set_mesh(
