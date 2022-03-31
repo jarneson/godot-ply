@@ -8,14 +8,9 @@ signal edit_committed(value)
 var value: float :
 	get:
 		return value # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_value
-
-
-func set_value(v):
-	value = v
-	update()
-
+	set(v):
+		value = v
+		update()
 
 var label: String
 var min_value: float
@@ -24,20 +19,26 @@ var step: float
 var allow_greater: bool
 var allow_lesser: bool
 
+var value_input_popup: Popup
 var value_input: LineEdit
 var value_input_just_closed: bool
 
 
 func _ready() -> void:
 	connect("focus_entered",Callable(self,"_on_focus_entered"))
+	value_input_popup = Popup.new()
+	value_input_popup.name = "spinner_popup_%s" % [label]
+	
 	value_input = LineEdit.new()
-	value_input.set_as_top_level(true)
-	value_input.focus_mode = Control.FOCUS_CLICK
-	value_input.hide()
-	value_input.connect("popup_hide",Callable(self,"_on_value_input_closed"))
+	value_input.name = "spinner_line_edit_%s" % [label]
+	value_input_popup.add_child(value_input)
+	value_input_popup.wrap_controls = true
+	value_input.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
+	value_input_popup.connect("popup_hide",Callable(self,"_on_value_input_closed"))
 	value_input.connect("text_submitted",Callable(self,"_on_value_input_entered"))
 	value_input.connect("focus_exited",Callable(self,"_on_value_input_focus_exited"))
-	add_child(value_input)
+	
+	add_child(value_input_popup)
 	focus_mode = FOCUS_ALL
 
 
@@ -46,7 +47,7 @@ func get_text_value() -> String:
 
 
 func _on_value_input_entered(_text) -> void:
-	value_input.hide()
+	value_input_popup.hide()
 
 
 func _evaluate_input_text(and_hide: bool) -> void:
@@ -66,7 +67,7 @@ func _evaluate_input_text(and_hide: bool) -> void:
 	emit_signal("value_changed", value)
 	emit_signal("edit_committed", value)
 	if and_hide:
-		value_input.hide()
+		value_input_popup.hide()
 
 
 func _on_value_input_focus_exited() -> void:
@@ -91,11 +92,11 @@ func _on_focus_entered() -> void:
 func _handle_focus() -> void:
 	var gr = get_global_rect()
 	value_input.set_text(get_text_value())
-	value_input.set_position(gr.position)
-	value_input.set_size(gr.size)
-	value_input.show_modal()
-	value_input.select_all()
+	value_input_popup.set_position(get_screen_position())
+	value_input_popup.set_size(gr.size)
+	value_input_popup.call_deferred("popup")
 	value_input.call_deferred("grab_focus")
+	value_input.call_deferred("select_all")
 	value_input.focus_next = find_next_valid_focus().get_path()
 	value_input.focus_previous = find_prev_valid_focus().get_path()
 	value_input_just_closed = false
@@ -113,9 +114,22 @@ func _draw() -> void:
 	var vofs = (size.y - font.get_height()) / 2 + font.get_ascent()
 	var fc = get_theme_color("font_color", "LineEdit")
 	var numstr = get_text_value()
-	draw_string(font, Vector2(round(sb.get_offset().x), vofs), label, 0, -1, 16, fc * Color(1, 1, 1, 0.5))
 	draw_string(
-		font, Vector2(round(sb.get_offset().x + string_width + sep), vofs), numstr, -1, 16, 0, fc, number_width
+		font,
+		Vector2(round(sb.get_offset().x), vofs),
+		label,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		16, fc * Color(1, 1, 1, 0.5)
+	)
+	draw_string(
+		font,
+		Vector2(round(sb.get_offset().x + string_width + sep), vofs),
+		numstr,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		16,
+		fc
 	)
 
 var grabbing_spinner_mouse_pos: Vector2

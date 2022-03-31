@@ -183,8 +183,6 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 				origin, origin + direction * 1000, pos, sqrt(dist) / 32.0
 			)
 			if hit:
-				print("hit vertex: %s" % [pos.distance_to(origin)])
-				print("vertex distance: %s" % [hit[0].distance_to(origin)])
 				scan_results.push_back(["V", v, hit[0].distance_to(origin)])
 
 	if mode == SelectionMode.EDGE:
@@ -207,9 +205,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 				r_o, r_o + r_d * 1000.0, dist, sqrt(e_midpoint.distance_to(origin)) / 32.0
 			)
 			if hit:
-				print("hit edge: %s" % [e])
 				var distance = origin.distance_to(t.affine_inverse() * hit[0])
-				print("edge distance: %s" % [distance])
 				scan_results.push_back(["E", e, distance])
 
 	if mode == SelectionMode.FACE:
@@ -234,9 +230,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 					var mod = 0.0
 					if normal.dot(ai_direction) > 0:
 						mod = 0.01
-					print("hit face: %s" % [f])
 					var distance = ai_origin.distance_to(hit) + mod
-					print("face distance: %s" % [distance])
 					scan_results.push_back(["F", f, distance, hit])
 
 	scan_results.sort_custom(Callable(IntersectSorter,"sort_ascending"))
@@ -286,7 +280,6 @@ var _current_edit
 
 
 func begin_edit() -> void:
-	print("begin edit")
 	_current_edit = _ply_mesh.begin_edit()
 
 
