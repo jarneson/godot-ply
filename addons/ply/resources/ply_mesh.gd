@@ -52,10 +52,10 @@ func edge(i: int) -> Array:
 	return [edge_origin(i), edge_destination(i)]
 
 
-func edge_normal(e: int) -> Array:
+func edge_normal(e: int) -> Vector3:
 	var face_normal_left = face_normal(edge_face_left(e))
 	var face_normal_right = face_normal(edge_face_right(e))
-	return [(face_normal_left + face_normal_right) / 2]
+	return (face_normal_left + face_normal_right) / 2
 
 
 func face_count() -> int:
