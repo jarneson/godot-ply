@@ -44,7 +44,8 @@ var plugin: EditorPlugin
 @onready var face_extrude = $Scroll/Content/FaceTools/Extrude
 @onready var face_connect = $Scroll/Content/FaceTools/Connect
 @onready var face_subdivide = $Scroll/Content/FaceTools/Subdivide
-@onready var face_triangulate = $Scroll/Content/FaceTools/Triangulate
+@onready var face_triangulate_regular = $Scroll/Content/FaceTools/Triangulate/Regular
+@onready var face_triangulate_offset = $Scroll/Content/FaceTools/Triangulate/Offset
 
 @onready var face_set_shape_1 = $"Scroll/Content/FaceTools/Surfaces/1"
 @onready var face_set_shape_2 = $"Scroll/Content/FaceTools/Surfaces/2"
@@ -103,7 +104,8 @@ func _ready() -> void:
 	face_extrude.connect("pressed",Callable(self,"_face_extrude"))
 	face_connect.connect("pressed",Callable(self,"_face_connect"))
 	face_subdivide.connect("pressed",Callable(self,"_face_subdivide"))
-	face_triangulate.connect("pressed",Callable(self,"_face_triangulate"))
+	face_triangulate_regular.connect("pressed",Callable(self,"_face_triangulate_regular"))
+	face_triangulate_offset.connect("pressed",Callable(self,"_face_triangulate_offset"))
 
 	edge_select_loop.connect("pressed",Callable(self,"_edge_select_loop"))
 	edge_cut_loop.connect("pressed",Callable(self,"_edge_cut_loop"))
@@ -332,7 +334,7 @@ func _face_subdivide():
 	)
 
 
-func _face_triangulate():
+func _face_triangulate_regular():
 	if plugin.ignore_inputs:
 		return
 	if not plugin.selection or selection_mode != SelectionMode.FACE:
@@ -340,6 +342,16 @@ func _face_triangulate():
 	var pre_edit = plugin.selection.ply_mesh.begin_edit()
 	Triangulate.faces(plugin.selection.ply_mesh, plugin.selection.selected_faces)
 	plugin.selection.ply_mesh.commit_edit("Triangulate Faces", plugin.get_undo_redo(), pre_edit)
+
+
+func _face_triangulate_offset():
+	if plugin.ignore_inputs:
+		return
+	if not plugin.selection or selection_mode != SelectionMode.FACE:
+		return
+	var pre_edit = plugin.selection.ply_mesh.begin_edit()
+	Triangulate.faces(plugin.selection.ply_mesh, plugin.selection.selected_faces, 1)
+	plugin.selection.ply_mesh.commit_edit("Triangulate Faces (Offset +1)", plugin.get_undo_redo(), pre_edit)
 
 
 func _set_face_surface(s):

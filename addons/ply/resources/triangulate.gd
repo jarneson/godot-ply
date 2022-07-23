@@ -8,9 +8,13 @@ static func object(ply_mesh):
 	return faces(ply_mesh, f)
 
 
-static func faces(ply_mesh, face_indices) -> void:
+static func faces(ply_mesh, face_indices, offset = 0) -> void:
 	for face_idx in face_indices:
 		var verts = ply_mesh.face_vertex_indexes(face_idx)
+		for o in range(offset):
+			var v = verts[0]
+			verts.remove_at(0)
+			verts.push_back(v)
 		while verts.size() > 3:
 			var min_dot = null
 			var min_pair = null

@@ -469,11 +469,24 @@ text = "Subdivide"
 icon = ExtResource( "13_68wte" )
 expand_icon = true
 
-[node name="Triangulate" type="Button" parent="Scroll/Content/FaceTools"]
+[node name="Triangulate" type="HBoxContainer" parent="Scroll/Content/FaceTools"]
 offset_top = 358.0
 offset_right = 192.0
 offset_bottom = 389.0
+
+[node name="Regular" type="Button" parent="Scroll/Content/FaceTools/Triangulate"]
+offset_right = 161.0
+offset_bottom = 31.0
+size_flags_horizontal = 3
 text = "Triangulate"
+icon = ExtResource( "14_8ytvm" )
+expand_icon = true
+
+[node name="Offset" type="Button" parent="Scroll/Content/FaceTools/Triangulate"]
+offset_left = 165.0
+offset_right = 192.0
+offset_bottom = 31.0
+text = "+1"
 icon = ExtResource( "14_8ytvm" )
 expand_icon = true
 
