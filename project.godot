@@ -22,8 +22,8 @@ _global_script_class_icons={
 
 config/name="PlyDev"
 run/main_scene="res://addons/ply/demo/demo.tscn"
-config/icon="res://icon_lg.png"
 config/features=PackedStringArray("4.0")
+config/icon="res://icon_lg.png"
 
 [editor_plugins]
 

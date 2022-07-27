@@ -3,5 +3,5 @@
 [ext_resource type="Texture2D" uid="uid://bb6kjype86gts" path="res://addons/ply/materials/debug.png" id="1"]
 
 [resource]
-albedo_texture = ExtResource( "1" )
+albedo_texture = ExtResource("1")
 uv1_triplanar = true

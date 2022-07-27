@@ -621,7 +621,7 @@ func compute_edit(camera: Camera3D, screen_position: Vector2, snap: float = 0.0)
 			if motion_mask != Vector3.ZERO:
 				motion = motion_mask.dot(motion) * motion_mask
 			if snap != 0:
-				motion = motion.snapped(Vector3(snap, snap, snap))
+				motion = xb * (xb.inverse() * motion).snapped(Vector3(snap, snap, snap))
 
 			_plugin.selection.translate_selection(motion)
 		TransformMode.ROTATE:

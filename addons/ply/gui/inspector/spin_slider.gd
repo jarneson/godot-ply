@@ -151,7 +151,7 @@ func _gui_input(evt) -> void:
 				if grabbing_spinner_attempt:
 					if grabbing_spinner:
 						Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-						Input.warp_mouse_position(grabbing_spinner_mouse_pos)
+						Input.warp_mouse(grabbing_spinner_mouse_pos)
 						emit_signal("edit_committed", value)
 					else:
 						_handle_focus()
