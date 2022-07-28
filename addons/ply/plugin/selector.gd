@@ -98,11 +98,11 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 			if event.ctrl_pressed:
 				match _plugin.transform_gizmo.edit_mode:
 					1:  # translate
-						snap = 1.0
+						snap = _plugin.snap_values.translate_snap
 					2:  # rotate
-						snap = 15.0  # to radians?
+						snap = _plugin.snap_values.rotate_snap  # to radians?
 					3:  # scale
-						snap = 0.1
+						snap = _plugin.snap_values.scale_snap
 			_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
 		else:
 			_plugin.transform_gizmo.select(camera, event.position, true)

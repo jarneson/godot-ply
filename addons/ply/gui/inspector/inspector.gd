@@ -23,6 +23,10 @@ var scale_z
 @onready var face_count = $"V/FaceCount"
 @onready var selection_text = $"V/Selection"
 
+@onready var translate_snap = $"P/TranslateSnap"
+@onready var rotate_snap = $"P/RotateSnap"
+@onready var scale_snap = $"P/ScaleSnap"
+
 var plugin = null
 var gizmo_transform
 
@@ -75,8 +79,18 @@ func _ready() -> void:
 	scale_container.add_child(scale_y)
 	scale_container.add_child(scale_z)
 
+	translate_snap.value = plugin.snap_values.translate_snap
+	rotate_snap.value = plugin.snap_values.rotate_snap
+	scale_snap.value = plugin.snap_values.scale_snap
+
 	plugin.connect("selection_changed",Callable(self,"_on_selection_changed"))
 	plugin.toolbar.connect("gizmo_mode_changed",Callable(self,"_on_gizmo_mode_changed"))
+	
+	translate_snap.connect("value_changed", Callable(self,"_translate_snap_changed"))
+	rotate_snap.connect("value_changed", Callable(self,"_rotate_snap_changed"))
+	scale_snap.connect("value_changed", Callable(self,"_scale_snap_changed"))
+
+	#plugin.selector.
 
 	rotate_x.value = 0
 	rotate_y.value = 0
@@ -87,6 +101,14 @@ func _ready() -> void:
 
 	tool_grid.hide()
 
+func _translate_snap_changed(new_value: float) -> void:
+	plugin.snap_values.translate_snap = translate_snap.value
+
+func _rotate_snap_changed(new_value: float) -> void:
+	plugin.snap_values.rotate_snap = rotate_snap.value
+
+func _scale_snap_changed(new_value: float) -> void:
+	plugin.snap_values.scale_snap = scale_snap.value
 
 func _get_origin() -> Vector3:
 	match current_gizmo_mode:

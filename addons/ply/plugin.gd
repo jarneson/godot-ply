@@ -13,6 +13,8 @@ const Interop = preload("res://addons/ply/interop.gd")
 
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 
+const snap_data_path = "res://ply.dat"
+var snap_values = {translate_snap=1.0, rotate_snap=15.0, scale_snap=0.1}
 
 func _get_plugin_name() -> String:
 	return "Ply"
@@ -45,6 +47,14 @@ func _enter_tree() -> void:
 	toolbar.plugin = self
 	toolbar.visible = false
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, toolbar)
+	
+	var data = File.new()
+	if data.file_exists(snap_data_path):
+		data.open(snap_data_path, File.READ)
+		snap_values.translate_snap = data.get_real()
+		snap_values.rotate_snap = data.get_real()
+		snap_values.scale_snap = data.get_real()
+		data.close()
 
 
 func _exit_tree() -> void:
@@ -58,6 +68,13 @@ func _exit_tree() -> void:
 	selector.teardown()
 	selector.free()
 	Interop.deregister(self)
+	
+	var data = File.new()
+	data.open(snap_data_path, File.WRITE)
+	data.store_real(snap_values.translate_snap)
+	data.store_real(snap_values.rotate_snap)
+	data.store_real(snap_values.scale_snap)
+	data.close()
 
 
 func _handles(o: Variant) -> bool:
