@@ -334,7 +334,7 @@ func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override =
 		else:
 			v_z = v_y.cross(v_x)
 			v_x = v_y.cross(v_z)
-		basis = Basis(v_x, v_y, v_z)
+		basis = Basis(v_x, v_y, v_z).transposed()
 	if gizmo_mode == GizmoMode.GLOBAL:
 		basis = Basis.IDENTITY
 	if basis_override:
