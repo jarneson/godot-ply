@@ -10,9 +10,12 @@ const TransformGizmo = preload("res://addons/ply/plugin/transform_gizmo.gd")
 const Inspector = preload("res://addons/ply/plugin/inspector.gd")
 
 const Interop = preload("res://addons/ply/interop.gd")
+const Settings = preload("res://addons/ply/settings.gd")
 
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 
+var editor_settings = get_editor_interface().get_editor_settings()
+var snap_values = {translate=1.0, rotate=15.0, scale=0.1}
 
 func _get_plugin_name() -> String:
 	return "Ply"
@@ -27,6 +30,8 @@ var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instantiate()
 
 func _enter_tree() -> void:
 	Interop.register(self, "ply")
+	Settings.initialize_plugin_settings(editor_settings)
+	
 	add_custom_type(
 		"PlyEditor",
 		"Node3D",
@@ -45,6 +50,10 @@ func _enter_tree() -> void:
 	toolbar.plugin = self
 	toolbar.visible = false
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, toolbar)
+	
+	snap_values.translate = editor_settings.get_setting('editors/ply_gizmos/snap_increments/translate')
+	snap_values.rotate = editor_settings.get_setting('editors/ply_gizmos/snap_increments/rotate')
+	snap_values.scale = editor_settings.get_setting('editors/ply_gizmos/snap_increments/scale')
 
 
 func _exit_tree() -> void:
