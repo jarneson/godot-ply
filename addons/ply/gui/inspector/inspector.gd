@@ -79,9 +79,9 @@ func _ready() -> void:
 	scale_container.add_child(scale_y)
 	scale_container.add_child(scale_z)
 
-	translate_snap.value = plugin.snap_values.translate_snap
-	rotate_snap.value = plugin.snap_values.rotate_snap
-	scale_snap.value = plugin.snap_values.scale_snap
+	translate_snap.value = plugin.snap_values.translate
+	rotate_snap.value = plugin.snap_values.rotate
+	scale_snap.value = plugin.snap_values.scale
 
 	plugin.connect("selection_changed",Callable(self,"_on_selection_changed"))
 	plugin.toolbar.connect("gizmo_mode_changed",Callable(self,"_on_gizmo_mode_changed"))
@@ -102,13 +102,16 @@ func _ready() -> void:
 	tool_grid.hide()
 
 func _translate_snap_changed(new_value: float) -> void:
-	plugin.snap_values.translate_snap = translate_snap.value
+	plugin.snap_values.translate = new_value
+	plugin.editor_settings.set_setting('editors/ply_gizmos/snap_increments/translate', new_value)
 
 func _rotate_snap_changed(new_value: float) -> void:
-	plugin.snap_values.rotate_snap = rotate_snap.value
+	plugin.snap_values.rotate = new_value
+	plugin.editor_settings.set_setting('editors/ply_gizmos/snap_increments/translate', new_value)
 
 func _scale_snap_changed(new_value: float) -> void:
-	plugin.snap_values.scale_snap = scale_snap.value
+	plugin.snap_values.scale = new_value
+	plugin.editor_settings.set_setting('editors/ply_gizmos/snap_increments/translate', new_value)
 
 func _get_origin() -> Vector3:
 	match current_gizmo_mode:
