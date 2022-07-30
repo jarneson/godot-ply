@@ -25,7 +25,7 @@ var value_input_just_closed: bool
 
 
 func _ready() -> void:
-	connect("focus_entered",Callable(self,"_on_focus_entered"))
+	focus_entered.connect(_on_focus_entered)
 	value_input_popup = Popup.new()
 	value_input_popup.name = "spinner_popup_%s" % [label]
 	
@@ -34,9 +34,10 @@ func _ready() -> void:
 	value_input_popup.add_child(value_input)
 	value_input_popup.wrap_controls = true
 	value_input.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
-	value_input_popup.connect("popup_hide",Callable(self,"_on_value_input_closed"))
-	value_input.connect("text_submitted",Callable(self,"_on_value_input_entered"))
-	value_input.connect("focus_exited",Callable(self,"_on_value_input_focus_exited"))
+	
+	value_input_popup.popup_hide.connect(_on_value_input_closed)
+	value_input.text_submitted.connect(_on_value_input_entered)
+	value_input.focus_exited.connect(_on_value_input_focus_exited)
 	
 	add_child(value_input_popup)
 	focus_mode = FOCUS_ALL
