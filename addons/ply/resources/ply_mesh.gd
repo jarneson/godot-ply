@@ -200,8 +200,6 @@ func get_mesh(mesh: Mesh = null) -> ArrayMesh:
 			var faces = surface_map[s_idx]
 			for v in faces:
 				num_verts += render_face(st, v, Vector3.ZERO, num_verts)
-
-			st.generate_normals()
 		surfaces[s_idx] = st.commit(mesh)
 	return mesh
 
@@ -677,13 +675,21 @@ func face_vertex_indexes(idx):
 func render_face(st, f_idx, offset = Vector3.ZERO, num_verts = 0):
 	var tri_res = face_tris(f_idx)
 	var verts = tri_res[0]
-	var tris = tri_res[1]
-	var norm = face_normal(f_idx)
-
-	if verts.size() == 0:
+	if verts.size() < 3:
 		return
 
+	var tris = tri_res[1]
+	var norm = face_normal(f_idx)
+	var p = Plane(norm, verts[0][0])
+	
+	var y = norm
+	var x = (p.project(verts[1][0]) - p.project(verts[0][0])).normalized()
+	var z = y.cross(x)
+	var b = Basis(x,y,z)
 	for vtx in verts:
+		var uv = b * (p.project(vtx[0]) - p.project(verts[0][0]));
+		st.set_uv(Vector2(uv.x, uv.z))
+		st.set_normal(norm)
 		st.add_vertex(vtx[0] + offset)
 
 	for tri in tris:
