@@ -4,7 +4,7 @@ extends Node
 signal selection_changed
 signal selection_mutated
 
-const default_materials = [
+const default_materials: Array[Material] = [
 	preload("res://addons/ply/materials/debug_material_light.tres"),
 	preload("res://addons/ply/materials/debug_material_medium.tres"),
 	preload("res://addons/ply/materials/debug_material_dark.tres"),
@@ -43,7 +43,7 @@ const Faces = preload("res://addons/ply/nodes/ply_faces.gd")
 			_on_mesh_updated()
 		else:
 			print("assigned resource that is not a ply_mesh to ply editor")
-@export var materials : Array[BaseMaterial3D]:
+@export var materials : Array[Material]:
 	set=set_materials # (Array, Material)
 
 var _ply_mesh: PlyMesh
@@ -67,15 +67,16 @@ func _ready() -> void:
 
 
 func _compute_materials() -> void:
-	materials = default_materials
+	var res = default_materials.duplicate()
 	var paints = _ply_mesh.face_paint_indices()
 	if parent is MeshInstance3D and parent.mesh:
 		for surface in parent.mesh.get_surface_count():
 			var mat = parent.get_surface_override_material(surface)
 			if mat:
-				materials[paints[surface]] = parent.get_surface_override_material(surface)
+				res[paints[surface]] = parent.get_surface_override_material(surface)
 	elif parent is CSGMesh3D:
-		materials[0] = parent.material
+		res[0] = parent.material
+	materials = res
 
 
 func _enter_tree() -> void:
