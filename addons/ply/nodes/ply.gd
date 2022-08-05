@@ -31,15 +31,15 @@ const Faces = preload("res://addons/ply/nodes/ply_faces.gd")
 		return _ply_mesh
 	set(v):
 		if v == null:
-			if _ply_mesh && _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
-				_ply_mesh.disconnect("mesh_updated",Callable(self,"_on_mesh_updated"))
+			if _ply_mesh && _ply_mesh.mesh_updated.is_connected(_on_mesh_updated):
+				_ply_mesh.mesh_updated.disconnect(_on_mesh_updated)
 			_ply_mesh = v
 			_clear_parent()
 		if v is PlyMesh:
-			if _ply_mesh && _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
-				_ply_mesh.disconnect("mesh_updated",Callable(self,"_on_mesh_updated"))
+			if _ply_mesh && _ply_mesh.mesh_updated.is_connected(_on_mesh_updated):
+				_ply_mesh.mesh_updated.disconnect(_on_mesh_updated)
 			_ply_mesh = v
-			_ply_mesh.connect("mesh_updated",Callable(self,"_on_mesh_updated"))
+			_ply_mesh.mesh_updated.connect(_on_mesh_updated)
 			_on_mesh_updated()
 		else:
 			print("assigned resource that is not a ply_mesh to ply editor")
@@ -83,8 +83,8 @@ func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
 		return
 
-	if _ply_mesh and not _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
-		_ply_mesh.connect("mesh_updated",Callable(self,"_on_mesh_updated"))
+	if _ply_mesh and not _ply_mesh.mesh_updated.is_connected(_on_mesh_updated):
+		_ply_mesh.mesh_updated.connect(_on_mesh_updated)
 
 
 func _exit_tree() -> void:
@@ -92,8 +92,8 @@ func _exit_tree() -> void:
 		return
 	if not _ply_mesh:
 		return
-	if _ply_mesh.is_connected("mesh_updated",Callable(self,"_on_mesh_updated")):
-		_ply_mesh.disconnect("mesh_updated",Callable(self,"_on_mesh_updated"))
+	if _ply_mesh.mesh_updated.is_connected(_on_mesh_updated):
+		_ply_mesh.mesh_updated.disconnect(_on_mesh_updated)
 
 
 func _clear_parent() -> void:
@@ -234,7 +234,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 					var distance = ai_origin.distance_to(hit) + mod
 					scan_results.push_back(["F", f, distance, hit])
 
-	scan_results.sort_custom(Callable(IntersectSorter,"sort_ascending"))
+	scan_results.sort_custom(Callable(IntersectSorter, "sort_ascending"))
 	return scan_results
 
 

@@ -15,11 +15,11 @@ func _init(p: EditorPlugin):
 
 
 func startup() -> void:
-	_plugin.toolbar.connect("selection_mode_changed",Callable(self,"_on_selection_mode_changed"))
+	_plugin.toolbar.selection_mode_changed.connect(_on_selection_mode_changed)
 
 
 func teardown() -> void:
-	_plugin.toolbar.disconnect("selection_mode_changed",Callable(self,"_on_selection_mode_changed"))
+	_plugin.toolbar.selection_mode_changed.disconnect(_on_selection_mode_changed)
 
 
 func _on_selection_mode_changed(_mode) -> void:

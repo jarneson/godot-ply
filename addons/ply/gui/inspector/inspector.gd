@@ -41,9 +41,9 @@ func _prep_slider(s, l, mn, mx, st, mod, axis) -> void:
 	s.allow_greater = true
 	s.allow_lesser = true
 
-	s.connect("edit_started",Callable(self,"_transform_axis_edit_started"),[s,mod,axis])
-	s.connect("value_changed",Callable(self,"_transform_axis_value_changed"),[s,mod,axis])
-	s.connect("edit_committed",Callable(self,"_transform_axis_edit_committed"),[s,mod,axis])
+	s.edit_started.connect(_transform_axis_edit_started.bind(s,mod,axis))
+	s.value_changed.connect(_transform_axis_value_changed.bind(s,mod,axis))
+	s.edit_committed.connect(_transform_axis_edit_committed.bind(s,mod,axis))
 
 
 func _ready() -> void:
@@ -83,12 +83,12 @@ func _ready() -> void:
 	rotate_snap.value = plugin.snap_values.rotate
 	scale_snap.value = plugin.snap_values.scale
 
-	plugin.connect("selection_changed",Callable(self,"_on_selection_changed"))
-	plugin.toolbar.connect("gizmo_mode_changed",Callable(self,"_on_gizmo_mode_changed"))
+	plugin.selection_changed.connect(_on_selection_changed)
+	plugin.toolbar.gizmo_mode_changed.connect(_on_gizmo_mode_changed)
 	
-	translate_snap.connect("value_changed", Callable(self,"_translate_snap_changed"))
-	rotate_snap.connect("value_changed", Callable(self,"_rotate_snap_changed"))
-	scale_snap.connect("value_changed", Callable(self,"_scale_snap_changed"))
+	translate_snap.value_changed.connect(_translate_snap_changed)
+	rotate_snap.value_changed.connect(_rotate_snap_changed)
+	scale_snap.value_changed.connect(_scale_snap_changed)
 
 	#plugin.selector.
 
@@ -167,13 +167,13 @@ var current_selection
 
 func _on_selection_changed(selection) -> void:
 	if current_selection:
-		current_selection.disconnect("selection_changed",Callable(self,"_on_selected_geometry_changed"))
-		current_selection.disconnect("selection_mutated",Callable(self,"_on_selected_geometry_mutated"))
+		current_selection.selection_changed.disconnect(_on_selected_geometry_changed)
+		current_selection.selection_mutated.disconnect(_on_selected_geometry_mutated)
 	current_selection = selection
 	gizmo_transform = null
 	if current_selection:
-		current_selection.connect("selection_changed",Callable(self,"_on_selected_geometry_changed"))
-		current_selection.connect("selection_mutated",Callable(self,"_on_selected_geometry_mutated"))
+		current_selection.selection_changed.connect(_on_selected_geometry_changed)
+		current_selection.selection_mutated.connect(_on_selected_geometry_mutated)
 		_on_selected_geometry_changed()
 
 

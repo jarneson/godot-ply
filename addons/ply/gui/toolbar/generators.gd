@@ -28,10 +28,10 @@ var current_selection = "None"
 
 
 func _ready() -> void:
-	selection_plane.connect("pressed",Callable(self,"_set_selection"),["Plane"])
-	selection_cube.connect("pressed",Callable(self,"_set_selection"),["Cube"])
-	selection_icosphere.connect("pressed",Callable(self,"_set_selection"),["Icosphere"])
-	selection_cylinder.connect("pressed",Callable(self,"_set_selection"),["Cylinder"])
+	selection_plane.pressed.connect(_set_selection.bind("Plane"))
+	selection_cube.pressed.connect(_set_selection.bind("Cube"))
+	selection_icosphere.pressed.connect(_set_selection.bind("Icosphere"))
+	selection_cylinder.pressed.connect(_set_selection.bind("Cylinder"))
 
 
 func _set_selection(sel) -> void:
