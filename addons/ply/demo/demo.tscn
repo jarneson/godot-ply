@@ -3,14 +3,14 @@
 [ext_resource type="Script" path="res://addons/ply/nodes/ply.gd" id="1_mrvif"]
 [ext_resource type="Material" uid="uid://b4i0cps0lllg8" path="res://addons/ply/materials/debug_material_light.tres" id="2_fi5te"]
 [ext_resource type="Script" path="res://addons/ply/resources/ply_mesh.gd" id="2_tn2jh"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_medium.tres" id="3_xnde4"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_dark.tres" id="4_bv8y0"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_red.tres" id="5_n8che"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_orange.tres" id="6_208lt"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_yellow.tres" id="7_7v0r6"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_green.tres" id="8_7sfpg"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_blue.tres" id="9_anqur"]
-[ext_resource type="Material" path="res://addons/ply/materials/debug_material_purple.tres" id="10_wta51"]
+[ext_resource type="Material" uid="uid://b5hltcvsr8ow7" path="res://addons/ply/materials/debug_material_medium.tres" id="3_xnde4"]
+[ext_resource type="Material" uid="uid://skrl8khxn3qq" path="res://addons/ply/materials/debug_material_dark.tres" id="4_bv8y0"]
+[ext_resource type="Material" uid="uid://dacfunt7kmw4i" path="res://addons/ply/materials/debug_material_red.tres" id="5_n8che"]
+[ext_resource type="Material" uid="uid://c3fj8shvw38ya" path="res://addons/ply/materials/debug_material_orange.tres" id="6_208lt"]
+[ext_resource type="Material" uid="uid://dopi0ecblkm83" path="res://addons/ply/materials/debug_material_yellow.tres" id="7_7v0r6"]
+[ext_resource type="Material" uid="uid://f6xd80u8vkfw" path="res://addons/ply/materials/debug_material_green.tres" id="8_7sfpg"]
+[ext_resource type="Material" uid="uid://l5ph4ka5c0uq" path="res://addons/ply/materials/debug_material_blue.tres" id="9_anqur"]
+[ext_resource type="Material" uid="uid://m4fm1mohv8oo" path="res://addons/ply/materials/debug_material_purple.tres" id="10_wta51"]
 
 [sub_resource type="Environment" id="10"]
 ambient_light_color = Color(1, 1, 1, 1)
@@ -18,24 +18,27 @@ ambient_light_sky_contribution = 0.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_ui03m"]
 _surfaces = [{
-"aabb": AABB(-0.5, 0, -0.5, 1, 1e-05, 1.00001),
-"format": 4099,
-"index_count": 12,
-"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 2, 0, 3, 0, 0, 0, 3, 0, 2, 0, 1, 0, 1, 0, 0, 0, 3, 0),
+"aabb": AABB(-0.5, 0, -0.5, 1, 1.00001, 1),
+"attribute_data": PackedByteArray(0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 128, 63, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 128, 63, 0, 0, 128, 191, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 128, 191, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 128, 63, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 128, 63, 0, 0, 128, 191, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 128, 191, 255, 0, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 255, 255, 0, 0, 128, 63, 0, 0, 0, 0, 255, 0, 255, 255, 0, 0, 128, 63, 0, 0, 128, 191, 255, 0, 255, 255, 0, 0, 0, 0, 0, 0, 128, 191, 255, 255, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 255, 0, 0, 128, 63, 0, 0, 0, 0, 255, 255, 0, 255, 0, 0, 128, 63, 0, 0, 128, 191, 255, 255, 0, 255, 0, 0, 0, 0, 0, 0, 128, 191, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 128, 63, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 128, 63, 0, 0, 128, 191, 0, 255, 0, 255, 0, 0, 0, 0, 0, 0, 128, 191, 255, 255, 0, 255, 0, 0, 0, 0, 0, 0, 0, 128, 255, 255, 0, 255, 0, 0, 128, 63, 0, 0, 0, 0, 255, 255, 0, 255, 0, 0, 128, 63, 0, 0, 128, 191, 255, 255, 0, 255, 0, 0, 0, 0, 0, 0, 128, 191),
+"format": 4123,
+"index_count": 36,
+"index_data": PackedByteArray(2, 0, 3, 0, 0, 0, 0, 0, 1, 0, 2, 0, 6, 0, 7, 0, 4, 0, 4, 0, 5, 0, 6, 0, 10, 0, 11, 0, 8, 0, 8, 0, 9, 0, 10, 0, 14, 0, 15, 0, 12, 0, 12, 0, 13, 0, 14, 0, 18, 0, 19, 0, 16, 0, 16, 0, 17, 0, 18, 0, 22, 0, 23, 0, 20, 0, 20, 0, 21, 0, 22, 0),
 "primitive": 3,
-"vertex_count": 4,
-"vertex_data": PackedByteArray(0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 63, 255, 253, 255, 31, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 191, 255, 1, 240, 31, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191, 255, 253, 255, 31, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 255, 1, 240, 31)
+"vertex_count": 24,
+"vertex_data": PackedByteArray(0, 0, 0, 191, 0, 0, 128, 63, 0, 0, 0, 191, 255, 253, 255, 31, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 191, 255, 253, 255, 31, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 63, 255, 253, 255, 31, 0, 0, 0, 191, 0, 0, 128, 63, 0, 0, 0, 63, 255, 253, 255, 31, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 191, 255, 1, 240, 31, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 63, 255, 1, 240, 31, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 255, 1, 240, 31, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191, 255, 1, 240, 31, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 191, 255, 253, 7, 0, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191, 255, 253, 7, 0, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 191, 255, 253, 7, 0, 0, 0, 0, 191, 0, 0, 128, 63, 0, 0, 0, 191, 255, 253, 7, 0, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191, 255, 255, 247, 31, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 255, 255, 247, 31, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 63, 255, 255, 247, 31, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 191, 255, 255, 247, 31, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 255, 253, 247, 63, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 63, 255, 253, 247, 63, 0, 0, 0, 191, 0, 0, 128, 63, 0, 0, 0, 63, 255, 253, 247, 63, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 63, 255, 253, 247, 63, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 63, 0, 252, 247, 31, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 191, 0, 252, 247, 31, 0, 0, 0, 191, 0, 0, 128, 63, 0, 0, 0, 191, 0, 252, 247, 31, 0, 0, 0, 191, 0, 0, 128, 63, 0, 0, 0, 63, 0, 252, 247, 31)
 }]
 
 [sub_resource type="Resource" id="Resource_mrqsq"]
 script = ExtResource("2_tn2jh")
-vertexes = PackedVector3Array(-0.5, 0, -0.5, 0.5, 0, -0.5, 0.5, 0, 0.5, -0.5, 0, 0.5)
-vertex_edges = PackedInt32Array(0, 1, 2, 3)
-edge_vertexes = PackedInt32Array(0, 1, 1, 2, 2, 3, 3, 0)
-edge_faces = PackedInt32Array(1, 0, 1, 0, 1, 0, 1, 0)
-edge_edges = PackedInt32Array(3, 1, 0, 2, 1, 3, 2, 0)
-face_edges = PackedInt32Array(0, 0)
-face_surfaces = PackedInt32Array(0, 0)
+vertexes = PackedVector3Array(-0.5, 0, -0.5, 0.5, 0, -0.5, 0.5, 0, 0.5, -0.5, 0, 0.5, -0.5, 1, -0.5, 0.5, 1, -0.5, 0.5, 1, 0.5, -0.5, 1, 0.5)
+vertex_edges = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+vertex_colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1)
+edge_vertexes = PackedInt32Array(0, 1, 1, 2, 2, 3, 3, 0, 4, 0, 5, 1, 6, 2, 7, 3, 5, 4, 6, 5, 7, 6, 4, 7)
+edge_faces = PackedInt32Array(1, 2, 1, 3, 1, 4, 1, 5, 5, 2, 2, 3, 3, 4, 4, 5, 0, 2, 0, 3, 0, 4, 0, 5)
+edge_edges = PackedInt32Array(3, 5, 0, 6, 1, 7, 2, 4, 11, 0, 8, 1, 9, 2, 10, 3, 9, 4, 10, 5, 11, 6, 8, 7)
+face_edges = PackedInt32Array(11, 0, 4, 5, 6, 7)
+face_surfaces = PackedInt32Array(0, 0, 0, 0, 0, 0)
+face_colors = PackedColorArray(0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1)
 
 [node name="Demo" type="Node3D"]
 

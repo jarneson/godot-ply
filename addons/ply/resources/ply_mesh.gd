@@ -14,6 +14,7 @@ func emit_change_signal() -> void:
 
 @export var vertexes = PackedVector3Array()
 @export var vertex_edges = PackedInt32Array()
+@export var vertex_colors = PackedColorArray()
 
 @export var edge_vertexes = PackedInt32Array()
 @export var edge_faces = PackedInt32Array()
@@ -21,6 +22,7 @@ func emit_change_signal() -> void:
 
 @export var face_edges = PackedInt32Array()
 @export var face_surfaces = PackedInt32Array()
+@export var face_colors = PackedColorArray()
 
 #########################################
 # Primary API
@@ -71,19 +73,19 @@ func face_vertices(idx) -> PackedVector3Array:
 
 
 func face_tris(f_idx: int) -> Array:
-	var verts = face_vertices(f_idx)
+	var verts = face_vertex_indexes(f_idx)
 	if verts.size() == 0:
 		return []
 
 	var mapped_verts = []
 	if true:
 		var face_normal = face_normal(f_idx)
-		var axis_a = (verts[verts.size() - 1] - verts[0]).normalized()
+		var axis_a = (vertexes[verts[verts.size() - 1]] - vertexes[verts[0]]).normalized()
 		var axis_b = axis_a.cross(face_normal)
-		var p_origin = verts[0]
+		var p_origin = vertexes[verts[0]]
 		for vtx in verts:
 			mapped_verts.push_back(
-				[vtx, Vector2((vtx - p_origin).dot(axis_a), (vtx - p_origin).dot(axis_b))]
+				[vertexes[vtx], Vector2((vertexes[vtx] - p_origin).dot(axis_a), (vertexes[vtx] - p_origin).dot(axis_b)), vtx]
 			)
 
 	var tris = []
@@ -103,9 +105,9 @@ func face_tris(f_idx: int) -> Array:
 			if next >= remaining.size():
 				next = 0
 
-			var va = verts[remaining[prev]]
-			var vb = verts[remaining[curr]]
-			var vc = verts[remaining[next]]
+			var va = vertexes[verts[remaining[prev]]]
+			var vb = vertexes[verts[remaining[curr]]]
+			var vc = vertexes[verts[remaining[next]]]
 
 			var ab = vb - va
 			var bc = vc - vb
@@ -146,18 +148,22 @@ func set_face_surface(idx: int, s: int):
 
 func begin_edit() -> Array:
 	return [
-		vertexes.duplicate(), vertex_edges.duplicate(), edge_vertexes.duplicate(), edge_faces.duplicate(), edge_edges.duplicate(), face_edges.duplicate(), face_surfaces.duplicate()
+		vertexes.duplicate(), vertex_edges.duplicate(), vertex_colors.duplicate(),
+		edge_vertexes.duplicate(), edge_faces.duplicate(), edge_edges.duplicate(),
+		face_edges.duplicate(), face_surfaces.duplicate(), face_colors.duplicate()
 	]
 
 
 func reject_edit(pre_edits: Array, emit: bool = true) -> void:
 	vertexes = pre_edits[0].duplicate()
 	vertex_edges = pre_edits[1].duplicate()
-	edge_vertexes = pre_edits[2].duplicate()
-	edge_faces = pre_edits[3].duplicate()
-	edge_edges = pre_edits[4].duplicate()
-	face_edges = pre_edits[5].duplicate()
-	face_surfaces = pre_edits[6].duplicate()
+	vertex_colors = pre_edits[2].duplicate()
+	edge_vertexes = pre_edits[3].duplicate()
+	edge_faces = pre_edits[4].duplicate()
+	edge_edges = pre_edits[5].duplicate()
+	face_edges = pre_edits[6].duplicate()
+	face_surfaces = pre_edits[7].duplicate()
+	face_colors = pre_edits[8].duplicate()
 	if emit:
 		emit_change_signal()
 
@@ -210,16 +216,20 @@ func commit_edit(name: String, undo_redo: UndoRedo, pre_edits: Array) -> void:
 	undo_redo.add_undo_property(self, "vertexes", pre_edits[0])
 	undo_redo.add_do_property(self, "vertex_edges", vertex_edges)
 	undo_redo.add_undo_property(self, "vertex_edges", pre_edits[1])
+	undo_redo.add_do_property(self, "vertex_colors", vertex_colors)
+	undo_redo.add_undo_property(self, "vertex_colors", pre_edits[2])
 	undo_redo.add_do_property(self, "edge_vertexes", edge_vertexes)
-	undo_redo.add_undo_property(self, "edge_vertexes", pre_edits[2])
+	undo_redo.add_undo_property(self, "edge_vertexes", pre_edits[3])
 	undo_redo.add_do_property(self, "edge_faces", edge_faces)
-	undo_redo.add_undo_property(self, "edge_faces", pre_edits[3])
+	undo_redo.add_undo_property(self, "edge_faces", pre_edits[4])
 	undo_redo.add_do_property(self, "edge_edges", edge_edges)
-	undo_redo.add_undo_property(self, "edge_edges", pre_edits[4])
+	undo_redo.add_undo_property(self, "edge_edges", pre_edits[5])
 	undo_redo.add_do_property(self, "face_edges", face_edges)
-	undo_redo.add_undo_property(self, "face_edges", pre_edits[5])
+	undo_redo.add_undo_property(self, "face_edges", pre_edits[6])
 	undo_redo.add_do_property(self, "face_surfaces", face_surfaces)
-	undo_redo.add_undo_property(self, "face_surfaces", pre_edits[6])
+	undo_redo.add_undo_property(self, "face_surfaces", pre_edits[7])
+	undo_redo.add_do_property(self, "face_colors", face_colors)
+	undo_redo.add_undo_property(self, "face_colors", pre_edits[8])
 	undo_redo.add_do_method(self, "emit_change_signal")
 	undo_redo.add_undo_method(self, "emit_change_signal")
 	undo_redo.commit_action()
@@ -371,6 +381,7 @@ func evict_vertices(idxs, ignore_edges = []) -> void:
 	for idx in idxs:
 		vertexes.remove_at(idx)
 		vertex_edges.remove_at(idx)
+		vertex_colors.remove_at(idx)
 		for e_idx in range(edge_vertexes.size()):
 			if ignore_edges.has(e_idx / 2):
 				continue
@@ -397,9 +408,21 @@ func set_vertex_all(idx, pos, edge) -> void:
 	vertex_edges[idx] = edge
 
 
+func set_vertex_color(idx, color) -> void:
+	vertex_colors[idx] = color
+
+
+func get_vertex_color(idx) -> Color:
+	return vertex_colors[idx]
+
+
 func expand_vertexes(more) -> void:
 	vertexes.resize(vertexes.size() + more)
 	vertex_edges.resize(vertex_edges.size() + more)
+	var last = vertex_colors.size()
+	vertex_colors.resize(vertex_colors.size() + more)
+	for i in range(last, vertex_colors.size()):
+		vertex_colors[i] = Color.WHITE
 
 
 func average_vertex_normal(verts) -> Vector3:
@@ -633,6 +656,7 @@ func evict_faces(idxs, ignore_edges = []):
 	for f_idx in idxs:
 		face_edges.remove_at(f_idx)
 		face_surfaces.remove_at(f_idx)
+		face_colors.remove_at(f_idx)
 
 		for i in range(edge_faces.size()):
 			if ignore_edges.has(i / 2):
@@ -647,6 +671,10 @@ func evict_faces(idxs, ignore_edges = []):
 func expand_faces(more):
 	face_edges.resize(face_edges.size() + more)
 	face_surfaces.resize(face_surfaces.size() + more)
+	var last = face_colors.size()
+	face_colors.resize(face_colors.size() + more)
+	for i in range(last, face_colors.size()):
+		face_colors[i] = Color.WHITE
 
 
 func set_face_edge(f, e):
@@ -655,6 +683,14 @@ func set_face_edge(f, e):
 
 func get_face_edges(idx):
 	return get_face_edges_starting_at(face_edges[idx], edge_side(face_edges[idx], idx))
+
+
+func set_face_color(f, color):
+	face_colors[f] = color
+
+
+func get_face_color(f):
+	return face_colors[f]
 
 
 func face_vertex_indexes(idx):
@@ -688,6 +724,10 @@ func render_face(st, f_idx, offset = Vector3.ZERO, num_verts = 0):
 	var b = Basis(x,y,z)
 	for vtx in verts:
 		var uv = b * (p.project(vtx[0]) - p.project(verts[0][0]));
+		if face_colors[f_idx] == Color.WHITE:
+			st.set_color(vertex_colors[vtx[2]])
+		else:
+			st.set_color(face_colors[f_idx])
 		st.set_uv(Vector2(uv.x, uv.z))
 		st.set_normal(norm)
 		st.add_vertex(vtx[0] + offset)
@@ -702,8 +742,16 @@ func render_face(st, f_idx, offset = Vector3.ZERO, num_verts = 0):
 func set_mesh(vs, ves, fes, fss, evs, efs, ees):
 	vertexes = PackedVector3Array(vs)
 	vertex_edges = PackedInt32Array(ves)
+	vertex_colors = PackedColorArray()
+	vertex_colors.resize(vs.size())
+	for i in range(vertex_colors.size()):
+		vertex_colors[i] = Color.WHITE
 	face_edges = PackedInt32Array(fes)
 	face_surfaces = PackedInt32Array(fss)
+	face_colors = PackedColorArray()
+	face_colors.resize(fes.size())
+	for i in range(face_colors.size()):
+		face_colors[i] = Color.WHITE
 	edge_vertexes = PackedInt32Array(evs)
 	edge_faces = PackedInt32Array(efs)
 	edge_edges = PackedInt32Array(ees)
