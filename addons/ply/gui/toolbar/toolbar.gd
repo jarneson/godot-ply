@@ -93,7 +93,7 @@ func _ready() -> void:
 	mesh_generators.pressed.connect(_open_generators_modal)
 	generators_modal.confirmed.connect(_on_generators_modal_confirmed)
 	
-	face_color_picker.color_changed.connect("color_changed",Callable(self,"_on_face_color_changed"))
+	face_color_picker.color_changed.connect(_on_face_color_changed)
 	face_color_picker.pressed.connect(_on_face_color_pressed)
 	face_color_picker.popup_closed.connect(_on_face_color_closed)
 

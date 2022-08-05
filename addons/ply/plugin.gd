@@ -34,7 +34,7 @@ func _enter_tree() -> void:
 	
 	add_custom_type(
 		"PlyEditor",
-		"Node3D",
+		"Node",
 		preload("res://addons/ply/nodes/ply.gd"),
 		preload("res://addons/ply/icons/plugin.svg")
 	)
