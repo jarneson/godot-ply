@@ -36,6 +36,39 @@ func _point_to_segment_dist(v, a, b) -> float:
 		return bv.length()
 	return ab.cross(av).length() / ab.length()
 
+func _box_select(camera: Camera3D, v1: Vector2, v2: Vector2, additive: bool) -> void:
+	var is_orthogonal = camera.projection == Camera3D.PROJECTION_ORTHOGONAL
+	var z_offset = max(0.0, 5.0 - camera.near)
+	var box2d = [
+		Vector2(min(v1.x, v2.x), min(v1.y, v2.y)),
+		Vector2(max(v1.x, v2.x), min(v1.y, v2.y)),
+		Vector2(max(v1.x, v2.x), max(v1.y, v2.y)),
+		Vector2(min(v1.x, v2.x), max(v1.y, v2.y)),
+	]
+	var box3d = [
+		camera.project_position(box2d[0], z_offset),
+		camera.project_position(box2d[1], z_offset),
+		camera.project_position(box2d[2], z_offset),
+		camera.project_position(box2d[3], z_offset),
+	]
+	
+	var planes = []
+	for i in range(4):
+		var a = box3d[i]
+		var b = box3d[(i+1) % 4]
+		if is_orthogonal:
+			planes.push_back(Plane((a-b).normalized(), a))
+		else:
+			planes.push_back(Plane(a, b, camera.global_transform.origin))
+	var near = Plane(camera.global_transform.basis[2], camera.global_transform.origin)
+	near.d -= camera.near
+	planes.push_back(near)
+	
+	var far = -near
+	far.d += camera.far
+	planes.push_back(far)
+	var hits = _plugin.selection.get_frustum_intersection(planes, _plugin.toolbar.selection_mode)
+	_plugin.selection.select_geometry(hits, additive)
 
 func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 	var ray = camera.project_ray_normal(event.position)
@@ -98,6 +131,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 					var was_in_click = in_click
 					in_click = false
 					if was_in_click and click_position.distance_to(drag_position) > 5:
+						_box_select(camera, click_position, drag_position, event.shift_pressed)
 						_plugin.update_overlays()
 						return true
 						
@@ -132,7 +166,6 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	return false
 
 func draw_box_selection(overlay):
-	print(in_click, click_position, drag_position)
 	if in_click and click_position.distance_to(drag_position) > 5:
 		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.5, 0.5, 0.7, 0.3), true)
 		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.7, 0.7, 1.0, 1.0), false)

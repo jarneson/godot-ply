@@ -173,6 +173,84 @@ class IntersectSorter:
 			return true
 		return false
 
+func point_inside_frustum(pos: Vector3, planes: Array) -> bool:
+	for p in planes:
+		var dir = pos - p.project(pos)
+		if dir.dot(p.normal) > 0:
+			return false
+	return true
+
+func get_frustum_intersection(planes: Array, mode: int) -> Array:
+	var scan_results = []
+	var ai = parent.global_transform.affine_inverse()
+	if mode == SelectionMode.VERTEX:
+		for v in range(_ply_mesh.vertex_count()):
+			var pos = parent.global_transform * _ply_mesh.vertexes[v]
+			if point_inside_frustum(pos, planes):
+				scan_results.push_back(["V", v])
+	if mode == SelectionMode.EDGE:
+		for e in range(_ply_mesh.edge_count()):
+			var e_origin = parent.global_transform * _ply_mesh.edge_origin(e)
+			var e_destination = parent.global_transform * _ply_mesh.edge_destination(e)
+			var hull_intersect = Geometry3D.segment_intersects_convex(e_origin, e_destination, planes)
+			var origin_inside = point_inside_frustum(e_origin, planes)
+			var destination_inside = point_inside_frustum(e_destination, planes)
+			if hull_intersect or origin_inside or destination_inside:
+				scan_results.push_back(["E", e])
+	if mode == SelectionMode.FACE:
+		for f in range(_ply_mesh.face_count()):
+			var found = false
+			# any vertex inside frustum
+			for vtx in _ply_mesh.face_vertices(f):
+				var pos = parent.global_transform * vtx
+				if point_inside_frustum(pos, planes):
+					found = true
+					break
+			if found:
+				scan_results.push_back(["F", f])
+				continue
+
+			# frustum intersects polygon
+			var f_normal = _ply_mesh.face_normal(f)
+			var f_point = _ply_mesh.edge_origin(_ply_mesh.face_edges[f])
+			f_normal = (parent.global_transform.basis * f_normal).normalized()
+			f_point = parent.global_transform * f_point
+			var f_plane = Plane(f_normal, f_point)
+			var neighbor_planes = [
+				[planes[0], planes[1]],
+				[planes[1], planes[2]],
+				[planes[2], planes[3]],
+				[planes[3], planes[0]],
+			]
+			var ft = _ply_mesh.face_tris(f)
+			var verts = ft[0]
+			var tris = ft[1]
+			for np in neighbor_planes:
+				var intersect = f_plane.intersect_3(np[0], np[1])
+				if intersect == null:
+					continue
+				if f == 1:
+					print(intersect)
+				var segment = [intersect + f_normal, intersect - f_normal]
+				segment[0] = ai * segment[0]
+				segment[1] = ai * segment[1]
+				for tri in tris:
+					var hit = Geometry3D.segment_intersects_triangle(
+						segment[0],
+						segment[1],
+						verts[tri[0]][0],
+						verts[tri[1]][0],
+						verts[tri[2]][0]
+					)
+					if hit:
+						found = true
+						break
+				if found:
+					break
+			if found:
+				scan_results.push_back(["F", f])
+				continue
+	return scan_results
 
 func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Array:
 	var scan_results = []
@@ -281,15 +359,18 @@ var _current_edit
 
 
 func begin_edit() -> void:
+	print("begin edit")
 	_current_edit = _ply_mesh.begin_edit()
 
 
 func commit_edit(name: String, undo_redo: UndoRedo) -> void:
+	print("commit edit")
 	_ply_mesh.commit_edit(name, undo_redo, _current_edit)
 	_current_edit = null
 
 
 func abort_edit() -> void:
+	print("abort edit")
 	_ply_mesh.reject_edit(_current_edit)
 	_current_edit = null
 
