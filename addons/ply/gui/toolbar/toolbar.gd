@@ -128,11 +128,11 @@ func _ready() -> void:
 
 var selected_mesh
 func _on_selection_changed(selection):
-	print(selected_mesh, selection)
 	if selected_mesh:
 		selected_mesh.selection_changed.disconnect(_on_geometry_selection_changed)
 	selected_mesh = selection
-	selected_mesh.selection_changed.connect(_on_geometry_selection_changed)
+	if selected_mesh:
+		selected_mesh.selection_changed.connect(_on_geometry_selection_changed)
 
 func _on_geometry_selection_changed():
 	match selection_mode:
