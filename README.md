@@ -90,20 +90,20 @@ Ply uses a winged edge representation for edges but omits counterclockwise navig
 ```
 omitted
 left ccw        right cw
-		 \     /
-		  \   /
-		   \ /
-			o destination
-			^
-			|
+         \     /
+          \   /
+           \ /
+            o destination
+            ^
+            |
 left face   |   right face
-			|
-			o origin
-		   / \
-		  /   \
-		 /     \
+            |
+            o origin
+           / \
+          /   \
+         /     \
 left cw          right ccw
-				 omitted
+                 omitted
 ```
 
 ### Implications
