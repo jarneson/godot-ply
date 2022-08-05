@@ -24,7 +24,7 @@
 keycode = 49
 
 [sub_resource type="Shortcut" id="Shortcut_3n0xq"]
-events = [SubResource( "InputEventKey_wa7sa" )]
+events = [SubResource("InputEventKey_wa7sa")]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_jgq6o"]
 
@@ -32,19 +32,19 @@ events = [SubResource( "InputEventKey_wa7sa" )]
 keycode = 50
 
 [sub_resource type="Shortcut" id="6"]
-events = [SubResource( "InputEventKey_477mp" )]
+events = [SubResource("InputEventKey_477mp")]
 
 [sub_resource type="InputEventKey" id="InputEventKey_g51mm"]
 keycode = 51
 
 [sub_resource type="Shortcut" id="8"]
-events = [SubResource( "InputEventKey_g51mm" )]
+events = [SubResource("InputEventKey_g51mm")]
 
 [sub_resource type="InputEventKey" id="InputEventKey_xgrna"]
 keycode = 52
 
 [sub_resource type="Shortcut" id="10"]
-events = [SubResource( "InputEventKey_xgrna" )]
+events = [SubResource("InputEventKey_xgrna")]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_xlkoy"]
 
@@ -53,640 +53,676 @@ command_pressed = true
 keycode = 69
 
 [sub_resource type="Shortcut" id="12"]
-events = [SubResource( "InputEventKey_qn4mv" )]
+events = [SubResource("InputEventKey_qn4mv")]
 
 [sub_resource type="InputEventKey" id="InputEventKey_ubopt"]
 command_pressed = true
 keycode = 82
 
 [sub_resource type="Shortcut" id="14"]
-events = [SubResource( "InputEventKey_ubopt" )]
+events = [SubResource("InputEventKey_ubopt")]
 
 [node name="Toolbar" type="VBoxContainer"]
-minimum_size = Vector2(200, 0)
 offset_right = 200.0
-offset_bottom = 68.0
+offset_bottom = 1650.0
 size_flags_vertical = 3
-script = ExtResource( "12" )
+script = ExtResource("12")
 
 [node name="TitleLabel" type="MarginContainer" parent="."]
 offset_right = 200.0
-offset_bottom = 48.0
+offset_bottom = 40.0
 
 [node name="ColorRect" type="ColorRect" parent="TitleLabel"]
 offset_right = 200.0
-offset_bottom = 48.0
+offset_bottom = 40.0
 color = Color(0, 0, 0, 0.392157)
 
 [node name="MarginContainer" type="MarginContainer" parent="TitleLabel"]
 offset_right = 200.0
-offset_bottom = 48.0
+offset_bottom = 40.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TitleLabel/MarginContainer"]
 offset_right = 200.0
-offset_bottom = 48.0
+offset_bottom = 40.0
 
 [node name="TextureRect" type="TextureRect" parent="TitleLabel/MarginContainer/HBoxContainer"]
-minimum_size = Vector2(48, 48)
-offset_right = 48.0
-offset_bottom = 48.0
-texture = ExtResource( "8_0w4vc" )
+offset_bottom = 40.0
+texture = ExtResource("8_0w4vc")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="Title" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
-offset_left = 52.0
-offset_top = 11.0
+offset_left = 4.0
+offset_top = 7.0
 offset_right = 115.0
-offset_bottom = 37.0
+offset_bottom = 33.0
 size_flags_horizontal = 3
 text = "Ply"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Version" type="Label" parent="TitleLabel/MarginContainer/HBoxContainer"]
 offset_left = 119.0
-offset_top = 11.0
+offset_top = 7.0
 offset_right = 156.0
-offset_bottom = 37.0
+offset_bottom = 33.0
 text = "1.0.2"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="GithubLink" type="Button" parent="TitleLabel/MarginContainer/HBoxContainer"]
 offset_left = 160.0
 offset_right = 200.0
-offset_bottom = 48.0
-icon = ExtResource( "17" )
-script = ExtResource( "18" )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_bottom = 40.0
+icon = ExtResource("17")
+script = ExtResource("18")
 
 [node name="Scroll" type="ScrollContainer" parent="."]
-offset_top = 52.0
+offset_top = 44.0
 offset_right = 200.0
-offset_bottom = 68.0
+offset_bottom = 1650.0
 size_flags_vertical = 3
 follow_focus = true
 
 [node name="Content" type="VBoxContainer" parent="Scroll"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 575.0
 size_flags_horizontal = 3
 
 [node name="ToolModeLabel" type="MarginContainer" parent="Scroll/Content"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/ToolModeLabel"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/ToolModeLabel"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/ToolModeLabel/MarginContainer"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="Mode" type="Label" parent="Scroll/Content/ToolModeLabel/MarginContainer/CenterContainer"]
-offset_left = 79.0
-offset_right = 113.0
+offset_left = 83.0
+offset_right = 117.0
 offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Tool"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Mesh" type="Button" parent="Scroll/Content"]
 offset_top = 30.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 61.0
 toggle_mode = true
 button_pressed = true
-shortcut = SubResource( "Shortcut_3n0xq" )
-button_group = SubResource( "ButtonGroup_jgq6o" )
+shortcut = SubResource("Shortcut_3n0xq")
+button_group = SubResource("ButtonGroup_jgq6o")
 text = "Mesh"
-icon = ExtResource( "5_5m67v" )
+icon = ExtResource("5_5m67v")
 expand_icon = true
 
 [node name="Face" type="Button" parent="Scroll/Content"]
 offset_top = 65.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 96.0
 toggle_mode = true
-shortcut = SubResource( "6" )
-button_group = SubResource( "ButtonGroup_jgq6o" )
+shortcut = SubResource("6")
+button_group = SubResource("ButtonGroup_jgq6o")
 text = "Face"
-icon = ExtResource( "6_yuw87" )
+icon = ExtResource("6_yuw87")
 expand_icon = true
 
 [node name="Edge" type="Button" parent="Scroll/Content"]
 offset_top = 100.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 131.0
 toggle_mode = true
-shortcut = SubResource( "8" )
-button_group = SubResource( "ButtonGroup_jgq6o" )
+shortcut = SubResource("8")
+button_group = SubResource("ButtonGroup_jgq6o")
 text = "Edge"
-icon = ExtResource( "7_j2iu8" )
+icon = ExtResource("7_j2iu8")
 expand_icon = true
 
 [node name="Vertex" type="Button" parent="Scroll/Content"]
 offset_top = 135.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 166.0
 toggle_mode = true
-shortcut = SubResource( "10" )
-button_group = SubResource( "ButtonGroup_jgq6o" )
+shortcut = SubResource("10")
+button_group = SubResource("ButtonGroup_jgq6o")
 text = "Vertex"
-icon = ExtResource( "8_0w4vc" )
+icon = ExtResource("8_0w4vc")
 expand_icon = true
 
 [node name="GizmoModeLabel" type="MarginContainer" parent="Scroll/Content"]
 offset_top = 170.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 196.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/GizmoModeLabel"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/GizmoModeLabel"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/GizmoModeLabel/MarginContainer"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="Mode" type="Label" parent="Scroll/Content/GizmoModeLabel/MarginContainer/CenterContainer"]
-offset_left = 47.0
-offset_right = 144.0
+offset_left = 51.0
+offset_right = 148.0
 offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Gizmo Mode"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Global" type="Button" parent="Scroll/Content"]
 offset_top = 200.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 231.0
 toggle_mode = true
-button_group = SubResource( "ButtonGroup_xlkoy" )
+button_group = SubResource("ButtonGroup_xlkoy")
 text = "Global"
 
 [node name="Local" type="Button" parent="Scroll/Content"]
 offset_top = 235.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 266.0
 toggle_mode = true
-button_group = SubResource( "ButtonGroup_xlkoy" )
+button_group = SubResource("ButtonGroup_xlkoy")
 text = "Local"
 
 [node name="Normal" type="Button" parent="Scroll/Content"]
 offset_top = 270.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 301.0
 toggle_mode = true
-button_group = SubResource( "ButtonGroup_xlkoy" )
+button_group = SubResource("ButtonGroup_xlkoy")
 text = "Normal"
 
 [node name="Spacer" type="CenterContainer" parent="Scroll/Content"]
 offset_top = 305.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 305.0
 size_flags_vertical = 3
 
 [node name="MeshTools" type="VBoxContainer" parent="Scroll/Content"]
 offset_top = 309.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 575.0
 
 [node name="Tools" type="MarginContainer" parent="Scroll/Content/MeshTools"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/MeshTools/Tools"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/MeshTools/Tools"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/MeshTools/Tools/MarginContainer"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/MeshTools/Tools/MarginContainer/CenterContainer"]
-offset_left = 52.0
-offset_right = 139.0
+offset_left = 56.0
+offset_right = 143.0
 offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Mesh Tools"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Subdivide" type="Button" parent="Scroll/Content/MeshTools"]
 offset_top = 30.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 61.0
 text = "Subdivide"
 
 [node name="Triangulate" type="Button" parent="Scroll/Content/MeshTools"]
 offset_top = 65.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 96.0
 text = "Triangulate"
-icon = ExtResource( "14_8ytvm" )
+icon = ExtResource("14_8ytvm")
 expand_icon = true
 
 [node name="InvertNormals" type="Button" parent="Scroll/Content/MeshTools"]
 offset_top = 100.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 131.0
 text = "Invert Normals"
-icon = ExtResource( "10_uborc" )
+icon = ExtResource("10_uborc")
 expand_icon = true
 
 [node name="Utils" type="MarginContainer" parent="Scroll/Content/MeshTools"]
 offset_top = 135.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 161.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/MeshTools/Utils"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/MeshTools/Utils"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/MeshTools/Utils/MarginContainer"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/MeshTools/Utils/MarginContainer/CenterContainer"]
-offset_left = 43.0
-offset_right = 149.0
+offset_left = 47.0
+offset_right = 153.0
 offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Mesh Utilities"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Generators" type="Button" parent="Scroll/Content/MeshTools"]
 offset_top = 165.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 196.0
 text = "Generate"
 
 [node name="Import" type="Button" parent="Scroll/Content/MeshTools"]
 offset_top = 200.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 231.0
 text = "Import"
 
 [node name="ExportOBJ" type="Button" parent="Scroll/Content/MeshTools"]
 offset_top = 235.0
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 266.0
 text = "Export to OBJ"
 
 [node name="FaceTools" type="VBoxContainer" parent="Scroll/Content"]
 visible = false
 offset_top = 579.0
-offset_right = 192.0
-offset_bottom = 1103.0
+offset_right = 200.0
+offset_bottom = 1045.0
 
 [node name="SelectTools" type="MarginContainer" parent="Scroll/Content/FaceTools"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/FaceTools/SelectTools"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/FaceTools/SelectTools"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/FaceTools/SelectTools/MarginContainer"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/FaceTools/SelectTools/MarginContainer/CenterContainer"]
-offset_left = 49.0
-offset_right = 142.0
+offset_left = 53.0
+offset_right = 146.0
 offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Select Faces"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="FaceLoop1" type="Button" parent="Scroll/Content/FaceTools"]
 offset_top = 30.0
-offset_right = 192.0
-offset_bottom = 102.0
+offset_right = 200.0
+offset_bottom = 61.0
 text = "Loop"
-icon = ExtResource( "9_khceo" )
+icon = ExtResource("9_khceo")
 expand_icon = true
 
 [node name="FaceLoop2" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 106.0
-offset_right = 192.0
-offset_bottom = 178.0
+offset_top = 65.0
+offset_right = 200.0
+offset_bottom = 96.0
 text = "Loop"
-icon = ExtResource( "10_r3rjd" )
+icon = ExtResource("10_r3rjd")
 expand_icon = true
 
 [node name="FaceTools" type="MarginContainer" parent="Scroll/Content/FaceTools"]
-offset_top = 182.0
-offset_right = 192.0
-offset_bottom = 208.0
+offset_top = 100.0
+offset_right = 200.0
+offset_bottom = 126.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/FaceTools/FaceTools"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/FaceTools/FaceTools"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/FaceTools/FaceTools/MarginContainer"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/FaceTools/FaceTools/MarginContainer/CenterContainer"]
-offset_left = 56.0
-offset_right = 136.0
+offset_left = 60.0
+offset_right = 140.0
 offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Face Tools"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Extrude" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 212.0
-offset_right = 192.0
-offset_bottom = 284.0
-shortcut = SubResource( "12" )
+offset_top = 130.0
+offset_right = 200.0
+offset_bottom = 161.0
+shortcut = SubResource("12")
 text = "Extrude"
-icon = ExtResource( "11_ods2w" )
+icon = ExtResource("11_ods2w")
 expand_icon = true
 
 [node name="Connect" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 288.0
-offset_right = 192.0
-offset_bottom = 319.0
+offset_top = 165.0
+offset_right = 200.0
+offset_bottom = 196.0
 text = "Connect"
-icon = ExtResource( "12_t4tf1" )
+icon = ExtResource("12_t4tf1")
 expand_icon = true
 
 [node name="Subdivide" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 323.0
-offset_right = 192.0
-offset_bottom = 354.0
+offset_top = 200.0
+offset_right = 200.0
+offset_bottom = 231.0
 text = "Subdivide"
-icon = ExtResource( "13_68wte" )
+icon = ExtResource("13_68wte")
 expand_icon = true
 
 [node name="Triangulate" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 358.0
-offset_right = 192.0
-offset_bottom = 389.0
+offset_top = 235.0
+offset_right = 200.0
+offset_bottom = 266.0
 text = "Triangulate"
-icon = ExtResource( "14_8ytvm" )
+icon = ExtResource("14_8ytvm")
 expand_icon = true
 
 [node name="PaintSurfaces" type="MarginContainer" parent="Scroll/Content/FaceTools"]
-offset_top = 393.0
-offset_right = 192.0
-offset_bottom = 419.0
+offset_top = 270.0
+offset_right = 200.0
+offset_bottom = 296.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/FaceTools/PaintSurfaces"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/FaceTools/PaintSurfaces"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/FaceTools/PaintSurfaces/MarginContainer"]
-offset_right = 192.0
+offset_right = 200.0
 offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/FaceTools/PaintSurfaces/MarginContainer/CenterContainer"]
-offset_left = 52.0
-offset_right = 139.0
+offset_left = 70.0
+offset_right = 130.0
 offset_bottom = 26.0
 size_flags_horizontal = 3
-text = "Paint Faces"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+text = "Texture"
 
 [node name="Surfaces" type="GridContainer" parent="Scroll/Content/FaceTools"]
-offset_top = 423.0
-offset_right = 192.0
-offset_bottom = 524.0
+offset_top = 300.0
+offset_right = 200.0
+offset_bottom = 401.0
 columns = 3
 
 [node name="1" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_right = 61.0
+offset_right = 64.0
 offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "1"
 
 [node name="2" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 65.0
-offset_right = 126.0
+offset_left = 68.0
+offset_right = 132.0
 offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "2"
 
 [node name="3" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 130.0
-offset_right = 191.0
+offset_left = 136.0
+offset_right = 200.0
 offset_bottom = 31.0
 size_flags_horizontal = 3
 text = "3"
 
 [node name="4" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 offset_top = 35.0
-offset_right = 61.0
+offset_right = 64.0
 offset_bottom = 66.0
 size_flags_horizontal = 3
 text = "4"
 
 [node name="5" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 65.0
+offset_left = 68.0
 offset_top = 35.0
-offset_right = 126.0
+offset_right = 132.0
 offset_bottom = 66.0
 size_flags_horizontal = 3
 text = "5"
 
 [node name="6" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 130.0
+offset_left = 136.0
 offset_top = 35.0
-offset_right = 191.0
+offset_right = 200.0
 offset_bottom = 66.0
 size_flags_horizontal = 3
 text = "6"
 
 [node name="7" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 offset_top = 70.0
-offset_right = 61.0
+offset_right = 64.0
 offset_bottom = 101.0
 size_flags_horizontal = 3
 text = "7"
 
 [node name="8" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 65.0
+offset_left = 68.0
 offset_top = 70.0
-offset_right = 126.0
+offset_right = 132.0
 offset_bottom = 101.0
 size_flags_horizontal = 3
 text = "8"
 
 [node name="9" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
-offset_left = 130.0
+offset_left = 136.0
 offset_top = 70.0
-offset_right = 191.0
+offset_right = 200.0
 offset_bottom = 101.0
 size_flags_horizontal = 3
 text = "9"
 
+[node name="VertexColor" type="MarginContainer" parent="Scroll/Content/FaceTools"]
+offset_top = 405.0
+offset_right = 200.0
+offset_bottom = 431.0
+
+[node name="ColorRect" type="ColorRect" parent="Scroll/Content/FaceTools/VertexColor"]
+offset_right = 200.0
+offset_bottom = 26.0
+color = Color(0.537255, 0.537255, 0.537255, 0.294118)
+
+[node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/FaceTools/VertexColor"]
+offset_right = 200.0
+offset_bottom = 26.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/FaceTools/VertexColor/MarginContainer"]
+offset_right = 200.0
+offset_bottom = 26.0
+
+[node name="Tools" type="Label" parent="Scroll/Content/FaceTools/VertexColor/MarginContainer/CenterContainer"]
+offset_left = 52.0
+offset_right = 148.0
+offset_bottom = 26.0
+size_flags_horizontal = 3
+text = "Vertex Color"
+
+[node name="VertexColorPicker" type="ColorPickerButton" parent="Scroll/Content/FaceTools"]
+offset_top = 435.0
+offset_right = 200.0
+offset_bottom = 466.0
+text = " asdf"
+color = Color(1, 1, 1, 1)
+edit_alpha = false
+
+[node name="Label" type="Label" parent="Scroll/Content/FaceTools/VertexColorPicker"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Multiple"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_layout_mode = 1
+
 [node name="EdgeTools" type="VBoxContainer" parent="Scroll/Content"]
 visible = false
-offset_top = 371.0
-offset_right = 1024.0
-offset_bottom = 503.0
+offset_top = 1049.0
+offset_right = 200.0
+offset_bottom = 1245.0
 
 [node name="SelectTools" type="MarginContainer" parent="Scroll/Content/EdgeTools"]
-offset_top = 116.0
-offset_right = 1024.0
-offset_bottom = 153.0
+offset_right = 200.0
+offset_bottom = 26.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/EdgeTools/SelectTools"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 200.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/EdgeTools/SelectTools"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 200.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/EdgeTools/SelectTools/MarginContainer"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 200.0
+offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/EdgeTools/SelectTools/MarginContainer/CenterContainer"]
-offset_left = 464.0
-offset_top = 5.0
-offset_right = 559.0
-offset_bottom = 31.0
+offset_left = 52.0
+offset_right = 147.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Select Edges"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="SelectLoop" type="Button" parent="Scroll/Content/EdgeTools"]
-offset_top = 8.0
-offset_right = 1024.0
-offset_bottom = 32.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 61.0
 text = "Loop"
-icon = ExtResource( "15_5b5te" )
+icon = ExtResource("15_5b5te")
 expand_icon = true
 
 [node name="EdgeTools" type="MarginContainer" parent="Scroll/Content/EdgeTools"]
-offset_top = 116.0
-offset_right = 1024.0
-offset_bottom = 153.0
+offset_top = 65.0
+offset_right = 200.0
+offset_bottom = 91.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/EdgeTools/EdgeTools"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 200.0
+offset_bottom = 26.0
 color = Color(0.537255, 0.537255, 0.537255, 0.294118)
 
 [node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/EdgeTools/EdgeTools"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 200.0
+offset_bottom = 26.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/EdgeTools/EdgeTools/MarginContainer"]
-offset_right = 1024.0
-offset_bottom = 37.0
+offset_right = 200.0
+offset_bottom = 26.0
 
 [node name="Tools" type="Label" parent="Scroll/Content/EdgeTools/EdgeTools/MarginContainer/CenterContainer"]
-offset_left = 470.0
-offset_top = 5.0
-offset_right = 553.0
-offset_bottom = 31.0
+offset_left = 58.0
+offset_right = 141.0
+offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Edge Tools"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="CutLoop" type="Button" parent="Scroll/Content/EdgeTools"]
-offset_top = 44.0
-offset_right = 1024.0
-offset_bottom = 68.0
-shortcut = SubResource( "14" )
+offset_top = 95.0
+offset_right = 200.0
+offset_bottom = 126.0
+shortcut = SubResource("14")
 text = "Cut Loop"
-icon = ExtResource( "16_nokrw" )
+icon = ExtResource("16_nokrw")
 expand_icon = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Subdivide" type="Button" parent="Scroll/Content/EdgeTools"]
-offset_top = 72.0
-offset_right = 1024.0
-offset_bottom = 96.0
+offset_top = 130.0
+offset_right = 200.0
+offset_bottom = 161.0
 text = "Subdivide"
-icon = ExtResource( "17_lihy5" )
+icon = ExtResource("17_lihy5")
 expand_icon = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Collapse" type="Button" parent="Scroll/Content/EdgeTools"]
-offset_top = 108.0
-offset_right = 1024.0
-offset_bottom = 132.0
+offset_top = 165.0
+offset_right = 200.0
+offset_bottom = 196.0
 text = "Collapse"
-icon = ExtResource( "18_b8383" )
+icon = ExtResource("18_b8383")
 expand_icon = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="VertexTools" type="VBoxContainer" parent="Scroll/Content"]
 visible = false
-offset_top = 579.0
-offset_right = 192.0
-offset_bottom = 579.0
+offset_top = 1249.0
+offset_right = 200.0
+offset_bottom = 1310.0
 
-[node name="GeneratorsModal" parent="Scroll/Content" instance=ExtResource( "16" )]
+[node name="VertexColor" type="MarginContainer" parent="Scroll/Content/VertexTools"]
+offset_right = 200.0
+offset_bottom = 26.0
+
+[node name="ColorRect" type="ColorRect" parent="Scroll/Content/VertexTools/VertexColor"]
+offset_right = 200.0
+offset_bottom = 26.0
+color = Color(0.537255, 0.537255, 0.537255, 0.294118)
+
+[node name="MarginContainer" type="MarginContainer" parent="Scroll/Content/VertexTools/VertexColor"]
+offset_right = 200.0
+offset_bottom = 26.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Scroll/Content/VertexTools/VertexColor/MarginContainer"]
+offset_right = 200.0
+offset_bottom = 26.0
+
+[node name="Tools" type="Label" parent="Scroll/Content/VertexTools/VertexColor/MarginContainer/CenterContainer"]
+offset_left = 52.0
+offset_right = 148.0
+offset_bottom = 26.0
+size_flags_horizontal = 3
+text = "Vertex Color"
+
+[node name="VertexColorPicker" type="ColorPickerButton" parent="Scroll/Content/VertexTools"]
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 61.0
+text = " "
+color = Color(1, 1, 1, 1)
+edit_alpha = false
+
+[node name="Label" type="Label" parent="Scroll/Content/VertexTools/VertexColorPicker"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Multiple"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_layout_mode = 1
+
+[node name="GeneratorsModal" parent="Scroll/Content" instance=ExtResource("16")]
