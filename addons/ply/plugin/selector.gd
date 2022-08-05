@@ -79,6 +79,7 @@ func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 var click_position: Vector2
 var drag_position: Vector2
 var in_click: bool
+var in_edit: bool
 func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	if _plugin.ignore_inputs:
 		return false
@@ -87,6 +88,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 			MOUSE_BUTTON_LEFT:
 				if event.pressed:
 					if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
+						in_edit = true
 						return true
 					click_position = event.position
 					drag_position = event.position
@@ -99,13 +101,15 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 						_plugin.update_overlays()
 						return true
 						
-					if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
+					if in_edit:
+						in_edit = false
 						_plugin.transform_gizmo.end_edit()
 						return true
 					if _plugin.selection:
 						_scan_selection(camera, event)
 						return true
 			MOUSE_BUTTON_RIGHT:
+				in_edit = false
 				_plugin.transform_gizmo.abort_edit()
 	if event is InputEventMouseMotion:
 		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
