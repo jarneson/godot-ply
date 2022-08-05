@@ -76,6 +76,9 @@ func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 		_plugin.selection.select_geometry([], false)
 
 
+var click_position: Vector2
+var drag_position: Vector2
+var in_click: bool
 func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	if _plugin.ignore_inputs:
 		return false
@@ -85,16 +88,32 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 				if event.pressed:
 					if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
 						return true
+					click_position = event.position
+					drag_position = event.position
+					in_click = true
+					return true
+				else:
+					var was_in_click = in_click
+					in_click = false
+					if was_in_click and click_position.distance_to(drag_position) > 5:
+						_plugin.update_overlays()
+						return true
+						
+					if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
+						_plugin.transform_gizmo.end_edit()
+						return true
 					if _plugin.selection:
 						_scan_selection(camera, event)
 						return true
-				else:
-					_plugin.transform_gizmo.end_edit()
 			MOUSE_BUTTON_RIGHT:
 				_plugin.transform_gizmo.abort_edit()
 	if event is InputEventMouseMotion:
 		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
 			var snap = 0.0
+			if in_click:
+				drag_position = event.position
+				_plugin.update_overlays()
+				return true
 			if event.ctrl_pressed:
 				match _plugin.transform_gizmo.edit_mode:
 					1:  # translate
@@ -107,3 +126,9 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 		else:
 			_plugin.transform_gizmo.select(camera, event.position, true)
 	return false
+
+func draw_box_selection(overlay):
+	print(in_click, click_position, drag_position)
+	if in_click and click_position.distance_to(drag_position) > 5:
+		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.5, 0.5, 0.7, 0.3), true)
+		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.7, 0.7, 1.0, 1.0), false)

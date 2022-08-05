@@ -110,6 +110,10 @@ func _interop_notification(caller_plugin_id: String, code: int, _id, _args) -> v
 var last_camera: Camera3D
 
 
+func _forward_3d_draw_over_viewport(overlay):
+	selector.draw_box_selection(overlay)
+
+
 func _forward_3d_gui_input(camera: Camera3D, event: InputEvent):
 	last_camera = camera
 	return selector.handle_input(camera, event)
