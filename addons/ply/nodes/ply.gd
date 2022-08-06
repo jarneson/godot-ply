@@ -112,6 +112,7 @@ func _paint_faces() -> void:
 
 
 func _on_mesh_updated() -> void:
+	face_aabb_memo = {}
 	var remove = []
 	for v in selected_vertices:
 		if v >= _ply_mesh.vertex_count():
@@ -157,10 +158,13 @@ var selected: bool:
 		if _selected:
 			_compute_materials()
 			_vertices = Vertices.new()
+			_vertices.name = "ply_vertices"
 			add_child(_vertices)
 			_wireframe = Wireframe.new()
+			_wireframe.name = "ply_wireframe"
 			add_child(_wireframe)
 			_faces = Faces.new()
+			_faces.name = "ply_faces"
 			add_child(_faces)
 var _wireframe: Wireframe
 var _vertices: Vertices
@@ -180,6 +184,44 @@ func point_inside_frustum(pos: Vector3, planes: Array) -> bool:
 			return false
 	return true
 
+var face_aabb_memo = {}
+
+func get_face_aabb(f, b, p):
+	if not face_aabb_memo.has(f):
+		var verts = _ply_mesh.face_vertices(f)
+		var low = null
+		var hi = null
+		for v in verts:
+			var proj = b * p.project(v)
+			if low == null:
+				low = Vector2(proj.x, proj.z)
+			if hi == null:
+				hi = Vector2(proj.x, proj.z)
+			low = Vector2(min(low.x, proj.x), min(low.y, proj.z))
+			hi = Vector2(max(hi.x, proj.x), max(hi.y, proj.z))
+		face_aabb_memo[f] = Rect2(low, hi-low)
+	return face_aabb_memo[f]
+
+
+func face_aabb_scan(f, ai_origin, ai_direction):
+	var norm = _ply_mesh.face_normal(f)
+	var origin = _ply_mesh.edge_origin(_ply_mesh.face_edges[f])
+	var p = Plane(norm, origin)
+	var intersection = p.intersects_ray(ai_origin, ai_direction.normalized())
+	if intersection == null:
+		return false
+	var destination = _ply_mesh.edge_origin(_ply_mesh.face_edges[f])
+	var y = norm
+	var x = (p.project(destination) - p.project(origin)).normalized()
+	var z = y.cross(x)
+	var b = Basis(x,y,z).transposed()
+	var int_proj = b * p.project(intersection)
+	var aabb = get_face_aabb(f,b,p)
+	return aabb.position.x <= int_proj.x and \
+		aabb.position.y <= int_proj.z and \
+		aabb.end.x >= int_proj.x and \
+		aabb.end.y >= int_proj.y
+
 
 func first_intersect_towards(pos: Vector3, camera: Camera3D):
 	var ray = (pos - camera.global_transform.origin).normalized()
@@ -194,6 +236,8 @@ func first_intersect_towards(pos: Vector3, camera: Camera3D):
 	
 	var scan_results = []
 	for f in range(_ply_mesh.face_count()):
+		if not face_aabb_scan(f, ai_origin, ai_direction):
+			continue
 		var ft = _ply_mesh.face_tris(f)
 		var verts = ft[0]
 		var tris = ft[1]
@@ -206,8 +250,7 @@ func first_intersect_towards(pos: Vector3, camera: Camera3D):
 				verts[tri[2]][0]
 			)
 			if hit:
-				var distance = ai_origin.distance_to(hit)
-				scan_results.push_back(["F", f, distance, hit])
+				scan_results.push_back(["F", f, ai_origin.distance_to(hit), hit])
 	if scan_results.size() == 0:
 		return null
 	var min_hit = scan_results[0]
@@ -217,6 +260,26 @@ func first_intersect_towards(pos: Vector3, camera: Camera3D):
 	return min_hit[3]
 
 
+func edge_in_frustum(e, planes, camera):
+	var e_origin = parent.global_transform * _ply_mesh.edge_origin(e)
+	var e_destination = parent.global_transform * _ply_mesh.edge_destination(e)
+	var hull_intersect = Geometry3D.segment_intersects_convex(e_origin, e_destination, planes)
+	if hull_intersect:
+		var intersection = first_intersect_towards(hull_intersect[0], camera)
+		if intersection == null or hull_intersect[0].is_equal_approx(intersection):
+			return true
+	var origin_inside = point_inside_frustum(e_origin, planes)
+	if origin_inside:
+		var intersection = first_intersect_towards(e_origin, camera)
+		if intersection == null or e_origin.is_equal_approx(intersection):
+			return true
+	var destination_inside = point_inside_frustum(e_destination, planes)
+	if destination_inside:
+		var intersection = first_intersect_towards(e_destination, camera)
+		if intersection == null or e_destination.is_equal_approx(intersection):
+			return true
+	return false
+
 func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Array:
 	var scan_results = []
 	var ai = parent.global_transform.affine_inverse()
@@ -224,30 +287,14 @@ func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Arr
 		for v in range(_ply_mesh.vertex_count()):
 			var pos = parent.global_transform * _ply_mesh.vertexes[v]
 			var inside_frustum = point_inside_frustum(pos, planes)
+			if not inside_frustum:
+				continue
 			var intersection = first_intersect_towards(pos, camera)
-			if inside_frustum and (intersection == null or pos.is_equal_approx(intersection)):
+			if intersection == null or pos.is_equal_approx(intersection):
 				scan_results.push_back(["V", v])
 	if mode == SelectionMode.EDGE:
 		for e in range(_ply_mesh.edge_count()):
-			var e_origin = parent.global_transform * _ply_mesh.edge_origin(e)
-			var e_destination = parent.global_transform * _ply_mesh.edge_destination(e)
-			var hull_intersect = Geometry3D.segment_intersects_convex(e_origin, e_destination, planes)
-			if hull_intersect:
-				var intersection = first_intersect_towards(hull_intersect[0], camera)
-				if intersection == null or hull_intersect[0].is_equal_approx(intersection):
-					pass
-				else:
-					hull_intersect = null
-			var origin_inside = point_inside_frustum(e_origin, planes)
-			if origin_inside:
-				var intersection = first_intersect_towards(e_origin, camera)
-				origin_inside = intersection == null or e_origin.is_equal_approx(intersection)
-			var destination_inside = point_inside_frustum(e_destination, planes)
-			if destination_inside:
-				var intersection = first_intersect_towards(e_destination, camera)
-				origin_inside = intersection == null or e_destination.is_equal_approx(intersection)
-			if hull_intersect or origin_inside or destination_inside:
-				print(hull_intersect)
+			if edge_in_frustum(e, planes, camera):
 				scan_results.push_back(["E", e])
 	if mode == SelectionMode.FACE:
 		for f in range(_ply_mesh.face_count()):
@@ -268,7 +315,15 @@ func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Arr
 			if found:
 				scan_results.push_back(["F", f])
 				continue
-
+				
+			# any edge in frustum
+			for e in _ply_mesh.get_face_edges(f):
+				if edge_in_frustum(e, planes, camera):
+					found = true
+			if found:
+				scan_results.push_back(["F", f])
+				continue
+			
 			# frustum intersects polygon
 			var f_point = _ply_mesh.edge_origin(_ply_mesh.face_edges[f])
 			f_point = parent.global_transform * f_point
@@ -277,14 +332,17 @@ func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Arr
 				[planes[0], planes[1]],
 				[planes[1], planes[2]],
 				[planes[2], planes[3]],
-				[planes[3], planes[0]],
+				[planes[3], planes[4]],
 			]
+			
 			var ft = _ply_mesh.face_tris(f)
 			var verts = ft[0]
 			var tris = ft[1]
 			for np in neighbor_planes:
 				var intersect = f_plane.intersect_3(np[0], np[1])
 				if intersect == null:
+					continue
+				if not point_inside_frustum(intersect, planes):
 					continue
 				var segment = [intersect + f_normal, intersect - f_normal]
 				segment[0] = ai * segment[0]
@@ -417,18 +475,15 @@ var _current_edit
 
 
 func begin_edit() -> void:
-	print("begin edit")
 	_current_edit = _ply_mesh.begin_edit()
 
 
 func commit_edit(name: String, undo_redo: UndoRedo) -> void:
-	print("commit edit")
 	_ply_mesh.commit_edit(name, undo_redo, _current_edit)
 	_current_edit = null
 
 
 func abort_edit() -> void:
-	print("abort edit")
 	_ply_mesh.reject_edit(_current_edit)
 	_current_edit = null
 
