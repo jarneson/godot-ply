@@ -33,7 +33,7 @@ func _ready() -> void:
 	value_input.name = "spinner_line_edit_%s" % [label]
 	value_input_popup.add_child(value_input)
 	value_input_popup.wrap_controls = true
-	value_input.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
+	value_input.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	
 	value_input_popup.popup_hide.connect(_on_value_input_closed)
 	value_input.text_submitted.connect(_on_value_input_entered)
