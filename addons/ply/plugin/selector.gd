@@ -67,7 +67,7 @@ func _box_select(camera: Camera3D, v1: Vector2, v2: Vector2, additive: bool) -> 
 	var far = -near
 	far.d += camera.far
 	planes.push_back(far)
-	var hits = _plugin.selection.get_frustum_intersection(planes, _plugin.toolbar.selection_mode)
+	var hits = _plugin.selection.get_frustum_intersection(planes, _plugin.toolbar.selection_mode, camera)
 	_plugin.selection.select_geometry(hits, additive)
 
 func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
