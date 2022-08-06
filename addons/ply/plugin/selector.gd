@@ -36,6 +36,39 @@ func _point_to_segment_dist(v, a, b) -> float:
 		return bv.length()
 	return ab.cross(av).length() / ab.length()
 
+func _box_select(camera: Camera3D, v1: Vector2, v2: Vector2, additive: bool) -> void:
+	var is_orthogonal = camera.projection == Camera3D.PROJECTION_ORTHOGONAL
+	var z_offset = max(0.0, 5.0 - camera.near)
+	var box2d = [
+		Vector2(min(v1.x, v2.x), min(v1.y, v2.y)),
+		Vector2(max(v1.x, v2.x), min(v1.y, v2.y)),
+		Vector2(max(v1.x, v2.x), max(v1.y, v2.y)),
+		Vector2(min(v1.x, v2.x), max(v1.y, v2.y)),
+	]
+	var box3d = [
+		camera.project_position(box2d[0], z_offset),
+		camera.project_position(box2d[1], z_offset),
+		camera.project_position(box2d[2], z_offset),
+		camera.project_position(box2d[3], z_offset),
+	]
+	
+	var planes = []
+	for i in range(4):
+		var a = box3d[i]
+		var b = box3d[(i+1) % 4]
+		if is_orthogonal:
+			planes.push_back(Plane((a-b).normalized(), a))
+		else:
+			planes.push_back(Plane(a, b, camera.global_transform.origin))
+	var near = Plane(camera.global_transform.basis[2], camera.global_transform.origin)
+	near.d -= camera.near
+	planes.push_back(near)
+	
+	var far = -near
+	far.d += camera.far
+	planes.push_back(far)
+	var hits = _plugin.selection.get_frustum_intersection(planes, _plugin.toolbar.selection_mode, camera)
+	_plugin.selection.select_geometry(hits, additive)
 
 func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 	var ray = camera.project_ray_normal(event.position)
@@ -76,6 +109,10 @@ func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 		_plugin.selection.select_geometry([], false)
 
 
+var click_position: Vector2
+var drag_position: Vector2
+var in_click: bool
+var in_edit: bool
 func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	if _plugin.ignore_inputs:
 		return false
@@ -84,17 +121,37 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 			MOUSE_BUTTON_LEFT:
 				if event.pressed:
 					if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
+						in_edit = true
+						return true
+					click_position = event.position
+					drag_position = event.position
+					in_click = true
+					return true
+				else:
+					var was_in_click = in_click
+					in_click = false
+					if was_in_click and click_position.distance_to(drag_position) > 5:
+						_box_select(camera, click_position, drag_position, event.shift_pressed)
+						_plugin.update_overlays()
+						return true
+						
+					if in_edit:
+						in_edit = false
+						_plugin.transform_gizmo.end_edit()
 						return true
 					if _plugin.selection:
 						_scan_selection(camera, event)
 						return true
-				else:
-					_plugin.transform_gizmo.end_edit()
 			MOUSE_BUTTON_RIGHT:
+				in_edit = false
 				_plugin.transform_gizmo.abort_edit()
 	if event is InputEventMouseMotion:
 		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
 			var snap = 0.0
+			if in_click:
+				drag_position = event.position
+				_plugin.update_overlays()
+				return true
 			if event.ctrl_pressed:
 				match _plugin.transform_gizmo.edit_mode:
 					1:  # translate
@@ -107,3 +164,8 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 		else:
 			_plugin.transform_gizmo.select(camera, event.position, true)
 	return false
+
+func draw_box_selection(overlay):
+	if in_click and click_position.distance_to(drag_position) > 5:
+		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.5, 0.5, 0.7, 0.3), true)
+		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.7, 0.7, 1.0, 1.0), false)
