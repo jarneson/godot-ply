@@ -15,6 +15,8 @@ func _ready() -> void:
 	m.point_size = 10
 	m.vertex_color_use_as_albedo = true
 
+	cast_shadow = false
+
 
 func _process(_delta) -> void:
 	global_transform = editor.parent.global_transform
