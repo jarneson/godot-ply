@@ -583,9 +583,8 @@ func _on_vertex_color_changed(color: Color):
 		plugin.selection.ply_mesh.set_vertex_color(v_idx, color)
 	plugin.selection.ply_mesh.emit_change_signal()
 
-
 func _on_toolbar_visibility_changed():
-	if plugin.selection:
+	if visible and plugin.selection:
 		var parent_class = plugin.selection.get_parent().get_class()
 		
 		warning_label.visible = not parent_class in plugin.valid_classes
