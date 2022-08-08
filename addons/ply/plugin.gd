@@ -17,8 +17,6 @@ const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 var editor_settings = get_editor_interface().get_editor_settings()
 var snap_values = {translate=1.0, rotate=15.0, scale=0.1}
 
-var valid_classes = ["MeshInstance3D", "CSGMesh3D"]
-
 func _get_plugin_name() -> String:
 	return "Ply"
 

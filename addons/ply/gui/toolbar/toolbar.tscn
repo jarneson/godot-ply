@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://bb7qnjnl0y2lf"]
+[gd_scene load_steps=34 format=3 uid="uid://bb7qnjnl0y2lf"]
 
 [ext_resource type="Texture2D" uid="uid://da0i0pbup2umf" path="res://addons/ply/icons/dark/select_mesh_dark.png" id="5_5m67v"]
 [ext_resource type="Texture2D" uid="uid://cb212rtjh5ric" path="res://addons/ply/icons/dark/select_face_dark.png" id="6_yuw87"]
@@ -19,25 +19,6 @@
 [ext_resource type="Texture2D" uid="uid://cknwf8bxtl5b5" path="res://addons/ply/icons/dark/subdivide_edge_dark.png" id="17_lihy5"]
 [ext_resource type="Script" path="res://addons/ply/gui/toolbar/github_link.gd" id="18"]
 [ext_resource type="Texture2D" uid="uid://cfm8umrb1vs7r" path="res://addons/ply/icons/dark/collapse_edge_dark.png" id="18_b8383"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_icw8v"]
-content_margin_left = 3.0
-content_margin_top = 3.0
-content_margin_right = 3.0
-bg_color = Color(0.341176, 0.215686, 0.0509804, 1)
-
-[sub_resource type="Theme" id="Theme_gdhj0"]
-Label/font_sizes/font_size = 12
-Label/styles/normal = SubResource("StyleBoxFlat_icw8v")
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hd3f2"]
-content_margin_left = 3.0
-content_margin_right = 3.0
-content_margin_bottom = 2.0
-
-[sub_resource type="Theme" id="Theme_mx3h4"]
-Label/font_sizes/font_size = 12
-Label/styles/normal = SubResource("StyleBoxEmpty_hd3f2")
 
 [sub_resource type="InputEventKey" id="InputEventKey_wa7sa"]
 keycode = 49
@@ -131,42 +112,6 @@ offset_right = 200.0
 offset_bottom = 40.0
 icon = ExtResource("17")
 script = ExtResource("18")
-
-[node name="WarningLabel" type="MarginContainer" parent="."]
-visible = false
-offset_top = 44.0
-offset_right = 200.0
-offset_bottom = 113.0
-
-[node name="ColorRect" type="ColorRect" parent="WarningLabel"]
-offset_right = 200.0
-offset_bottom = 69.0
-color = Color(0.854902, 0.431373, 0, 0.392157)
-
-[node name="VBoxContainer" type="VBoxContainer" parent="WarningLabel"]
-offset_right = 200.0
-offset_bottom = 69.0
-
-[node name="HBoxContainer" type="HBoxContainer" parent="WarningLabel/VBoxContainer"]
-offset_right = 200.0
-offset_bottom = 23.0
-
-[node name="Title" type="Label" parent="WarningLabel/VBoxContainer/HBoxContainer"]
-offset_right = 200.0
-offset_bottom = 23.0
-size_flags_horizontal = 3
-theme = SubResource("Theme_gdhj0")
-text = "Warning"
-autowrap_mode = 2
-
-[node name="Message" type="Label" parent="WarningLabel/VBoxContainer"]
-offset_top = 27.0
-offset_right = 200.0
-offset_bottom = 69.0
-size_flags_horizontal = 3
-theme = SubResource("Theme_mx3h4")
-text = "Editor must be a child of one of the following classes: "
-autowrap_mode = 3
 
 [node name="Scroll" type="ScrollContainer" parent="."]
 offset_top = 44.0

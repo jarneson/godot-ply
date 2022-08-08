@@ -68,10 +68,6 @@ var plugin: EditorPlugin
 @onready var vertex_tools = $Scroll/Content/VertexTools
 @onready var vertex_color_picker = $Scroll/Content/VertexTools/VertexColorPicker
 
-@onready var warning_label = $WarningLabel
-@onready var warning_label_message = $WarningLabel/VBoxContainer/Message
-
-
 func _ready() -> void:
 	var config = ConfigFile.new()
 	var err = config.load("res://addons/ply/plugin.cfg")
@@ -125,9 +121,6 @@ func _ready() -> void:
 	vertex_color_picker.color_changed.connect(_on_vertex_color_changed)
 	vertex_color_picker.pressed.connect(_on_face_color_pressed)
 	vertex_color_picker.popup_closed.connect(_on_face_color_closed)
-	
-	visibility_changed.connect(_on_toolbar_visibility_changed)
-	warning_label_message.text = "Editor must be a child of one of the following classes: " + ", ".join(plugin.valid_classes)
 	
 	if plugin:
 		plugin.selection_changed.connect(_on_selection_changed)
@@ -582,9 +575,3 @@ func _on_vertex_color_changed(color: Color):
 	for v_idx in plugin.selection.selected_vertices:
 		plugin.selection.ply_mesh.set_vertex_color(v_idx, color)
 	plugin.selection.ply_mesh.emit_change_signal()
-
-func _on_toolbar_visibility_changed():
-	if visible and plugin.selection:
-		var parent_class = plugin.selection.get_parent().get_class()
-		
-		warning_label.visible = not parent_class in plugin.valid_classes
