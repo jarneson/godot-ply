@@ -1,0 +1,277 @@
+[gd_scene load_steps=28 format=2]
+
+[ext_resource path="res://addons/ply/icons/select_edge.svg" type="Texture" id=1]
+[ext_resource path="res://addons/ply/icons/select_face.svg" type="Texture" id=2]
+[ext_resource path="res://addons/ply/icons/extrude_face.svg" type="Texture" id=3]
+[ext_resource path="res://addons/ply/icons/select_vertex.svg" type="Texture" id=4]
+[ext_resource path="res://addons/ply/icons/icon_tool_merge_face.svg" type="Texture" id=5]
+[ext_resource path="res://addons/ply/icons/subdivide.svg" type="Texture" id=6]
+[ext_resource path="res://addons/ply/icons/triangulate.svg" type="Texture" id=7]
+[ext_resource path="res://addons/ply/icons/loop_cut.svg" type="Texture" id=8]
+[ext_resource path="res://addons/ply/icons/edge_select_loop.svg" type="Texture" id=9]
+[ext_resource path="res://addons/ply/icons/edge_collapse.svg" type="Texture" id=10]
+[ext_resource path="res://addons/ply/icons/edge_subdivide.svg" type="Texture" id=11]
+[ext_resource path="res://addons/ply/gui/spatial_toolbar/Control.gd" type="Script" id=12]
+[ext_resource path="res://addons/ply/icons/select_mesh.svg" type="Texture" id=13]
+[ext_resource path="res://addons/ply/gui/spatial_toolbar/ToolPanel.gd" type="Script" id=14]
+[ext_resource path="res://addons/ply/gui/toolbar/selection_button_group.tres" type="ButtonGroup" id=15]
+[ext_resource path="res://addons/ply/icons/select_vertex_checked.svg" type="Texture" id=16]
+[ext_resource path="res://addons/ply/icons/select_mesh_checked.svg" type="Texture" id=17]
+[ext_resource path="res://addons/ply/icons/select_edge_checked.svg" type="Texture" id=18]
+[ext_resource path="res://addons/ply/icons/select_face_checked.svg" type="Texture" id=19]
+[ext_resource path="res://addons/ply/icons/invert_normals.svg" type="Texture" id=20]
+[ext_resource path="res://addons/ply/icons/normal_selection_mode.svg" type="Texture" id=21]
+[ext_resource path="res://addons/ply/icons/global_selection_mode.svg" type="Texture" id=22]
+[ext_resource path="res://addons/ply/icons/normal_selection_mode_checked.svg" type="Texture" id=23]
+[ext_resource path="res://addons/ply/icons/global_selection_mode_checked.svg" type="Texture" id=24]
+[ext_resource path="res://addons/ply/icons/local_selection_mode.svg" type="Texture" id=25]
+[ext_resource path="res://addons/ply/icons/local_selection_mode_checked.svg" type="Texture" id=26]
+
+[sub_resource type="ButtonGroup" id=1]
+
+[node name="Control" type="HBoxContainer"]
+margin_right = 1024.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 0, 25 )
+script = ExtResource( 12 )
+
+[node name="GismoMode" type="HBoxContainer" parent="."]
+margin_right = 80.0
+margin_bottom = 25.0
+
+[node name="Global" type="CheckBox" parent="GismoMode"]
+margin_right = 24.0
+margin_bottom = 25.0
+hint_tooltip = "Global Gizmo Mode"
+custom_icons/radio_checked = ExtResource( 24 )
+custom_icons/unchecked = ExtResource( 22 )
+pressed = true
+group = SubResource( 1 )
+
+[node name="Local" type="CheckBox" parent="GismoMode"]
+margin_left = 28.0
+margin_right = 52.0
+margin_bottom = 25.0
+hint_tooltip = "Local Gizmo Mode"
+custom_icons/radio_checked = ExtResource( 26 )
+custom_icons/radio_unchecked = ExtResource( 25 )
+group = SubResource( 1 )
+
+[node name="Normal" type="CheckBox" parent="GismoMode"]
+margin_left = 56.0
+margin_right = 80.0
+margin_bottom = 25.0
+hint_tooltip = "Normal Gizmo Mode"
+custom_icons/radio_checked = ExtResource( 23 )
+custom_icons/radio_unchecked = ExtResource( 21 )
+group = SubResource( 1 )
+
+[node name="SelectionSeparator" type="VSeparator" parent="."]
+margin_left = 84.0
+margin_right = 88.0
+margin_bottom = 25.0
+
+[node name="Selectors" type="HBoxContainer" parent="."]
+margin_left = 92.0
+margin_right = 200.0
+margin_bottom = 25.0
+
+[node name="MeshSelect" type="CheckBox" parent="Selectors"]
+margin_right = 24.0
+margin_bottom = 25.0
+hint_tooltip = "Select Faces"
+custom_icons/radio_checked = ExtResource( 17 )
+custom_icons/radio_unchecked_disabled = ExtResource( 13 )
+custom_icons/radio_unchecked = ExtResource( 13 )
+custom_icons/unchecked = ExtResource( 13 )
+pressed = true
+group = ExtResource( 15 )
+flat = true
+
+[node name="FaceSelect" type="CheckBox" parent="Selectors"]
+margin_left = 28.0
+margin_right = 52.0
+margin_bottom = 25.0
+hint_tooltip = "Select Faces"
+custom_icons/radio_checked = ExtResource( 19 )
+custom_icons/radio_unchecked = ExtResource( 2 )
+custom_icons/unchecked = ExtResource( 2 )
+group = ExtResource( 15 )
+flat = true
+
+[node name="EdgeSelect" type="CheckBox" parent="Selectors"]
+margin_left = 56.0
+margin_right = 80.0
+margin_bottom = 25.0
+hint_tooltip = "Select Edges"
+custom_icons/radio_checked = ExtResource( 18 )
+custom_icons/radio_unchecked = ExtResource( 1 )
+group = ExtResource( 15 )
+flat = true
+
+[node name="VertexSelect" type="CheckBox" parent="Selectors"]
+margin_left = 84.0
+margin_right = 108.0
+margin_bottom = 25.0
+hint_tooltip = "Select Vertexes"
+custom_icons/radio_checked = ExtResource( 16 )
+custom_icons/radio_unchecked = ExtResource( 4 )
+custom_icons/unchecked = ExtResource( 4 )
+group = ExtResource( 15 )
+flat = true
+
+[node name="MeshTools" type="HBoxContainer" parent="."]
+margin_left = 204.0
+margin_right = 392.0
+margin_bottom = 25.0
+script = ExtResource( 14 )
+
+[node name="VSeparator5" type="VSeparator" parent="MeshTools"]
+margin_right = 4.0
+margin_bottom = 25.0
+
+[node name="Subdivide" type="ToolButton" parent="MeshTools"]
+margin_left = 8.0
+margin_right = 36.0
+margin_bottom = 25.0
+hint_tooltip = "Subdivide face"
+icon = ExtResource( 6 )
+
+[node name="Triangulate" type="ToolButton" parent="MeshTools"]
+margin_left = 40.0
+margin_right = 68.0
+margin_bottom = 25.0
+hint_tooltip = "Triangulate face"
+icon = ExtResource( 7 )
+
+[node name="InvertNormals" type="ToolButton" parent="MeshTools"]
+margin_left = 72.0
+margin_right = 100.0
+margin_bottom = 25.0
+hint_tooltip = "Invert normals"
+icon = ExtResource( 20 )
+
+[node name="VSeparator4" type="VSeparator" parent="MeshTools"]
+margin_left = 104.0
+margin_right = 108.0
+margin_bottom = 25.0
+
+[node name="ExportObj" type="ToolButton" parent="MeshTools"]
+margin_left = 112.0
+margin_right = 188.0
+margin_bottom = 25.0
+text = "Export obj"
+
+[node name="FaceTools" type="HBoxContainer" parent="."]
+visible = false
+margin_left = 204.0
+margin_right = 336.0
+margin_bottom = 25.0
+script = ExtResource( 14 )
+
+[node name="VSeparator2" type="VSeparator" parent="FaceTools"]
+margin_right = 4.0
+margin_bottom = 25.0
+
+[node name="Extrude" type="ToolButton" parent="FaceTools"]
+margin_left = 8.0
+margin_right = 36.0
+margin_bottom = 25.0
+hint_tooltip = "Extrude selected face"
+icon = ExtResource( 3 )
+
+[node name="Merge Faces" type="ToolButton" parent="FaceTools"]
+margin_left = 40.0
+margin_right = 68.0
+margin_bottom = 25.0
+hint_tooltip = "Merge selected faces"
+icon = ExtResource( 5 )
+
+[node name="Subdivide" type="ToolButton" parent="FaceTools"]
+margin_left = 72.0
+margin_right = 100.0
+margin_bottom = 25.0
+hint_tooltip = "Subdivide face"
+icon = ExtResource( 6 )
+
+[node name="Triangulate" type="ToolButton" parent="FaceTools"]
+margin_left = 104.0
+margin_right = 132.0
+margin_bottom = 25.0
+hint_tooltip = "Triangulate face"
+icon = ExtResource( 7 )
+
+[node name="EdgeTools" type="HBoxContainer" parent="."]
+visible = false
+margin_left = 226.0
+margin_right = 366.0
+margin_bottom = 25.0
+script = ExtResource( 14 )
+
+[node name="VSeparator" type="VSeparator" parent="EdgeTools"]
+margin_left = 136.0
+margin_right = 140.0
+margin_bottom = 25.0
+
+[node name="Select Loop" type="ToolButton" parent="EdgeTools"]
+margin_right = 28.0
+margin_bottom = 25.0
+hint_tooltip = "Select Loop"
+icon = ExtResource( 9 )
+
+[node name="VSeparator2" type="VSeparator" parent="EdgeTools"]
+margin_left = 32.0
+margin_right = 36.0
+margin_bottom = 25.0
+
+[node name="Cut Loop" type="ToolButton" parent="EdgeTools"]
+margin_left = 40.0
+margin_right = 68.0
+margin_bottom = 25.0
+hint_tooltip = "Cut loop"
+icon = ExtResource( 8 )
+
+[node name="Subdivide" type="ToolButton" parent="EdgeTools"]
+margin_left = 72.0
+margin_right = 100.0
+margin_bottom = 25.0
+hint_tooltip = "Merge selected faces"
+icon = ExtResource( 11 )
+
+[node name="Collapse" type="ToolButton" parent="EdgeTools"]
+margin_left = 104.0
+margin_right = 132.0
+margin_bottom = 25.0
+hint_tooltip = "Merge selected faces"
+icon = ExtResource( 10 )
+
+[node name="VertexTools" type="HBoxContainer" parent="."]
+visible = false
+margin_left = 226.0
+margin_right = 226.0
+margin_bottom = 25.0
+script = ExtResource( 14 )
+
+[connection signal="toggled" from="GismoMode/Global" to="." method="_update_gizmo_mode" binds= [ 0 ]]
+[connection signal="toggled" from="GismoMode/Local" to="." method="_update_gizmo_mode" binds= [ 1 ]]
+[connection signal="toggled" from="GismoMode/Normal" to="." method="_update_gizmo_mode" binds= [ 2 ]]
+[connection signal="toggled" from="Selectors/MeshSelect" to="." method="_update_selection_mode" binds= [ 0 ]]
+[connection signal="toggled" from="Selectors/MeshSelect" to="MeshTools" method="_on_toggled"]
+[connection signal="toggled" from="Selectors/FaceSelect" to="." method="_update_selection_mode" binds= [ 1 ]]
+[connection signal="toggled" from="Selectors/FaceSelect" to="FaceTools" method="_on_toggled"]
+[connection signal="toggled" from="Selectors/EdgeSelect" to="." method="_update_selection_mode" binds= [ 2 ]]
+[connection signal="toggled" from="Selectors/EdgeSelect" to="EdgeTools" method="_on_toggled"]
+[connection signal="toggled" from="Selectors/VertexSelect" to="." method="_update_selection_mode" binds= [ 3 ]]
+[connection signal="toggled" from="Selectors/VertexSelect" to="VertexTools" method="_on_toggled"]
+[connection signal="pressed" from="MeshTools/Subdivide" to="." method="_mesh_subdivide"]
+[connection signal="pressed" from="MeshTools/Triangulate" to="." method="_mesh_triangulate"]
+[connection signal="pressed" from="MeshTools/InvertNormals" to="." method="_mesh_invert_normals"]
+[connection signal="pressed" from="MeshTools/ExportObj" to="." method="_export_to_obj"]
+[connection signal="pressed" from="FaceTools/Extrude" to="." method="_face_extrude"]
+[connection signal="pressed" from="FaceTools/Merge Faces" to="." method="_face_connect"]
+[connection signal="pressed" from="FaceTools/Subdivide" to="." method="_face_subdivide"]
+[connection signal="pressed" from="FaceTools/Triangulate" to="." method="_face_triangulate"]
+[connection signal="pressed" from="EdgeTools/Select Loop" to="." method="_edge_select_loop"]
+[connection signal="pressed" from="EdgeTools/Cut Loop" to="." method="_edge_cut_loop"]
+[connection signal="pressed" from="EdgeTools/Subdivide" to="." method="_edge_subdivide"]
+[connection signal="pressed" from="EdgeTools/Collapse" to="." method="_edge_collapse"]

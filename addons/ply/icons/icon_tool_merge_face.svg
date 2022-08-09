@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="16"
+   viewBox="0 0 16 16"
+   width="16"
+   version="1.1"
+   id="svg135"
+   sodipodi:docname="icon_tool_merge_face.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs139" />
+  <sodipodi:namedview
+     id="namedview137"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="50.375"
+     inkscape:cx="8.4665012"
+     inkscape:cy="7.5831266"
+     inkscape:window-width="1920"
+     inkscape:window-height="1015"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg135" />
+  <path
+     d="m 6.7071,14.999925 -1.4141,-1.4141 2,-2 a 1.0001,1.0001 0 0 1 1.4141,0 l 2,2 -1.4141,1.4141 -1.293,-1.293 -1.293,1.293 z"
+     id="path1297"
+     style="fill:#e0e0e0;fill-opacity:0.996078" />
+  <path
+     d="m 13.585795,5.293 1.4141,1.4140988 -1.293,1.293 1.293,1.293 -1.4141,1.4141012 -2,-2.0000012 a 1.0001,1.0001 0 0 1 0,-1.4141 l 2,-1.9999988 z"
+     id="path1293"
+     style="fill:#e0e0e0;fill-opacity:0.996078" />
+  <path
+     d="m 2.414305,5.293 2,1.9999988 a 1.0001,1.0001 0 0 1 0,1.4141 l -2,2.0000012 -1.4141,-1.4141012 1.293,-1.293 -1.293,-1.293 1.4141,-1.4140988 z"
+     id="path1291"
+     style="fill:#e0e0e0;fill-opacity:0.996078" />
+  <path
+     d="m 7.9844,4.7069714 a 1.0001,1.0001 0 0 1 -0.69141,-0.29102 l -2,-2 1.4141,-1.4141 1.293,1.293 1.293,-1.293 1.4141,1.4141 -2,2 a 1.0001,1.0001 0 0 1 -0.72266,0.29102 z"
+     id="path133"
+     style="fill:#e0e0e0;fill-opacity:0.996078" />
+</svg>
