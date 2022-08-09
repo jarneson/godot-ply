@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="16"
+   viewBox="0 0 16 16"
+   width="16"
+   version="1.1"
+   id="svg135"
+   sodipodi:docname="invert_normals.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs139" />
+  <sodipodi:namedview
+     id="namedview137"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="50.375"
+     inkscape:cx="9.3895782"
+     inkscape:cy="8.0496278"
+     inkscape:window-width="1680"
+     inkscape:window-height="1022"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg135" />
+  <path
+     d="m 13.585795,5.293 1.4141,1.4140988 -1.293,1.293 1.293,1.293 -1.4141,1.4141012 -2,-2.0000012 a 1.0001,1.0001 0 0 1 0,-1.4141 l 2,-1.9999988 z"
+     id="path1293"
+     style="fill:#e0e0e0;fill-opacity:0.996078" />
+  <path
+     d="m 2.414305,5.293 2,1.9999988 a 1.0001,1.0001 0 0 1 0,1.4141 l -2,2.0000012 -1.4141,-1.4141012 1.293,-1.293 -1.293,-1.293 1.4141,-1.4140988 z"
+     id="path1291"
+     style="fill:#e0e0e0;fill-opacity:0.996078" />
+  <rect
+     style="fill:#e0e0e0;fill-opacity:0.99607843"
+     id="rect9199"
+     width="1.9520297"
+     height="14.417374"
+     x="7.1278448"
+     y="0.83818382"
+     ry="0.97601485" />
+</svg>

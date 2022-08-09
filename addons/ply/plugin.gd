@@ -22,7 +22,7 @@ const Interop = preload("res://addons/ply/interop.gd")
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 
 
-func get_plugin_name() -> String:
+func get_plugin_name():
 	return "Ply"
 
 
@@ -30,8 +30,9 @@ var selector: Selector
 var transform_gizmo: TransformGizmo
 var inspector: Inspector
 
-var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instance()
-
+#var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instance()
+var toolbar = preload("res://addons/ply/gui/spatial_toolbar/Control.tscn").instance()
+var bottom_panel = preload("res://addons/ply/gui/bottom_panel/BottomPanel.tscn").instance()
 
 func _enter_tree() -> void:
 	Interop.register(self, "ply")
@@ -52,41 +53,48 @@ func _enter_tree() -> void:
 
 	toolbar.plugin = self
 	toolbar.visible = false
-	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, toolbar)
+	bottom_panel.plugin = self
+	bottom_panel.visible = false
+	add_control_to_bottom_panel(bottom_panel,"Ply")
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU,toolbar)
+	#add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, toolbar)
 
 
 func _exit_tree() -> void:
-	remove_custom_type("PlyInstance")
 	remove_custom_type("PlyEditor")
-
-	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, toolbar)
+	
+	remove_control_from_bottom_panel(bottom_panel)
+	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU,toolbar)
+	
 	remove_inspector_plugin(inspector)
 	transform_gizmo.teardown()
 	toolbar.queue_free()
+	bottom_panel.queue_free()
 	selector.teardown()
 	selector.free()
 	Interop.deregister(self)
 
 
-func handles(o: Object) -> bool:
+func handles(o: Object):
 	return o is PlyEditor
 
 
-func clear() -> void:
+func clear():
 	print("clear")
 
 
 var selection  # nullable PlyEditor
 
 
-func edit(o: Object) -> void:
+func edit(o: Object):
 	assert(o is PlyEditor)
 	selection = o
 	emit_signal("selection_changed", selection)
 
 
-func make_visible(vis: bool) -> void:
+func make_visible(vis: bool):
 	toolbar.visible = vis
+	bottom_panel.visible = vis
 	if selection:
 		selection.selected = vis
 	if not vis:
@@ -97,7 +105,7 @@ func make_visible(vis: bool) -> void:
 var ignore_inputs = false
 
 
-func _interop_notification(caller_plugin_id: String, code: int, _id, _args) -> void:
+func _interop_notification(caller_plugin_id: String, code: int, _id, _args):
 	if caller_plugin_id == "gsr":
 		match code:
 			Interop.NOTIFY_CODE_WORK_STARTED:
@@ -109,11 +117,11 @@ func _interop_notification(caller_plugin_id: String, code: int, _id, _args) -> v
 var last_camera: Camera
 
 
-func forward_spatial_gui_input(camera: Camera, event: InputEvent) -> bool:
+func forward_spatial_gui_input(camera: Camera, event: InputEvent):
 	last_camera = camera
 	return selector.handle_input(camera, event)
 
 
-func _process(_delta) -> void:
+func _process(_delta):
 	if last_camera:
 		transform_gizmo.process()
