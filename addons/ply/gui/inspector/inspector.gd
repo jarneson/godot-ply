@@ -232,7 +232,7 @@ func _transform_axis_value_changed(val, s, mode, axis) -> void:
 					ax = gizmo_transform.basis.y
 				"Z":
 					ax = gizmo_transform.basis.z
-			current_selection.rotate_selection(ax, deg2rad(s.value))
+			current_selection.rotate_selection(ax, deg_to_rad(s.value))
 		"Scale":
 			var plane_normal: Vector3
 			var scale_factor: float

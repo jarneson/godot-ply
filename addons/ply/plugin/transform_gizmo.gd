@@ -656,9 +656,9 @@ func compute_edit(camera: Camera3D, screen_position: Vector2, snap: float = 0.0)
 			)
 
 			if snap:
-				angle = rad2deg(angle) + snap * 0.5
+				angle = rad_to_deg(angle) + snap * 0.5
 				angle -= fmod(angle, snap)
-				angle = deg2rad(angle)
+				angle = deg_to_rad(angle)
 
 			_plugin.selection.rotate_selection(axis, angle)
 		TransformMode.SCALE:
