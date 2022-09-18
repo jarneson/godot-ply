@@ -210,7 +210,7 @@ func get_mesh(mesh: Mesh = null) -> ArrayMesh:
 	return mesh
 
 
-func commit_edit(name: String, undo_redo: UndoRedo, pre_edits: Array) -> void:
+func commit_edit(name: String, undo_redo: EditorUndoRedoManager, pre_edits: Array) -> void:
 	undo_redo.create_action(name)
 	undo_redo.add_do_property(self, "vertexes", vertexes)
 	undo_redo.add_undo_property(self, "vertexes", pre_edits[0])
