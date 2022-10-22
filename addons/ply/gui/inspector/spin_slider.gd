@@ -10,7 +10,7 @@ var value: float :
 		return value # TODOConverter40 Non existent get function 
 	set(v):
 		value = v
-		update()
+		queue_redraw()
 
 var label: String
 var min_value: float
@@ -169,4 +169,4 @@ func _gui_input(evt) -> void:
 			if grabbing_spinner:
 				value = pre_grab_value + step * grabbing_spinner_dist_cache
 				emit_signal("value_changed", value)
-				update()
+				queue_redraw()

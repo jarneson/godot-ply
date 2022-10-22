@@ -478,7 +478,7 @@ func begin_edit() -> void:
 	_current_edit = _ply_mesh.begin_edit()
 
 
-func commit_edit(name: String, undo_redo: UndoRedo) -> void:
+func commit_edit(name: String, undo_redo: EditorUndoRedoManager) -> void:
 	_ply_mesh.commit_edit(name, undo_redo, _current_edit)
 	_current_edit = null
 

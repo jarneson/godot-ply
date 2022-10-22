@@ -133,11 +133,11 @@ func _init_materials() -> void:
 		var rotate_mat = ShaderMaterial.new()
 		rotate_mat.render_priority = 127
 		rotate_mat.shader = rotate_shader
-		rotate_mat.set_shader_param("albedo", axis_colors[i])
+		rotate_mat.set_shader_parameter("albedo", axis_colors[i])
 		rotation_materials[i] = rotate_mat
 
 		var rotate_mat_hl = rotate_mat.duplicate()
-		rotate_mat_hl.set_shader_param("albedo", axis_colors_selected[i])
+		rotate_mat_hl.set_shader_parameter("albedo", axis_colors_selected[i])
 		rotation_materials_selected[i] = rotate_mat_hl
 
 
@@ -656,9 +656,9 @@ func compute_edit(camera: Camera3D, screen_position: Vector2, snap: float = 0.0)
 			)
 
 			if snap:
-				angle = rad2deg(angle) + snap * 0.5
+				angle = rad_to_deg(angle) + snap * 0.5
 				angle -= fmod(angle, snap)
-				angle = deg2rad(angle)
+				angle = deg_to_rad(angle)
 
 			_plugin.selection.rotate_selection(axis, angle)
 		TransformMode.SCALE:
