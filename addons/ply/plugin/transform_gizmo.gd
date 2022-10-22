@@ -133,11 +133,11 @@ func _init_materials() -> void:
 		var rotate_mat = ShaderMaterial.new()
 		rotate_mat.render_priority = 127
 		rotate_mat.shader = rotate_shader
-		rotate_mat.set_shader_param("albedo", axis_colors[i])
+		rotate_mat.set_shader_parameter("albedo", axis_colors[i])
 		rotation_materials[i] = rotate_mat
 
 		var rotate_mat_hl = rotate_mat.duplicate()
-		rotate_mat_hl.set_shader_param("albedo", axis_colors_selected[i])
+		rotate_mat_hl.set_shader_parameter("albedo", axis_colors_selected[i])
 		rotation_materials_selected[i] = rotate_mat_hl
 
 

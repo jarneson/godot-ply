@@ -490,8 +490,7 @@ func _export_to_obj():
 	base_control.add_child(fd)
 	fd.popup_centered(Vector2(480, 600))
 	var file_name = await fd.file_selected
-	var obj_file = File.new()
-	obj_file.open(file_name, File.WRITE)
+	var obj_file = FileAccess.open(file_name, FileAccess.WRITE)
 	ExportMesh.export_to_obj(plugin.selection.ply_mesh, obj_file)
 
 
