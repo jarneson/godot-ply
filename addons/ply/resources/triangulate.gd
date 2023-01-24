@@ -5,7 +5,7 @@ static func object(ply_mesh):
 	var f = []
 	for i in range(ply_mesh.face_count()):
 		f.push_back(i)
-	return faces(ply_mesh, f)
+	faces(ply_mesh, f)
 
 
 static func faces(ply_mesh, face_indices) -> void:
