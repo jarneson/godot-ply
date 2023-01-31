@@ -1,5 +1,5 @@
 const Side = preload("res://addons/ply/utils/direction.gd")
-
+const PlyMesh = preload("res://addons/ply/resources/ply_mesh.gd")
 
 static func faces(ply_mesh: PlyMesh, faces, undo_redo = null, distance = 1) -> void:
 	# walk the outside of the faces:
