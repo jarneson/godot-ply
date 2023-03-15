@@ -16,9 +16,9 @@ dest_files=["res://.godot/imported/GitHub-Mark-Light-32px.png-174dc966f639bd7c48
 [params]
 
 compress/mode=0
+compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
-compress/bptc_ldr=0
 compress/normal_map=0
 compress/channel_pack=0
 mipmaps/generate=false

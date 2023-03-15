@@ -8,16 +8,6 @@
 
 config_version=5
 
-_global_script_classes=[{
-"base": "Resource",
-"class": &"PlyMesh",
-"language": &"GDScript",
-"path": "res://addons/ply/resources/ply_mesh.gd"
-}]
-_global_script_class_icons={
-"PlyMesh": ""
-}
-
 [application]
 
 config/name="PlyDev"

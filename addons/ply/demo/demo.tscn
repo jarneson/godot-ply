@@ -52,4 +52,4 @@ surface_material_override/0 = ExtResource("2_fi5te")
 [node name="PlyEditor" type="Node" parent="MeshInstance3D"]
 script = ExtResource("1_mrvif")
 ply_mesh = SubResource("Resource_mrqsq")
-materials = [ExtResource("2_fi5te"), ExtResource("3_xnde4"), ExtResource("4_bv8y0"), ExtResource("5_n8che"), ExtResource("6_208lt"), ExtResource("7_7v0r6"), ExtResource("8_7sfpg"), ExtResource("9_anqur"), ExtResource("10_wta51")]
+materials = Array[Material]([ExtResource("2_fi5te"), ExtResource("3_xnde4"), ExtResource("4_bv8y0"), ExtResource("5_n8che"), ExtResource("6_208lt"), ExtResource("7_7v0r6"), ExtResource("8_7sfpg"), ExtResource("9_anqur"), ExtResource("10_wta51")])

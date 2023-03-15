@@ -69,7 +69,7 @@ func _exit_tree() -> void:
 	Interop.deregister(self)
 
 
-func _handles(o: Variant) -> bool:
+func _handles(o: Object) -> bool:
 	return o is PlyEditor
 
 
@@ -80,15 +80,16 @@ func _clear() -> void:
 var selection	# nullable PlyEditor
 
 
-func _edit(o: Variant) -> void:
-	assert(o is PlyEditor)
+func _edit(o: Object) -> void:
+	if not o is PlyEditor:
+		return
 	selection = o
 	emit_signal("selection_changed", selection)
 
 
 func _make_visible(vis: bool) -> void:
 	toolbar.visible = vis
-	if selection:
+	if selection and selection.get_property_list().has("selected"):
 		selection.selected = vis
 	if not vis:
 		selection = null

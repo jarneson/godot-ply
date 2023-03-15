@@ -11,7 +11,7 @@ func _init(p):
 	plugin = p
 
 
-func _can_handle(o: Variant) -> bool:
+func _can_handle(o: Object) -> bool:
 	return o is PlyEditor
 
 

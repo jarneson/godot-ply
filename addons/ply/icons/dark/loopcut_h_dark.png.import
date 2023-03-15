@@ -16,9 +16,9 @@ dest_files=["res://.godot/imported/loopcut_h_dark.png-8610b42b1a68363e4a8c578e04
 [params]
 
 compress/mode=0
+compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
-compress/bptc_ldr=0
 compress/normal_map=0
 compress/channel_pack=0
 mipmaps/generate=false
