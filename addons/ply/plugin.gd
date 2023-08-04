@@ -81,7 +81,7 @@ var selection	# nullable PlyEditor
 
 
 func _edit(o: Object) -> void:
-	if selection:
+	if selection and not selection.is_queued_for_deletion():
 		selection.selected = false
 
 	selection = o
