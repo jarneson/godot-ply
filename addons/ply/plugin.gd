@@ -81,16 +81,10 @@ var selection	# nullable PlyEditor
 
 
 func _edit(o: Object) -> void:
-	if o == null:
-		selection.selected = false
-		selection = null
-		emit_signal("selection_changed", null)
-		return
-
 	if selection:
 		selection.selected = false
+
 	selection = o
-	selection.selected = true
 	emit_signal("selection_changed", selection)
 
 
