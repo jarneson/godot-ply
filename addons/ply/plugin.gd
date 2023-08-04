@@ -81,19 +81,15 @@ var selection	# nullable PlyEditor
 
 
 func _edit(o: Object) -> void:
-	if not o is PlyEditor:
-		return
+	if selection:
+		selection.selected = false
+
 	selection = o
 	emit_signal("selection_changed", selection)
 
 
 func _make_visible(vis: bool) -> void:
 	toolbar.visible = vis
-	if selection and selection.get_property_list().has("selected"):
-		selection.selected = vis
-	if not vis:
-		selection = null
-		emit_signal("selection_changed", null)
 
 
 var ignore_inputs = false
