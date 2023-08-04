@@ -25,6 +25,8 @@ const Wireframe = preload("res://addons/ply/nodes/ply_wireframe.gd")
 const Vertices = preload("res://addons/ply/nodes/ply_vertices.gd")
 const Faces = preload("res://addons/ply/nodes/ply_faces.gd")
 
+const valid_classes = ["MeshInstance3D", "CSGMesh3D"]
+
 @export var parent_property: String = "mesh"
 @export var ply_mesh: Resource :
 	get:
@@ -65,6 +67,13 @@ func _ready() -> void:
 		ply_mesh = PlyMesh.new()
 	_compute_materials()
 
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings = []
+	
+	if not get_parent().get_class() in valid_classes:
+		warnings.append("Must be a child of one of the following classes: " + ", ".join(valid_classes))
+		
+	return PackedStringArray(warnings)
 
 func _compute_materials() -> void:
 	var res = default_materials.duplicate()

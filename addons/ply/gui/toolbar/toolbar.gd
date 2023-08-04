@@ -68,7 +68,6 @@ var plugin: EditorPlugin
 @onready var vertex_tools = $Scroll/Content/VertexTools
 @onready var vertex_color_picker = $Scroll/Content/VertexTools/VertexColorPicker
 
-
 func _ready() -> void:
 	var config = ConfigFile.new()
 	var err = config.load("res://addons/ply/plugin.cfg")
