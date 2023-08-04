@@ -121,8 +121,8 @@ size_flags_vertical = 3
 follow_focus = true
 
 [node name="Content" type="VBoxContainer" parent="Scroll"]
-offset_right = 200.0
-offset_bottom = 575.0
+offset_right = 192.0
+offset_bottom = 806.0
 size_flags_horizontal = 3
 
 [node name="ToolModeLabel" type="MarginContainer" parent="Scroll/Content"]
@@ -150,9 +150,10 @@ size_flags_horizontal = 3
 text = "Tool"
 
 [node name="Mesh" type="Button" parent="Scroll/Content"]
+minimum_size = Vector2(0, 64)
 offset_top = 30.0
-offset_right = 200.0
-offset_bottom = 61.0
+offset_right = 192.0
+offset_bottom = 94.0
 toggle_mode = true
 button_pressed = true
 shortcut = SubResource("Shortcut_3n0xq")
@@ -162,9 +163,10 @@ icon = ExtResource("5_5m67v")
 expand_icon = true
 
 [node name="Face" type="Button" parent="Scroll/Content"]
-offset_top = 65.0
-offset_right = 200.0
-offset_bottom = 96.0
+minimum_size = Vector2(0, 64)
+offset_top = 98.0
+offset_right = 192.0
+offset_bottom = 162.0
 toggle_mode = true
 shortcut = SubResource("6")
 button_group = SubResource("ButtonGroup_jgq6o")
@@ -173,9 +175,10 @@ icon = ExtResource("6_yuw87")
 expand_icon = true
 
 [node name="Edge" type="Button" parent="Scroll/Content"]
-offset_top = 100.0
-offset_right = 200.0
-offset_bottom = 131.0
+minimum_size = Vector2(0, 64)
+offset_top = 166.0
+offset_right = 192.0
+offset_bottom = 230.0
 toggle_mode = true
 shortcut = SubResource("8")
 button_group = SubResource("ButtonGroup_jgq6o")
@@ -184,9 +187,10 @@ icon = ExtResource("7_j2iu8")
 expand_icon = true
 
 [node name="Vertex" type="Button" parent="Scroll/Content"]
-offset_top = 135.0
-offset_right = 200.0
-offset_bottom = 166.0
+minimum_size = Vector2(0, 64)
+offset_top = 234.0
+offset_right = 192.0
+offset_bottom = 298.0
 toggle_mode = true
 shortcut = SubResource("10")
 button_group = SubResource("ButtonGroup_jgq6o")
@@ -195,9 +199,9 @@ icon = ExtResource("8_0w4vc")
 expand_icon = true
 
 [node name="GizmoModeLabel" type="MarginContainer" parent="Scroll/Content"]
-offset_top = 170.0
-offset_right = 200.0
-offset_bottom = 196.0
+offset_top = 302.0
+offset_right = 192.0
+offset_bottom = 328.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/GizmoModeLabel"]
 offset_right = 200.0
@@ -220,39 +224,39 @@ size_flags_horizontal = 3
 text = "Gizmo Mode"
 
 [node name="Global" type="Button" parent="Scroll/Content"]
-offset_top = 200.0
-offset_right = 200.0
-offset_bottom = 231.0
+offset_top = 332.0
+offset_right = 192.0
+offset_bottom = 363.0
 toggle_mode = true
 button_group = SubResource("ButtonGroup_xlkoy")
 text = "Global"
 
 [node name="Local" type="Button" parent="Scroll/Content"]
-offset_top = 235.0
-offset_right = 200.0
-offset_bottom = 266.0
+offset_top = 367.0
+offset_right = 192.0
+offset_bottom = 398.0
 toggle_mode = true
 button_group = SubResource("ButtonGroup_xlkoy")
 text = "Local"
 
 [node name="Normal" type="Button" parent="Scroll/Content"]
-offset_top = 270.0
-offset_right = 200.0
-offset_bottom = 301.0
+offset_top = 402.0
+offset_right = 192.0
+offset_bottom = 433.0
 toggle_mode = true
 button_group = SubResource("ButtonGroup_xlkoy")
 text = "Normal"
 
 [node name="Spacer" type="CenterContainer" parent="Scroll/Content"]
-offset_top = 305.0
-offset_right = 200.0
-offset_bottom = 305.0
+offset_top = 437.0
+offset_right = 192.0
+offset_bottom = 437.0
 size_flags_vertical = 3
 
 [node name="MeshTools" type="VBoxContainer" parent="Scroll/Content"]
-offset_top = 309.0
-offset_right = 200.0
-offset_bottom = 575.0
+offset_top = 441.0
+offset_right = 192.0
+offset_bottom = 806.0
 
 [node name="Tools" type="MarginContainer" parent="Scroll/Content/MeshTools"]
 offset_right = 200.0
@@ -279,31 +283,36 @@ size_flags_horizontal = 3
 text = "Mesh Tools"
 
 [node name="Subdivide" type="Button" parent="Scroll/Content/MeshTools"]
+minimum_size = Vector2(0, 64)
 offset_top = 30.0
-offset_right = 200.0
-offset_bottom = 61.0
+offset_right = 192.0
+offset_bottom = 94.0
 text = "Subdivide"
+icon = ExtResource( "5_5m67v" )
+expand_icon = true
 
 [node name="Triangulate" type="Button" parent="Scroll/Content/MeshTools"]
-offset_top = 65.0
-offset_right = 200.0
-offset_bottom = 96.0
+minimum_size = Vector2(0, 64)
+offset_top = 98.0
+offset_right = 192.0
+offset_bottom = 162.0
 text = "Triangulate"
 icon = ExtResource("14_8ytvm")
 expand_icon = true
 
 [node name="InvertNormals" type="Button" parent="Scroll/Content/MeshTools"]
-offset_top = 100.0
-offset_right = 200.0
-offset_bottom = 131.0
+minimum_size = Vector2(0, 64)
+offset_top = 166.0
+offset_right = 192.0
+offset_bottom = 230.0
 text = "Invert Normals"
 icon = ExtResource("10_uborc")
 expand_icon = true
 
 [node name="Utils" type="MarginContainer" parent="Scroll/Content/MeshTools"]
-offset_top = 135.0
-offset_right = 200.0
-offset_bottom = 161.0
+offset_top = 234.0
+offset_right = 192.0
+offset_bottom = 260.0
 
 [node name="ColorRect" type="ColorRect" parent="Scroll/Content/MeshTools/Utils"]
 offset_right = 200.0
@@ -326,21 +335,21 @@ size_flags_horizontal = 3
 text = "Mesh Utilities"
 
 [node name="Generators" type="Button" parent="Scroll/Content/MeshTools"]
-offset_top = 165.0
-offset_right = 200.0
-offset_bottom = 196.0
+offset_top = 264.0
+offset_right = 192.0
+offset_bottom = 295.0
 text = "Generate"
 
 [node name="Import" type="Button" parent="Scroll/Content/MeshTools"]
-offset_top = 200.0
-offset_right = 200.0
-offset_bottom = 231.0
+offset_top = 299.0
+offset_right = 192.0
+offset_bottom = 330.0
 text = "Import"
 
 [node name="ExportOBJ" type="Button" parent="Scroll/Content/MeshTools"]
-offset_top = 235.0
-offset_right = 200.0
-offset_bottom = 266.0
+offset_top = 334.0
+offset_right = 192.0
+offset_bottom = 365.0
 text = "Export to OBJ"
 
 [node name="FaceTools" type="VBoxContainer" parent="Scroll/Content"]
@@ -374,6 +383,7 @@ size_flags_horizontal = 3
 text = "Select Faces"
 
 [node name="FaceLoop1" type="Button" parent="Scroll/Content/FaceTools"]
+minimum_size = Vector2(0, 64)
 offset_top = 30.0
 offset_right = 200.0
 offset_bottom = 61.0
@@ -382,9 +392,10 @@ icon = ExtResource("9_khceo")
 expand_icon = true
 
 [node name="FaceLoop2" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 65.0
-offset_right = 200.0
-offset_bottom = 96.0
+minimum_size = Vector2(0, 64)
+offset_top = 106.0
+offset_right = 192.0
+offset_bottom = 178.0
 text = "Loop"
 icon = ExtResource("10_r3rjd")
 expand_icon = true
@@ -415,34 +426,38 @@ size_flags_horizontal = 3
 text = "Face Tools"
 
 [node name="Extrude" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 130.0
-offset_right = 200.0
-offset_bottom = 161.0
-shortcut = SubResource("12")
+minimum_size = Vector2(0, 64)
+offset_top = 212.0
+offset_right = 192.0
+offset_bottom = 284.0
+shortcut = SubResource( "12" )
 text = "Extrude"
 icon = ExtResource("11_ods2w")
 expand_icon = true
 
 [node name="Connect" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 165.0
-offset_right = 200.0
-offset_bottom = 196.0
+minimum_size = Vector2(0, 64)
+offset_top = 288.0
+offset_right = 192.0
+offset_bottom = 319.0
 text = "Connect"
 icon = ExtResource("12_t4tf1")
 expand_icon = true
 
 [node name="Subdivide" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 200.0
-offset_right = 200.0
-offset_bottom = 231.0
+minimum_size = Vector2(0, 64)
+offset_top = 323.0
+offset_right = 192.0
+offset_bottom = 354.0
 text = "Subdivide"
 icon = ExtResource("13_68wte")
 expand_icon = true
 
 [node name="Triangulate" type="Button" parent="Scroll/Content/FaceTools"]
-offset_top = 235.0
-offset_right = 200.0
-offset_bottom = 266.0
+minimum_size = Vector2(0, 64)
+offset_top = 358.0
+offset_right = 192.0
+offset_bottom = 389.0
 text = "Triangulate"
 icon = ExtResource("14_8ytvm")
 expand_icon = true
@@ -619,9 +634,10 @@ size_flags_horizontal = 3
 text = "Select Edges"
 
 [node name="SelectLoop" type="Button" parent="Scroll/Content/EdgeTools"]
-offset_top = 30.0
-offset_right = 200.0
-offset_bottom = 61.0
+minimum_size = Vector2(0, 64)
+offset_top = 8.0
+offset_right = 1024.0
+offset_bottom = 32.0
 text = "Loop"
 icon = ExtResource("15_5b5te")
 expand_icon = true
@@ -652,26 +668,29 @@ size_flags_horizontal = 3
 text = "Edge Tools"
 
 [node name="CutLoop" type="Button" parent="Scroll/Content/EdgeTools"]
-offset_top = 95.0
-offset_right = 200.0
-offset_bottom = 126.0
-shortcut = SubResource("14")
+minimum_size = Vector2(0, 64)
+offset_top = 44.0
+offset_right = 1024.0
+offset_bottom = 68.0
+shortcut = SubResource( "14" )
 text = "Cut Loop"
 icon = ExtResource("16_nokrw")
 expand_icon = true
 
 [node name="Subdivide" type="Button" parent="Scroll/Content/EdgeTools"]
-offset_top = 130.0
-offset_right = 200.0
-offset_bottom = 161.0
+minimum_size = Vector2(0, 64)
+offset_top = 72.0
+offset_right = 1024.0
+offset_bottom = 96.0
 text = "Subdivide"
 icon = ExtResource("17_lihy5")
 expand_icon = true
 
 [node name="Collapse" type="Button" parent="Scroll/Content/EdgeTools"]
-offset_top = 165.0
-offset_right = 200.0
-offset_bottom = 196.0
+minimum_size = Vector2(0, 64)
+offset_top = 108.0
+offset_right = 1024.0
+offset_bottom = 132.0
 text = "Collapse"
 icon = ExtResource("18_b8383")
 expand_icon = true
