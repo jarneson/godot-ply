@@ -14,8 +14,7 @@ func _ready() -> void:
 	m.use_point_size = true
 	m.point_size = 10
 	m.vertex_color_use_as_albedo = true
-
-	cast_shadow = false
+	m.cast_shadow = false
 
 
 func _process(_delta) -> void:
