@@ -81,14 +81,15 @@ var selection	# nullable PlyEditor
 
 
 func _edit(o: Object) -> void:
-    if selection and not selection.is_queued_for_deletion():
-        selection.selected = false
-
-    if o == null:
-        toolbar.visible = false
-    else:
-        selection = o
-        emit_signal("selection_changed", selection)
+	if selection and not selection.is_queued_for_deletion():
+		selection.selected = false
+	
+	if o == null:
+		toolbar.visible = false
+	else:
+		selection = o
+		selection.selected = true
+		emit_signal("selection_changed", selection)
 
 
 func _make_visible(vis: bool) -> void:
