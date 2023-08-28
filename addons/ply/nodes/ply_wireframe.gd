@@ -11,6 +11,7 @@ func _ready() -> void:
 	# m.flags_no_depth_test = true # enable for xray
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	m.vertex_color_use_as_albedo = true
+	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 func _process(_delta) -> void:
