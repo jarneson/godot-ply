@@ -14,7 +14,7 @@ func _ready() -> void:
 	m.use_point_size = true
 	m.point_size = 10
 	m.vertex_color_use_as_albedo = true
-	m.cast_shadow = false
+	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 func _process(_delta) -> void:
