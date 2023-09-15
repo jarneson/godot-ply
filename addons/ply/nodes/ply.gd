@@ -121,7 +121,6 @@ func _paint_faces() -> void:
 
 
 func _on_mesh_updated() -> void:
-	face_aabb_memo = {}
 	var remove = []
 	for v in selected_vertices:
 		if v >= _ply_mesh.vertex_count():
@@ -193,47 +192,9 @@ func point_inside_frustum(pos: Vector3, planes: Array) -> bool:
 			return false
 	return true
 
-var face_aabb_memo = {}
-
-func get_face_aabb(f, b, p):
-	if not face_aabb_memo.has(f):
-		var verts = _ply_mesh.face_vertices(f)
-		var low = null
-		var hi = null
-		for v in verts:
-			var proj = b * p.project(v)
-			if low == null:
-				low = Vector2(proj.x, proj.z)
-			if hi == null:
-				hi = Vector2(proj.x, proj.z)
-			low = Vector2(min(low.x, proj.x), min(low.y, proj.z))
-			hi = Vector2(max(hi.x, proj.x), max(hi.y, proj.z))
-		face_aabb_memo[f] = Rect2(low, hi-low)
-	return face_aabb_memo[f]
-
-
-func face_aabb_scan(f, ai_origin, ai_direction):
-	var norm = _ply_mesh.face_normal(f)
-	var origin = _ply_mesh.edge_origin(_ply_mesh.face_edges[f])
-	var p = Plane(norm, origin)
-	var intersection = p.intersects_ray(ai_origin, ai_direction.normalized())
-	if intersection == null:
-		return false
-	var destination = _ply_mesh.edge_origin(_ply_mesh.face_edges[f])
-	var y = norm
-	var x = (p.project(destination) - p.project(origin)).normalized()
-	var z = y.cross(x)
-	var b = Basis(x,y,z).transposed()
-	var int_proj = b * p.project(intersection)
-	var aabb = get_face_aabb(f,b,p)
-	return aabb.position.x <= int_proj.x and \
-		aabb.position.y <= int_proj.z and \
-		aabb.end.x >= int_proj.x and \
-		aabb.end.y >= int_proj.y
-
 
 func first_intersect_towards(pos: Vector3, camera: Camera3D):
-	var ray = (pos - camera.global_transform.origin).normalized()
+	var ray = (pos-camera.global_transform.origin).normalized()
 	var from = camera.global_transform.origin
 	if camera.projection == Camera3D.PROJECTION_ORTHOGONAL:
 		ray = camera.global_transform.basis[2]
@@ -245,8 +206,6 @@ func first_intersect_towards(pos: Vector3, camera: Camera3D):
 	
 	var scan_results = []
 	for f in range(_ply_mesh.face_count()):
-		if not face_aabb_scan(f, ai_origin, ai_direction):
-			continue
 		var ft = _ply_mesh.face_tris(f)
 		var verts = ft[0]
 		var tris = ft[1]
@@ -260,13 +219,14 @@ func first_intersect_towards(pos: Vector3, camera: Camera3D):
 			)
 			if hit:
 				scan_results.push_back(["F", f, ai_origin.distance_to(hit), hit])
+
 	if scan_results.size() == 0:
 		return null
 	var min_hit = scan_results[0]
 	for h in scan_results:
 		if min_hit[2] > h[2]:
 			min_hit = h
-	return min_hit[3]
+	return parent.global_transform * min_hit[3]
 
 
 func edge_in_frustum(e, planes, camera):
@@ -307,6 +267,7 @@ func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Arr
 				scan_results.push_back(["E", e])
 	if mode == SelectionMode.FACE:
 		for f in range(_ply_mesh.face_count()):
+			# only select faces facing the camera
 			var f_normal = _ply_mesh.face_normal(f)
 			f_normal = (parent.global_transform.basis * f_normal).normalized()
 			if f_normal.dot(camera.global_transform.basis[2]) < 0:
@@ -401,7 +362,7 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 			var b_z = dir.normalized()
 			var b_y = direction.cross(b_z).normalized()
 			var b_x = b_z.cross(b_y)
-			var t = Transform3D(Basis(b_x, b_y, b_z).transposed(), e_midpoint).inverse()
+			var t = Transform3D(Basis(b_x, b_y, b_z), e_midpoint).inverse()
 
 			var r_o = t * origin
 			var r_d = t.basis * direction

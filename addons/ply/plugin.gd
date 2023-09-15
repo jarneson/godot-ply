@@ -24,6 +24,7 @@ func _get_plugin_name() -> String:
 var selector: Selector
 var transform_gizmo: TransformGizmo
 var inspector: Inspector
+var ignore_inputs = false
 
 var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instantiate()
 
@@ -94,18 +95,6 @@ func _edit(o: Object) -> void:
 
 func _make_visible(vis: bool) -> void:
 	toolbar.visible = vis
-
-
-var ignore_inputs = false
-
-
-func _interop_notification(caller_plugin_id: String, code: int, _id, _args) -> void:
-	if caller_plugin_id == "gsr":
-		match code:
-			Interop.NOTIFY_CODE_WORK_STARTED:
-				ignore_inputs = true
-			Interop.NOTIFY_CODE_WORK_ENDED:
-				ignore_inputs = false
 
 
 var last_camera: Camera3D
