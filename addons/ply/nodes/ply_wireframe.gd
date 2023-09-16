@@ -13,20 +13,17 @@ func _ready() -> void:
 	m.vertex_color_use_as_albedo = true
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
-
 func _process(_delta) -> void:
 	global_transform = editor.parent.global_transform
 	mesh.clear_surfaces()
-	if editor.ply_mesh.edge_count():
-		mesh.surface_begin(Mesh.PRIMITIVE_LINES, m)
-		for e in range(editor.ply_mesh.edge_count()):
-			if editor.selected_edges.has(e):
-				mesh.surface_set_color(Color.GREEN)
-			else:
-				mesh.surface_set_color(Color.BLUE)
-			var verts = editor.ply_mesh.edge(e)
-			if not verts.size():
-				continue
-			mesh.surface_add_vertex(verts[0])
-			mesh.surface_add_vertex(verts[1])
-		mesh.surface_end()
+
+	mesh.surface_begin(Mesh.PRIMITIVE_LINES, m)
+	editor.editor.call_each_edge(func(e):
+		if editor.selected_edges.has(e.id()):
+			mesh.surface_set_color(Color.GREEN)
+		else:
+			mesh.surface_set_color(Color.BLUE)
+		mesh.surface_add_vertex(e.origin().position())
+		mesh.surface_add_vertex(e.destination().position())
+	)
+	mesh.surface_end()

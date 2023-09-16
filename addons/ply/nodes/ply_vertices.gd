@@ -16,17 +16,15 @@ func _ready() -> void:
 	m.vertex_color_use_as_albedo = true
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
-
 func _process(_delta) -> void:
 	global_transform = editor.parent.global_transform
 	mesh.clear_surfaces()
-	if editor.ply_mesh.vertex_count() == 0:
-		return
 	mesh.surface_begin(Mesh.PRIMITIVE_POINTS, m)
-	for v in range(editor.ply_mesh.vertex_count()):
-		if editor.selected_vertices.has(v):
+	editor.editor.call_each_vertex(func(v):
+		if editor.selected_vertices.has(v.id()):
 			mesh.surface_set_color(Color.GREEN)
 		else:
 			mesh.surface_set_color(Color.BLUE)
-		mesh.surface_add_vertex(editor.ply_mesh.vertexes[v])
+		mesh.surface_add_vertex(v.position())
+	)
 	mesh.surface_end()

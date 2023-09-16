@@ -21,6 +21,7 @@ const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
 const Median = preload("res://addons/ply/resources/median.gd")
 
 const PlyMesh = preload("res://addons/ply/resources/ply_mesh.gd")
+const PlyMeshEditor = preload("res://addons/ply/resources/mesh_editor.gd")
 const Wireframe = preload("res://addons/ply/nodes/ply_wireframe.gd")
 const Vertices = preload("res://addons/ply/nodes/ply_vertices.gd")
 const Faces = preload("res://addons/ply/nodes/ply_faces.gd")
@@ -36,19 +37,23 @@ const valid_classes = ["MeshInstance3D", "CSGMesh3D"]
 			if _ply_mesh && _ply_mesh.mesh_updated.is_connected(_on_mesh_updated):
 				_ply_mesh.mesh_updated.disconnect(_on_mesh_updated)
 			_ply_mesh = v
+			editor = null
 			_clear_parent()
 		if v is PlyMesh:
 			if _ply_mesh && _ply_mesh.mesh_updated.is_connected(_on_mesh_updated):
 				_ply_mesh.mesh_updated.disconnect(_on_mesh_updated)
 			_ply_mesh = v
 			_ply_mesh.mesh_updated.connect(_on_mesh_updated)
+			editor = PlyMeshEditor.new(_ply_mesh)
 			_on_mesh_updated()
 		else:
 			print("assigned resource that is not a ply_mesh to ply editor")
+
 @export var materials : Array[Material]:
 	set=set_materials # (Array, Material)
 
 var _ply_mesh: PlyMesh
+var editor: PlyMeshEditor
 
 
 func set_materials(v) -> void:
