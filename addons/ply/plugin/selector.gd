@@ -1,7 +1,7 @@
 @tool
 extends Object
 
-const Loop = preload("res://addons/ply/resources/loop.gd")
+const Loop = preload("res://addons/ply/tools/loop.gd")
 const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 

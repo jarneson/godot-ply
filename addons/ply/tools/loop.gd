@@ -1,5 +1,5 @@
 const Side = preload("res://addons/ply/utils/direction.gd")
-const Subdivide = preload("res://addons/ply/resources/subdivide.gd")
+const Subdivide = preload("res://addons/ply/tools/subdivide.gd")
 const Euler = preload("res://addons/ply/resources/euler.gd")
 
 
