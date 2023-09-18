@@ -12,3 +12,10 @@ static func face_normal(verts) -> Vector3:
 			right_idx = 0
 		normal_sum = normal_sum + tri_normal(verts[i], verts[left_idx], verts[right_idx]).normalized()
 	return (normal_sum / verts.size())
+
+static func point_inside_frustum(pos: Vector3, planes: Array[Plane]) -> bool:
+	for p in planes:
+		var dir = pos - p.project(pos)
+		if dir.dot(p.normal) > 0:
+			return false
+	return true

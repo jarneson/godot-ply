@@ -28,11 +28,10 @@ func _process(_delta) -> void:
 		if not editor.selected_faces.has(f.id()):
 			return
 		var normal = f.normal()
-		var verts = f.raw_vertices()
-		var tris = MeshTools.wing_clip(verts)
-		for tri in tris:
-			mesh.surface_add_vertex(verts[tri[0]] + normal * 0.001)
-			mesh.surface_add_vertex(verts[tri[1]] + normal * 0.001)
-			mesh.surface_add_vertex(verts[tri[2]] + normal * 0.001)
+		var tris = f.tris()
+		for i in range(0, tris.size(), 3):
+			mesh.surface_add_vertex(tris[i] + normal * 0.001)
+			mesh.surface_add_vertex(tris[i+1] + normal * 0.001)
+			mesh.surface_add_vertex(tris[i+2] + normal * 0.001)
 	)
 	mesh.surface_end()

@@ -19,6 +19,7 @@ const default_materials: Array[Material] = [
 const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
 const GizmoMode = preload("res://addons/ply/utils/gizmo_mode.gd")
 const Median = preload("res://addons/ply/resources/median.gd")
+const Math = preload("res://addons/ply/utils/math.gd")
 
 const PlyMesh = preload("res://addons/ply/resources/ply_mesh.gd")
 const PlyMeshEditor = preload("res://addons/ply/resources/mesh_editor.gd")
@@ -190,13 +191,6 @@ class IntersectSorter:
 			return true
 		return false
 
-func point_inside_frustum(pos: Vector3, planes: Array) -> bool:
-	for p in planes:
-		var dir = pos - p.project(pos)
-		if dir.dot(p.normal) > 0:
-			return false
-	return true
-
 
 func first_intersect_towards(pos: Vector3, camera: Camera3D):
 	var ray = (pos-camera.global_transform.origin).normalized()
@@ -242,12 +236,12 @@ func edge_in_frustum(e, planes, camera):
 		var intersection = first_intersect_towards(hull_intersect[0], camera)
 		if intersection == null or hull_intersect[0].is_equal_approx(intersection):
 			return true
-	var origin_inside = point_inside_frustum(e_origin, planes)
+	var origin_inside = Math.point_inside_frustum(e_origin, planes)
 	if origin_inside:
 		var intersection = first_intersect_towards(e_origin, camera)
 		if intersection == null or e_origin.is_equal_approx(intersection):
 			return true
-	var destination_inside = point_inside_frustum(e_destination, planes)
+	var destination_inside = Math.point_inside_frustum(e_destination, planes)
 	if destination_inside:
 		var intersection = first_intersect_towards(e_destination, camera)
 		if intersection == null or e_destination.is_equal_approx(intersection):
@@ -260,7 +254,7 @@ func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Arr
 	if mode == SelectionMode.VERTEX:
 		for v in range(_ply_mesh.vertex_count()):
 			var pos = parent.global_transform * _ply_mesh.vertexes[v]
-			var inside_frustum = point_inside_frustum(pos, planes)
+			var inside_frustum = Math.point_inside_frustum(pos, planes)
 			if not inside_frustum:
 				continue
 			var intersection = first_intersect_towards(pos, camera)
@@ -282,7 +276,7 @@ func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Arr
 			# any vertex inside frustum
 			for vtx in _ply_mesh.face_vertices(f):
 				var pos = parent.global_transform * vtx
-				if point_inside_frustum(pos, planes):
+				if Math.point_inside_frustum(pos, planes):
 					var intersection = first_intersect_towards(pos, camera)
 					if intersection == null or pos.is_equal_approx(intersection):
 						found = true
@@ -317,7 +311,7 @@ func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Arr
 				var intersect = f_plane.intersect_3(np[0], np[1])
 				if intersect == null:
 					continue
-				if not point_inside_frustum(intersect, planes):
+				if not Math.point_inside_frustum(intersect, planes):
 					continue
 				var segment = [intersect + f_normal, intersect - f_normal]
 				segment[0] = ai * segment[0]
@@ -345,65 +339,36 @@ func get_frustum_intersection(planes: Array, mode: int, camera: Camera3D) -> Arr
 
 func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Array:
 	var scan_results = []
+
+	var ai = parent.global_transform.affine_inverse()
+	var ai_origin = ai * origin
+	var ai_direction = (ai.basis * direction).normalized()
+
+	var ts = Time.get_ticks_usec()
+
 	if mode == SelectionMode.VERTEX:
-		for v in range(_ply_mesh.vertex_count()):
-			var pos = parent.global_transform * _ply_mesh.vertexes[v]
-			var dist = pos.distance_to(origin)
-			var hit = Geometry3D.segment_intersects_sphere(
-				origin, origin + direction * 1000, pos, sqrt(dist) / 32.0
-			)
-			if hit:
-				scan_results.push_back(["V", v, hit[0].distance_to(origin)])
+		editor.call_each_vertex(func(v):
+			var hit_dist = v.intersects_ray(ai_origin, ai_direction)
+			if hit_dist >= 0.0:
+				scan_results.push_back(["V", v.id(), hit_dist])
+		)
 
 	if mode == SelectionMode.EDGE:
-		for e in range(_ply_mesh.edge_count()):
-			var e_origin = parent.global_transform * _ply_mesh.edge_origin(e)
-			var e_destination = parent.global_transform * _ply_mesh.edge_destination(e)
-
-			var e_midpoint = (e_origin + e_destination) / 2.0
-			var dir = (e_destination - e_origin).normalized()
-			var dist = e_destination.distance_to(e_origin)
-
-			var b_z = dir.normalized()
-			var b_y = direction.cross(b_z).normalized()
-			var b_x = b_z.cross(b_y)
-			var t = Transform3D(Basis(b_x, b_y, b_z), e_midpoint).inverse()
-
-			var r_o = t * origin
-			var r_d = t.basis * direction
-			var hit = Geometry3D.segment_intersects_cylinder(
-				r_o, r_o + r_d * 1000.0, dist, sqrt(e_midpoint.distance_to(origin)) / 32.0
-			)
-			if hit:
-				var distance = origin.distance_to(t.affine_inverse() * hit[0])
-				scan_results.push_back(["E", e, distance])
+		editor.call_each_edge(func(e):
+			var hit_dist = e.intersects_ray(ai_origin, ai_direction)
+			if hit_dist >= 0.0:
+				scan_results.push_back(["E", e.id(), hit_dist])
+		)
 
 	if mode == SelectionMode.FACE:
-		var ai = parent.global_transform.affine_inverse()
-		var ai_origin = ai * origin
-		var ai_direction = ai.basis * direction.normalized()
-		for f in range(_ply_mesh.face_count()):
-			var ft = _ply_mesh.face_tris(f)
-			var verts = ft[0]
-			var tris = ft[1]
-			for tri in tris:
-				var hit = Geometry3D.segment_intersects_triangle(
-					ai_origin,
-					ai_origin + ai_direction * 1000.0,
-					verts[tri[0]][0],
-					verts[tri[1]][0],
-					verts[tri[2]][0]
-				)
-				if hit:
-					# offset faces that are facing away from the camera a bit, to select the correct face easier
-					var normal = (verts[tri[2]][0] - verts[tri[0]][0]).cross(verts[tri[1]][0] - verts[tri[0]][0]).normalized()
-					var mod = 0.0
-					if normal.dot(ai_direction) > 0:
-						mod = 0.01
-					var distance = ai_origin.distance_to(hit) + mod
-					scan_results.push_back(["F", f, distance, hit])
+		editor.call_each_face(func(f):
+			var hit_dist = f.intersects_ray(ai_origin, ai_direction)
+			if hit_dist >= 0.0:
+				scan_results.push_back(["F", f.id(), hit_dist])
+		)
 
 	scan_results.sort_custom(Callable(IntersectSorter, "sort_ascending"))
+	print("ray cast took ", Time.get_ticks_usec() - ts, "us")
 	return scan_results
 
 
