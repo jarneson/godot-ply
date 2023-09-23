@@ -71,8 +71,8 @@ class Vertex:
 			return hit[0].distance_to(origin)
 		return -1.0
 
-	func is_inside_frustum(planes: Array[Plane]) -> bool:
-		return Math.point_inside_frustum(position(), planes)
+	func is_inside_frustum(planes: Array[Plane], camera_position: Vector3) -> bool:
+		return Math.point_inside_frustum(position(), planes) and not _p.point_is_occluded_from(position(), camera_position)
 
 func call_each_vertex(fn: Callable) -> void:
 	for i in range(_pm.vertex_count()):
@@ -127,12 +127,16 @@ class Edge:
 			return dist
 		return -1
 
-	func is_inside_frustum(planes: Array[Plane]) -> bool:
-		if origin().is_inside_frustum(planes):
+	func is_inside_frustum(planes: Array[Plane], camera_position: Vector3) -> bool:
+		# TODO(hints): just checking points may select surprising edges that are occluded in practice,
+		# we could slide along the edge a small amount to see if it's occluded instead.
+		if origin().is_inside_frustum(planes, camera_position):
 			return true
-		if destination().is_inside_frustum(planes):
+		if destination().is_inside_frustum(planes, camera_position):
 			return true
-		if Geometry3D.segment_intersects_convex(origin().position(), destination().position(), planes):
+
+		var hit = Geometry3D.segment_intersects_convex(origin().position(), destination().position(), planes)
+		if hit and not _p.point_is_occluded_from(hit[0], camera_position):
 			return true
 		return false
 
@@ -209,9 +213,9 @@ class Face:
 					min_dist = dist
 		return min_dist
 
-	func is_inside_frustum(planes: Array[Plane]) -> bool:
+	func is_inside_frustum(planes: Array[Plane], camera_position: Vector3) -> bool:
 		for e in edges():
-			if e.is_inside_frustum(planes):
+			if e.is_inside_frustum(planes, camera_position):
 				return true
 
 		var f_normal = normal()
@@ -231,10 +235,11 @@ class Face:
 			if not Math.point_inside_frustum(intersect, planes):
 				return false
 			for i in range(0, f_tris.size(), 3):
-				if Geometry3D.segment_intersects_triangle(
+				var hit = Geometry3D.segment_intersects_triangle(
 					intersect + f_normal, intersect - f_normal,
 					f_tris[i], f_tris[i+1], f_tris[i+2]
-				):
+				)
+				if hit and not _p.point_is_occluded_from(hit, camera_position):
 					return true
 		return false
 
@@ -242,3 +247,17 @@ func call_each_face(fn: Callable) -> void:
 	for i in range(_pm.face_count()):
 		fn.call(get_face(i))
 
+
+func point_is_occluded_from(point: Vector3, from: Vector3) -> bool:
+	var distances = []
+	var ray = (point - from).normalized()
+	call_each_face(func(f):
+		var dist = f.intersects_ray(from, ray)
+		if dist >= 0.0:
+			distances.push_back(dist)
+	)
+	var target_dist = point.distance_to(from)
+	for d in distances:
+		if d - target_dist < -0.001:
+			return true
+	return false

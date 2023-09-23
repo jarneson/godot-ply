@@ -197,25 +197,26 @@ func get_frustum_intersection(planes: Array[Plane], mode: int, camera: Camera3D)
 	var scan_results = []
 	var ai = parent.global_transform.affine_inverse()
 	var ai_planes: Array[Plane] = []
+	var ai_camera_origin = ai * camera.global_transform.origin
 	ai_planes.resize(planes.size())
 	for i in  range(planes.size()):
 		ai_planes[i] = ai * planes[i]
 
 	if mode == SelectionMode.VERTEX:
 		editor.call_each_vertex(func(v):
-			if v.is_inside_frustum(ai_planes):
+			if v.is_inside_frustum(ai_planes, ai_camera_origin):
 				scan_results.push_back(["V", v.id()])
 		)
 
 	if mode == SelectionMode.EDGE:
 		editor.call_each_edge(func(e):
-			if e.is_inside_frustum(ai_planes):
+			if e.is_inside_frustum(ai_planes, ai_camera_origin):
 				scan_results.push_back(["E", e.id()])
 		)
 
 	if mode == SelectionMode.FACE:
 		editor.call_each_face(func(f):
-			if f.is_inside_frustum(ai_planes):
+			if f.is_inside_frustum(ai_planes, ai_camera_origin):
 				scan_results.push_back(["F", f.id()])
 		)
 
