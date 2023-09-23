@@ -127,12 +127,12 @@ class Edge:
 			return dist
 		return -1
 
+	# NOTE(hints): this fails to select correctly when the endpoints are occluded, but the edge is not entirely occluded.
 	func is_inside_frustum(planes: Array[Plane], camera_position: Vector3) -> bool:
-		# TODO(hints): just checking points may select surprising edges that are occluded in practice,
-		# we could slide along the edge a small amount to see if it's occluded instead.
-		if origin().is_inside_frustum(planes, camera_position):
+		# just checking endpoints can select edges that are entirely occluded visually, so also check they are not occluded slightly inwards on the edge
+		if origin().is_inside_frustum(planes, camera_position) and not _p.point_is_occluded_from(origin().position().lerp(destination().position(), 0.01), camera_position):
 			return true
-		if destination().is_inside_frustum(planes, camera_position):
+		if destination().is_inside_frustum(planes, camera_position) and not _p.point_is_occluded_from(destination().position().lerp(origin().position(), 0.01), camera_position):
 			return true
 
 		var hit = Geometry3D.segment_intersects_convex(origin().position(), destination().position(), planes)
@@ -219,6 +219,7 @@ class Face:
 
 	func is_inside_frustum(planes: Array[Plane], camera_position: Vector3) -> bool:
 		for e in edges():
+			# TODO(hints): this will incorrectly select faces that are entirely occluded by wrapping around edges
 			if e.is_inside_frustum(planes, camera_position):
 				return true
 
