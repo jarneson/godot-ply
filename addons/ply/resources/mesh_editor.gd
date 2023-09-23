@@ -71,8 +71,8 @@ class Vertex:
 			return hit[0].distance_to(origin)
 		return -1.0
 
-	func is_inside_frustum(planes: Array[Plane], camera_position: Vector3) -> bool:
-		return Math.point_inside_frustum(position(), planes) and not _p.point_is_occluded_from(position(), camera_position)
+	func is_inside_frustum(planes: Array[Plane], camera: Transform3D, projection: Camera3D.ProjectionType) -> bool:
+		return Math.point_inside_frustum(position(), planes) and not _p.point_is_occluded_from(position(), camera, projection)
 
 func call_each_vertex(fn: Callable) -> void:
 	for i in range(_pm.vertex_count()):
@@ -128,15 +128,15 @@ class Edge:
 		return -1
 
 	# NOTE(hints): this fails to select correctly when the endpoints are occluded, but the edge is not entirely occluded.
-	func is_inside_frustum(planes: Array[Plane], camera_position: Vector3) -> bool:
+	func is_inside_frustum(planes: Array[Plane], camera: Transform3D, projection: Camera3D.ProjectionType) -> bool:
 		# just checking endpoints can select edges that are entirely occluded visually, so also check they are not occluded slightly inwards on the edge
-		if origin().is_inside_frustum(planes, camera_position) and not _p.point_is_occluded_from(origin().position().lerp(destination().position(), 0.01), camera_position):
+		if origin().is_inside_frustum(planes, camera, projection) and not _p.point_is_occluded_from(origin().position().lerp(destination().position(), 0.01), camera, projection):
 			return true
-		if destination().is_inside_frustum(planes, camera_position) and not _p.point_is_occluded_from(destination().position().lerp(origin().position(), 0.01), camera_position):
+		if destination().is_inside_frustum(planes, camera, projection) and not _p.point_is_occluded_from(destination().position().lerp(origin().position(), 0.01), camera, projection):
 			return true
 
 		var hit = Geometry3D.segment_intersects_convex(origin().position(), destination().position(), planes)
-		if hit and not _p.point_is_occluded_from(hit[0], camera_position):
+		if hit and not _p.point_is_occluded_from(hit[0], camera, projection):
 			return true
 		return false
 
@@ -217,10 +217,10 @@ class Face:
 					min_dist = dist
 		return min_dist
 
-	func is_inside_frustum(planes: Array[Plane], camera_position: Vector3) -> bool:
+	func is_inside_frustum(planes: Array[Plane], camera: Transform3D, projection: Camera3D.ProjectionType) -> bool:
 		for e in edges():
 			# TODO(hints): this will incorrectly select faces that are entirely occluded by wrapping around edges
-			if e.is_inside_frustum(planes, camera_position):
+			if e.is_inside_frustum(planes, camera, projection):
 				return true
 
 		var f_normal = normal()
@@ -244,7 +244,7 @@ class Face:
 					intersect + f_normal, intersect - f_normal,
 					f_tris[i], f_tris[i+1], f_tris[i+2]
 				)
-				if hit and not _p.point_is_occluded_from(hit, camera_position):
+				if hit and not _p.point_is_occluded_from(hit, camera, projection):
 					return true
 		return false
 
@@ -273,9 +273,15 @@ func call_each_face(fn: Callable) -> void:
 	for i in range(_pm.face_count()):
 		fn.call(get_face(i))
 
-func point_is_occluded_from(point: Vector3, from: Vector3) -> bool:
+func point_is_occluded_from(point: Vector3, camera: Transform3D, projection: Camera3D.ProjectionType) -> bool:
 	var distances = [] # NOTE: it seems you can only close over references, so using array over primitive
+	var from = camera.origin
 	var ray = (point - from).normalized()
+
+	if projection == Camera3D.PROJECTION_ORTHOGONAL:
+		ray = camera.basis[2]
+		from = Plane(camera.basis[2], camera.origin).project(point)
+
 	var target_dist = point.distance_to(from)
 	call_each_face(func(f):
 		if distances.size() > 0:
