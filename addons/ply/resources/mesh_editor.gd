@@ -155,6 +155,7 @@ class Face:
 	var edges_memo: Array[Edge]
 	var verts_memo: Array[Vertex]
 	var tris_memo: PackedVector3Array
+	var aabb_memo: AABB
 
 	func id() -> int:
 		return _i
@@ -197,8 +198,11 @@ class Face:
 		return tris_memo
 
 	func intersects_ray(origin: Vector3, direction: Vector3) -> float:
-		var t = tris()
 		var min_dist = -1.0
+		if true:
+			if aabb().intersects_ray(origin, direction) == null:
+				return min_dist
+		var t = tris()
 		for i in range(0, t.size(), 3):
 			var hit = Geometry3D.segment_intersects_triangle(
 				origin,
@@ -242,6 +246,27 @@ class Face:
 				if hit and not _p.point_is_occluded_from(hit, camera_position):
 					return true
 		return false
+
+	func aabb() -> AABB:
+		if aabb_memo.size == Vector3.ZERO:
+			var verts = raw_vertices()
+			var from = verts[0]
+			var to = verts[0]
+			for v in verts:
+				if v.x < from.x:
+					from.x = v.x
+				if v.y < from.y:
+					from.y = v.y
+				if v.z < from.z:
+					from.z = v.z
+				if v.x > to.x:
+					to.x = v.x
+				if v.y > to.y:
+					to.y = v.y
+				if v.z > to.z:
+					to.z = v.z
+			aabb_memo = AABB(from, to - from)
+		return aabb_memo
 
 func call_each_face(fn: Callable) -> void:
 	for i in range(_pm.face_count()):
