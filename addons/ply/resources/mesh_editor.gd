@@ -71,6 +71,9 @@ class Vertex:
 			return hit[0].distance_to(origin)
 		return -1.0
 
+	func is_inside_frustum(planes: Array[Plane]) -> bool:
+		return Math.point_inside_frustum(position(), planes)
+
 func call_each_vertex(fn: Callable) -> void:
 	for i in range(_pm.vertex_count()):
 		fn.call(get_vertex(i))
@@ -123,6 +126,15 @@ class Edge:
 		if dist < sqrt(origin.distance_to(nearest[0])) / 32.0:
 			return dist
 		return -1
+
+	func is_inside_frustum(planes: Array[Plane]) -> bool:
+		if origin().is_inside_frustum(planes):
+			return true
+		if destination().is_inside_frustum(planes):
+			return true
+		if Geometry3D.segment_intersects_convex(origin().position(), destination().position(), planes):
+			return true
+		return false
 
 func call_each_edge(fn: Callable) -> void:
 	for i in range(_pm.edge_count()):
@@ -197,6 +209,36 @@ class Face:
 					min_dist = dist
 		return min_dist
 
+	func is_inside_frustum(planes: Array[Plane]) -> bool:
+		for e in edges():
+			if e.is_inside_frustum(planes):
+				return true
+
+		var f_normal = normal()
+		var f_plane = Plane(f_normal, edges()[0].origin().position())
+		var f_tris = tris()
+
+		var neighbor_planes = [
+			[planes[0], planes[1]],
+			[planes[1], planes[2]],
+			[planes[2], planes[3]],
+			[planes[3], planes[4]],
+		]
+		for np in neighbor_planes:
+			var intersect = f_plane.intersect_3(np[0], np[1])
+			if intersect == null:
+				return false
+			if not Math.point_inside_frustum(intersect, planes):
+				return false
+			for i in range(0, f_tris.size(), 3):
+				if Geometry3D.segment_intersects_triangle(
+					intersect + f_normal, intersect - f_normal,
+					f_tris[i], f_tris[i+1], f_tris[i+2]
+				):
+					return true
+		return false
+
 func call_each_face(fn: Callable) -> void:
 	for i in range(_pm.face_count()):
 		fn.call(get_face(i))
+
