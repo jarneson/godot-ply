@@ -251,13 +251,12 @@ func call_each_face(fn: Callable) -> void:
 func point_is_occluded_from(point: Vector3, from: Vector3) -> bool:
 	var distances = []
 	var ray = (point - from).normalized()
+	var target_dist = point.distance_to(from)
 	call_each_face(func(f):
+		if distances.size() > 0:
+			return
 		var dist = f.intersects_ray(from, ray)
-		if dist >= 0.0:
+		if dist >= 0.0 and dist - target_dist < -0.001:
 			distances.push_back(dist)
 	)
-	var target_dist = point.distance_to(from)
-	for d in distances:
-		if d - target_dist < -0.001:
-			return true
-	return false
+	return distances.size() > 0
