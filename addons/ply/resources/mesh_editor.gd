@@ -272,9 +272,8 @@ func call_each_face(fn: Callable) -> void:
 	for i in range(_pm.face_count()):
 		fn.call(get_face(i))
 
-
 func point_is_occluded_from(point: Vector3, from: Vector3) -> bool:
-	var distances = []
+	var distances = [] # NOTE: it seems you can only close over references, so using array over primitive
 	var ray = (point - from).normalized()
 	var target_dist = point.distance_to(from)
 	call_each_face(func(f):
