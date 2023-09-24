@@ -33,10 +33,10 @@ func vertex_count() -> int:
 	return v_memo.size()
 
 func edge_count() -> int:
-	return v_memo.size()
+	return e_memo.size()
 
 func face_count() -> int:
-	return v_memo.size()
+	return f_memo.size()
 
 func get_vertex(i: int) -> Vertex:
 	if v_memo[i] == null:
