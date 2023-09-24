@@ -6,7 +6,7 @@ extends MeshInstance3D
 var m = StandardMaterial3D.new()
 
 func _ready() -> void:
-	mesh = ImmediateMesh.new()
+	mesh = ArrayMesh.new()
 	m.albedo_color = Color.WHITE
 	# m.flags_no_depth_test = true # enable for xray
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -14,16 +14,30 @@ func _ready() -> void:
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 func _process(_delta) -> void:
+	var ts = Time.get_ticks_usec()
 	global_transform = editor.parent.global_transform
-	mesh.clear_surfaces()
 
-	mesh.surface_begin(Mesh.PRIMITIVE_LINES, m)
-	editor.editor.call_each_edge(func(e):
-		if editor.selected_edges.has(e.id()):
-			mesh.surface_set_color(Color.GREEN)
+	var vtxs = PackedVector3Array()
+	vtxs.resize(2 * editor.editor.edge_count())
+	var colors = PackedColorArray()
+	colors.resize(2 * editor.editor.edge_count())
+
+	for i in range(editor.editor.edge_count()):
+		var e = editor.editor.get_edge(i)
+		vtxs[2*i] = e.origin().position()
+		vtxs[2*i+1] = e.destination().position()
+		if editor.selected_edges.has(i):
+			colors[2*i] = Color.GREEN
+			colors[2*i+1] = Color.GREEN
 		else:
-			mesh.surface_set_color(Color.BLUE)
-		mesh.surface_add_vertex(e.origin().position())
-		mesh.surface_add_vertex(e.destination().position())
-	)
-	mesh.surface_end()
+			colors[2*i] = Color.BLUE
+			colors[2*i+1] = Color.BLUE
+
+	mesh.clear_surfaces()
+	var arrs = []
+	arrs.resize(Mesh.ARRAY_MAX)
+	arrs[Mesh.ARRAY_VERTEX] = vtxs
+	arrs[Mesh.ARRAY_COLOR] = colors
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_LINES, arrs)
+	mesh.surface_set_material(0, m)
+	print("update edges took ", Time.get_ticks_usec() - ts, "us")

@@ -29,6 +29,15 @@ func clear_memo():
 	f_memo = []
 	f_memo.resize(_pm.face_count())
 
+func vertex_count() -> int:
+	return v_memo.size()
+
+func edge_count() -> int:
+	return v_memo.size()
+
+func face_count() -> int:
+	return v_memo.size()
+
 func get_vertex(i: int) -> Vertex:
 	if v_memo[i] == null:
 		v_memo[i] = Vertex.new(self, i)

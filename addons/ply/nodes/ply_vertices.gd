@@ -6,7 +6,7 @@ extends MeshInstance3D
 var m = StandardMaterial3D.new()
 
 func _ready() -> void:
-	mesh = ImmediateMesh.new()
+	mesh = ArrayMesh.new()
 	m.albedo_color = Color.WHITE
 	m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	# m.flags_no_depth_test = true # enable for x-ray
@@ -17,14 +17,26 @@ func _ready() -> void:
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 func _process(_delta) -> void:
+	var ts = Time.get_ticks_usec()
 	global_transform = editor.parent.global_transform
-	mesh.clear_surfaces()
-	mesh.surface_begin(Mesh.PRIMITIVE_POINTS, m)
-	editor.editor.call_each_vertex(func(v):
-		if editor.selected_vertices.has(v.id()):
-			mesh.surface_set_color(Color.GREEN)
+
+	var vtxs = PackedVector3Array()
+	vtxs.resize(editor.editor.vertex_count())
+	var colors = PackedColorArray()
+	colors.resize(editor.editor.vertex_count())
+
+	for i in range(editor.editor.vertex_count()):
+		vtxs[i] = editor.editor.get_vertex(i).position()
+		if editor.selected_vertices.has(i):
+			colors[i] = Color.GREEN
 		else:
-			mesh.surface_set_color(Color.BLUE)
-		mesh.surface_add_vertex(v.position())
-	)
-	mesh.surface_end()
+			colors[i] = Color.BLUE
+
+	mesh.clear_surfaces()
+	var arrs = []
+	arrs.resize(Mesh.ARRAY_MAX)
+	arrs[Mesh.ARRAY_VERTEX] = vtxs
+	arrs[Mesh.ARRAY_COLOR] = colors
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_POINTS, arrs)
+	mesh.surface_set_material(0, m)
+	print("update verts took ", Time.get_ticks_usec() - ts, "us")
