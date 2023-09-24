@@ -329,31 +329,12 @@ func point_is_occluded_from(point: Vector3, camera: Transform3D, projection: Cam
 	var ray = (point - from).normalized()
 
 	if projection == Camera3D.PROJECTION_ORTHOGONAL:
-		ray = camera.basis[2]
+		ray = -camera.basis[2]
 		from = Plane(camera.basis[2], camera.origin).project(point)
 
-	var params = PhysicsRayQueryParameters3D.create(from, from + ray * 1000.0)
+	var params = PhysicsRayQueryParameters3D.create(from, from + ray * 10000.0)
 	var hit = ps.intersect_ray(params)
 	if hit.has("position"):
 		if hit["position"].distance_to(from) - point.distance_to(from) < -0.001:
 			return true
 	return false
-
-func point_is_occluded_from_old(point: Vector3, camera: Transform3D, projection: Camera3D.ProjectionType) -> bool:
-	var distances = [] # NOTE: it seems you can only close over references, so using array over primitive
-	var from = camera.origin
-	var ray = (point - from).normalized()
-
-	if projection == Camera3D.PROJECTION_ORTHOGONAL:
-		ray = camera.basis[2]
-		from = Plane(camera.basis[2], camera.origin).project(point)
-
-	var target_dist = point.distance_to(from)
-	call_each_face(func(f):
-		if distances.size() > 0:
-			return
-		var dist = f.intersects_ray(from, ray)
-		if dist >= 0.0 and dist - target_dist < -0.001:
-			distances.push_back(dist)
-	)
-	return distances.size() > 0

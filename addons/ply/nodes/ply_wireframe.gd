@@ -14,7 +14,6 @@ func _ready() -> void:
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 func _process(_delta) -> void:
-	var ts = Time.get_ticks_usec()
 	global_transform = editor.parent.global_transform
 
 	var vtxs = PackedVector3Array()
@@ -40,4 +39,3 @@ func _process(_delta) -> void:
 	arrs[Mesh.ARRAY_COLOR] = colors
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_LINES, arrs)
 	mesh.surface_set_material(0, m)
-	print("update edges took ", Time.get_ticks_usec() - ts, "us")
