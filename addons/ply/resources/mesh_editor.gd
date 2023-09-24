@@ -19,6 +19,7 @@ func _init(pm: PlyMesh):
 
 func _on_mesh_updated():
 	clear_memo()
+	reset_physics()
 
 func clear_memo():
 	v_memo = []
@@ -273,7 +274,63 @@ func call_each_face(fn: Callable) -> void:
 	for i in range(_pm.face_count()):
 		fn.call(get_face(i))
 
+#########################################
+# Occlusion
+#########################################
+
+var space_rid: RID
+var body_rid: RID
+var shape_rid: RID
+
+func reset_physics():
+	if space_rid.is_valid():
+		PhysicsServer3D.free_rid(body_rid)
+		PhysicsServer3D.free_rid(shape_rid)
+		PhysicsServer3D.free_rid(space_rid)
+		body_rid = RID()
+		shape_rid = RID()
+		space_rid = RID()
+
+func physics_space() -> PhysicsDirectSpaceState3D:
+	if not space_rid.is_valid():
+		space_rid = PhysicsServer3D.space_create()
+		body_rid = PhysicsServer3D.body_create()
+		print(PhysicsServer3D.body_get_mode(body_rid))
+		PhysicsServer3D.body_set_mode(body_rid, PhysicsServer3D.BODY_MODE_STATIC)
+
+		shape_rid = PhysicsServer3D.concave_polygon_shape_create()
+		var vtxs = PackedVector3Array()
+		call_each_face(func(f):
+			vtxs.append_array(f.tris())
+		)
+		print("set vtxs: ", vtxs.size())
+		PhysicsServer3D.shape_set_data(shape_rid, {
+			"faces": vtxs,
+		})
+		PhysicsServer3D.body_add_shape(body_rid, shape_rid)
+
+		PhysicsServer3D.body_set_space(body_rid, space_rid)
+		PhysicsServer3D.space_set_active(space_rid, true)
+	return PhysicsServer3D.space_get_direct_state(space_rid)
+
 func point_is_occluded_from(point: Vector3, camera: Transform3D, projection: Camera3D.ProjectionType) -> bool:
+	var ps = physics_space()
+
+	var from = camera.origin
+	var ray = (point - from).normalized()
+
+	if projection == Camera3D.PROJECTION_ORTHOGONAL:
+		ray = camera.basis[2]
+		from = Plane(camera.basis[2], camera.origin).project(point)
+
+	var params = PhysicsRayQueryParameters3D.create(from, from + ray * 1000.0)
+	var hit = ps.intersect_ray(params)
+	if hit.has("position"):
+		if hit["position"].distance_to(from) - point.distance_to(from) < -0.001:
+			return true
+	return false
+
+func point_is_occluded_from_old(point: Vector3, camera: Transform3D, projection: Camera3D.ProjectionType) -> bool:
 	var distances = [] # NOTE: it seems you can only close over references, so using array over primitive
 	var from = camera.origin
 	var ray = (point - from).normalized()
