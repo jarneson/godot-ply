@@ -56,14 +56,11 @@ const valid_classes = ["MeshInstance3D", "CSGMesh3D"]
 var _ply_mesh: PlyMesh
 var editor: PlyMeshEditor
 
-
 func set_materials(v) -> void:
 	materials = v
 	_paint_faces()
 
-
 @onready var parent = get_parent()
-
 
 func _ready() -> void:
 	if not Engine.is_editor_hint():
@@ -93,14 +90,12 @@ func _compute_materials() -> void:
 		res[0] = parent.material
 	materials = res
 
-
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
 		return
 
 	if _ply_mesh and not _ply_mesh.mesh_updated.is_connected(_on_mesh_updated):
 		_ply_mesh.mesh_updated.connect(_on_mesh_updated)
-
 
 func _exit_tree() -> void:
 	if not Engine.is_editor_hint():
@@ -110,10 +105,8 @@ func _exit_tree() -> void:
 	if _ply_mesh.mesh_updated.is_connected(_on_mesh_updated):
 		_ply_mesh.mesh_updated.disconnect(_on_mesh_updated)
 
-
 func _clear_parent() -> void:
 	parent.set(parent_property, ArrayMesh.new())
-
 
 func _paint_faces() -> void:
 	if parent is MeshInstance3D and parent.mesh:
@@ -124,7 +117,6 @@ func _paint_faces() -> void:
 
 	if parent is CSGMesh3D:
 		parent.material = materials[0]
-
 
 func _on_mesh_updated() -> void:
 	var remove = []
@@ -184,16 +176,13 @@ var _wireframe: Wireframe
 var _vertices: Vertices
 var _faces: Faces
 
-
 class IntersectSorter:
 	static func sort_ascending(a, b) -> bool:
 		if a[2] < b[2]:
 			return true
 		return false
 
-
 func get_frustum_intersection(planes: Array[Plane], mode: int, camera: Camera3D) -> Array:
-	var ts = Time.get_ticks_usec()
 	var scan_results = []
 	var ai = parent.global_transform.affine_inverse()
 
@@ -225,7 +214,6 @@ func get_frustum_intersection(planes: Array[Plane], mode: int, camera: Camera3D)
 				scan_results.push_back(["F", f.id()])
 		)
 
-	print("frustum took ", Time.get_ticks_usec() - ts, "us")
 	return scan_results
 
 func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Array:
@@ -234,8 +222,6 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 	var ai = parent.global_transform.affine_inverse()
 	var ai_origin = ai * origin
 	var ai_direction = (ai.basis * direction).normalized()
-
-	var ts = Time.get_ticks_usec()
 
 	if mode == SelectionMode.VERTEX:
 		editor.call_each_vertex(func(v):
@@ -259,14 +245,11 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 		)
 
 	scan_results.sort_custom(Callable(IntersectSorter, "sort_ascending"))
-	print("ray cast took ", Time.get_ticks_usec() - ts, "us")
 	return scan_results
-
 
 var selected_vertices: Array = []
 var selected_edges: Array = []
 var selected_faces: Array = []
-
 
 func select_geometry(hits: Array, toggle: bool) -> void:
 	if not toggle:
@@ -301,23 +284,18 @@ func select_geometry(hits: Array, toggle: bool) -> void:
 					selected_faces.push_back(h[1])
 	emit_signal("selection_changed")
 
-
 var _current_edit
-
 
 func begin_edit() -> void:
 	_current_edit = _ply_mesh.begin_edit()
-
 
 func commit_edit(name: String, undo_redo: EditorUndoRedoManager) -> void:
 	_ply_mesh.commit_edit(name, undo_redo, _current_edit)
 	_current_edit = null
 
-
 func abort_edit() -> void:
 	_ply_mesh.reject_edit(_current_edit)
 	_current_edit = null
-
 
 func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override = null):
 	if selected_vertices.size() == 0 and selected_edges.size() == 0 and selected_faces.size() == 0:
@@ -367,7 +345,6 @@ func get_selection_transform(gizmo_mode: int = GizmoMode.LOCAL, basis_override =
 		basis = basis_override
 	return Transform3D(basis.orthonormalized(), parent.global_transform * pos)
 
-
 func translate_selection(global_dir: Vector3) -> void:
 	if _current_edit == null:
 		return
@@ -377,7 +354,6 @@ func translate_selection(global_dir: Vector3) -> void:
 	_ply_mesh.transform_edges(selected_edges, Transform3D(Basis.IDENTITY, dir))
 	_ply_mesh.transform_vertexes(selected_vertices, Transform3D(Basis.IDENTITY, dir))
 	emit_signal("selection_mutated")
-
 
 func rotate_selection(axis: Vector3, rad: float) -> void:
 	if _current_edit == null:
@@ -390,7 +366,6 @@ func rotate_selection(axis: Vector3, rad: float) -> void:
 	_ply_mesh.transform_vertexes(selected_vertices, Transform3D(new_basis, Vector3.ZERO))
 	emit_signal("selection_mutated")
 
-
 func scale_selection_along_plane(plane_normal: Vector3, axes: Array, scale_factor: float) -> void:
 	if _current_edit == null:
 		return
@@ -402,7 +377,6 @@ func scale_selection_along_plane(plane_normal: Vector3, axes: Array, scale_facto
 	_ply_mesh.scale_edges(selected_edges, plane_normal, axes, scale_factor)
 	_ply_mesh.scale_vertices(selected_vertices, plane_normal, axes, scale_factor)
 	emit_signal("selection_mutated")
-
 
 func scale_selection_along_plane_normal(plane_normal: Vector3, scale_factor: float) -> void:
 	if _current_edit == null:
