@@ -1,5 +1,5 @@
-static func wing_clip(verts: PackedVector3Array) -> PackedVector3Array:
-	var out = PackedVector3Array()
+static func wing_clip_indices(verts: PackedVector3Array) -> PackedInt32Array:
+	var out = PackedInt32Array()
 	var remaining = []
 	remaining.resize(verts.size())
 	for i in range(verts.size()):
@@ -36,13 +36,21 @@ static func wing_clip(verts: PackedVector3Array) -> PackedVector3Array:
 		var next = curr + 1
 		if next >= remaining.size():
 			next = 0
-		out.push_back(verts[remaining[prev]])
-		out.push_back(verts[remaining[curr]])
-		out.push_back(verts[remaining[next]])
+		out.push_back(remaining[prev])
+		out.push_back(remaining[curr])
+		out.push_back(remaining[next])
 		remaining.remove_at(min_idx)
 	if remaining.size() == 3:
-		out.push_back(verts[remaining[0]])
-		out.push_back(verts[remaining[1]])
-		out.push_back(verts[remaining[2]])
+		out.push_back(remaining[0])
+		out.push_back(remaining[1])
+		out.push_back(remaining[2])
 
+	return out
+
+static func wing_clip(verts: PackedVector3Array) -> PackedVector3Array:
+	var indices = wing_clip_indices(verts)
+	var out = PackedVector3Array()
+	out.resize(indices.size())
+	for i in range(indices.size()):
+		out[i] = verts[indices[i]]
 	return out

@@ -283,6 +283,72 @@ func call_each_face(fn: Callable) -> void:
 	for i in range(_pm.face_count()):
 		fn.call(get_face(i))
 
+func render_face(st, f_idx, offset = Vector3.ZERO, num_verts = 0):
+	var f = get_face(f_idx)
+	var tris = f.tris()
+
+	var first_vert = tris[0]
+	var vert_dict = {}
+	for v in tris:
+		vert_dict[v] = true
+
+	var norm = f.normal()
+	var p = Plane(norm, first_vert)
+	
+	var y = norm
+	var x = (p.project(tris[1]) - p.project(tris[0])).normalized()
+	var z = y.cross(x)
+	var b = Basis(x,y,z)
+
+	var count = 0
+	for vtx in vert_dict:
+		var uv = b * (p.project(vtx) - p.project(first_vert))
+		if _pm.face_colors[f_idx] == Color.WHITE:
+			st.set_color(_pm.vertex_colors[0]) #TODO
+		else:
+			st.set_color(_pm.face_colors[f_idx])
+		st.set_uv(Vector2(uv.x, uv.z))
+		st.set_normal(norm)
+		st.add_vertex(vtx + offset)
+		vert_dict[vtx] = count
+		count += 1
+
+	for i in range(0, tris.size(), 3):
+		st.add_index(vert_dict[tris[i]] + num_verts)
+		st.add_index(vert_dict[tris[i+1]] + num_verts)
+		st.add_index(vert_dict[tris[i+2]] + num_verts)
+
+	return vert_dict.size()
+
+func get_mesh(mesh: Mesh = null) -> ArrayMesh:
+	var max_surface = 0
+	var surface_map = {}
+	for f_idx in range(_pm.face_surfaces.size()):
+		var s = _pm.face_surfaces[f_idx]
+		if surface_map.has(s):
+			surface_map[s].push_back(f_idx)
+		else:
+			if s > max_surface:
+				max_surface = s
+			surface_map[s] = [f_idx]
+	var surfaces = []
+	surfaces.resize(max_surface + 1)
+	if not mesh:
+		mesh = ArrayMesh.new()
+	mesh.clear_surfaces()
+	for s_idx in range(surfaces.size()):
+		var st = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+
+		if surface_map.has(s_idx):
+			var num_verts = 0
+			var faces = surface_map[s_idx]
+			for v in faces:
+				num_verts += render_face(st, v, Vector3.ZERO, num_verts)
+		surfaces[s_idx] = st.commit(mesh)
+	return mesh
+
+
 #########################################
 # Occlusion
 #########################################

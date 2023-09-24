@@ -141,7 +141,10 @@ func _on_mesh_updated() -> void:
 		var m = parent.get(parent_property)
 		if not m:
 			m = ArrayMesh.new()
+		var ts = Time.get_ticks_usec()
 		parent.set(parent_property, _ply_mesh.get_mesh(m))
+		# parent.set(parent_property, editor.get_mesh(m))
+		print("update mesh took ", Time.get_ticks_usec() - ts, "us")
 		if parent is MeshInstance3D:
 			var collision_shape = parent.get_node_or_null("StaticBody3D/CollisionShape3D")
 			if collision_shape:
