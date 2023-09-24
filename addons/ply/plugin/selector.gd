@@ -1,7 +1,7 @@
 @tool
 extends Object
 
-const Loop = preload("res://addons/ply/resources/loop.gd")
+const Loop = preload("res://addons/ply/tools/loop.gd")
 const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 
@@ -52,7 +52,7 @@ func _box_select(camera: Camera3D, v1: Vector2, v2: Vector2, additive: bool) -> 
 		camera.project_position(box2d[3], z_offset),
 	]
 	
-	var planes = []
+	var planes: Array[Plane] = []
 	for i in range(4):
 		var a = box3d[i]
 		var b = box3d[(i+1) % 4]

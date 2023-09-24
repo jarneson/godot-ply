@@ -1,6 +1,8 @@
 @tool
 extends MeshInstance3D
 
+const MeshTools = preload("res://addons/ply/utils/mesh.gd")
+
 @onready var editor = get_parent()
 
 var m = StandardMaterial3D.new()
@@ -20,21 +22,16 @@ func _process(_delta) -> void:
 	mesh.clear_surfaces()
 	if editor.selected_faces == null or editor.selected_faces.size() == 0:
 		return
-	if editor.ply_mesh.face_count():
-		mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, m)
-		for f in range(editor.ply_mesh.face_count()):
-			if not editor.selected_faces.has(f):
-				continue
-			var normal = editor.ply_mesh.face_normal(f)
-			var ft = editor.ply_mesh.face_tris(f)
-			var verts = ft[0]
-			var tris = ft[1]
-			if not tris.size():
-				continue
-			if verts.size() == 0:
-				continue
-			for tri in tris:
-				mesh.surface_add_vertex(verts[tri[0]][0] + normal * 0.001)
-				mesh.surface_add_vertex(verts[tri[1]][0] + normal * 0.001)
-				mesh.surface_add_vertex(verts[tri[2]][0] + normal * 0.001)
-		mesh.surface_end()
+	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, m)
+	
+	editor.editor.call_each_face(func(f):
+		if not editor.selected_faces.has(f.id()):
+			return
+		var normal = f.normal()
+		var tris = f.tris()
+		for i in range(0, tris.size(), 3):
+			mesh.surface_add_vertex(tris[i] + normal * 0.001)
+			mesh.surface_add_vertex(tris[i+1] + normal * 0.001)
+			mesh.surface_add_vertex(tris[i+2] + normal * 0.001)
+	)
+	mesh.surface_end()

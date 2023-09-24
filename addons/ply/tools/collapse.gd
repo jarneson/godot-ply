@@ -1,7 +1,8 @@
 const Side = preload("res://addons/ply/utils/direction.gd")
+const PlyMesh = preload("res://addons/ply/resources/ply_mesh.gd")
 
 
-static func edges(ply_mesh, edge_indices, undo_redo = null) -> bool:
+static func edges(ply_mesh: PlyMesh, edge_indices, undo_redo = null) -> bool:
 	var pre_edit
 	if undo_redo:
 		pre_edit = ply_mesh.begin_edit()
