@@ -217,20 +217,21 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 					start_rotate()
 					
 			if event.keycode == KEY_X:
-				if not event.shift_pressed:
-					axis = TransformAxis.X
-				else:
+				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
 					axis = TransformAxis.YZ
+				else:
+					axis = TransformAxis.X
 			if event.keycode == KEY_Y:
-				if not event.shift_pressed:
-					axis = TransformAxis.Y
-				else:
+				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
 					axis = TransformAxis.XZ
-			if event.keycode == KEY_Z:
-				if not event.shift_pressed:
-					axis = TransformAxis.Z
 				else:
+					axis = TransformAxis.Y
+			if event.keycode == KEY_Z:
+				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
 					axis = TransformAxis.XY
+				else:
+					axis = TransformAxis.Z
+					
 		_plugin.transform_gizmo.edit_axis = axis
 			
 		if event is InputEventMouseMotion:
