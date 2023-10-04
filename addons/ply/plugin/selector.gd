@@ -219,17 +219,17 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 			if event.keycode == KEY_X:
 				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
 					axis = TransformAxis.YZ
-				else:
+				elif not event.shift_pressed:
 					axis = TransformAxis.X
 			if event.keycode == KEY_Y:
 				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
 					axis = TransformAxis.XZ
-				else:
+				elif not event.shift_pressed:
 					axis = TransformAxis.Y
 			if event.keycode == KEY_Z:
 				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
 					axis = TransformAxis.XY
-				else:
+				elif not event.shift_pressed:
 					axis = TransformAxis.Z
 					
 		_plugin.transform_gizmo.edit_axis = axis
@@ -272,7 +272,7 @@ func draw_box_selection(overlay):
 
 func start_grab():
 	mode = _MODE.GSR
-	gsr_mode == _GSR_MODE.GRAB
+	gsr_mode = _GSR_MODE.GRAB
 	_plugin.transform_gizmo.in_edit = true
 	_plugin.transform_gizmo.edit_mode = TransformMode.TRANSLATE
 	axis = TransformAxis.XZ
@@ -280,7 +280,7 @@ func start_grab():
 	
 func start_rotate():
 	mode = _MODE.GSR
-	gsr_mode == _GSR_MODE.ROTATE
+	gsr_mode = _GSR_MODE.ROTATE
 	_plugin.transform_gizmo.in_edit = true
 	_plugin.transform_gizmo.edit_mode = TransformMode.ROTATE
 	axis = TransformAxis.Y
@@ -288,7 +288,7 @@ func start_rotate():
 	
 func start_scale():
 	mode = _MODE.GSR
-	gsr_mode == _GSR_MODE.SCALE
+	gsr_mode = _GSR_MODE.SCALE
 	_plugin.transform_gizmo.in_edit = true
 	_plugin.transform_gizmo.edit_mode = TransformMode.SCALE
 	axis = TransformAxis.XZ
