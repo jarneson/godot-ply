@@ -9,6 +9,23 @@ var _plugin: EditorPlugin
 
 var selection: PlyEditor
 
+enum _MODE {
+	NORMAL,
+	GSR,
+}
+
+enum _GSR_MODE {
+	GRAB, SCALE, ROTATE
+}
+
+var mode = _MODE.NORMAL
+var gsr_mode = _GSR_MODE.GRAB
+var gsr_apply = false
+
+enum TransformMode { NONE, TRANSLATE, ROTATE, SCALE, MAX }
+enum TransformAxis { X, Y, Z, YZ, XZ, XY, MAX }
+
+var axis = TransformAxis.XZ
 
 func _init(p: EditorPlugin):
 	_plugin = p
@@ -116,42 +133,108 @@ var in_edit: bool
 func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	if _plugin.ignore_inputs:
 		return false
-	if event is InputEventMouseButton:
-		match event.button_index:
-			MOUSE_BUTTON_LEFT:
-				if event.pressed:
-					if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
-						in_edit = true
+	if mode == _MODE.NORMAL:
+		if event is InputEventMouseButton:
+			match event.button_index:
+				MOUSE_BUTTON_LEFT:
+					if gsr_apply:
+						gsr_apply = false
 						return true
-					click_position = event.position
+					if event.pressed:
+						if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
+							in_edit = true
+							return true
+						click_position = event.position
+						drag_position = event.position
+						in_click = true
+						return true
+					else:
+						var was_in_click = in_click
+						in_click = false
+						if was_in_click and click_position.distance_to(drag_position) > 5:
+							_box_select(camera, click_position, drag_position, event.shift_pressed)
+							_plugin.update_overlays()
+							return true
+							
+						if in_edit:
+							in_edit = false
+							_plugin.transform_gizmo.end_edit()
+							return true
+						if _plugin.selection:
+							_scan_selection(camera, event)
+							return true
+				MOUSE_BUTTON_RIGHT:
+					in_edit = false
+					_plugin.transform_gizmo.abort_edit()
+		if event is InputEventMouseMotion:
+			if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+				var snap = 0.0
+				if in_click:
 					drag_position = event.position
-					in_click = true
+					_plugin.update_overlays()
 					return true
+				if event.ctrl_pressed:
+					match _plugin.transform_gizmo.edit_mode:
+						1:  # translate
+							snap = _plugin.snap_values.translate
+						2:  # rotate
+							snap = _plugin.snap_values.rotate  # to radians?
+						3:  # scale
+							snap = _plugin.snap_values.scale
+				_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
+			else:
+				_plugin.transform_gizmo.select(camera, event.position, true)
+				
+		gsr_apply = false
+		
+		if event is InputEventKey:
+			if event.keycode == KEY_G and event.pressed:
+				start_grab()
+			if event.keycode == KEY_R and event.pressed:
+				start_rotate()
+			if event.keycode == KEY_S and event.pressed:
+				start_scale()
+				
+	elif mode == _MODE.GSR:
+		in_edit = true
+		in_click = true
+		if event is InputEventKey and event.pressed:
+			if event.keycode == KEY_G:
+				if gsr_mode == _GSR_MODE.GRAB:
+					mode = _MODE.NORMAL
 				else:
-					var was_in_click = in_click
-					in_click = false
-					if was_in_click and click_position.distance_to(drag_position) > 5:
-						_box_select(camera, click_position, drag_position, event.shift_pressed)
-						_plugin.update_overlays()
-						return true
-						
-					if in_edit:
-						in_edit = false
-						_plugin.transform_gizmo.end_edit()
-						return true
-					if _plugin.selection:
-						_scan_selection(camera, event)
-						return true
-			MOUSE_BUTTON_RIGHT:
-				in_edit = false
-				_plugin.transform_gizmo.abort_edit()
-	if event is InputEventMouseMotion:
-		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+					start_grab()
+					
+			if event.keycode == KEY_S:
+				if gsr_mode == _GSR_MODE.SCALE:
+					mode = _MODE.NORMAL
+				else:
+					start_scale()
+			if event.keycode == KEY_R:
+				if gsr_mode == _GSR_MODE.ROTATE:
+					mode = _MODE.NORMAL
+				else:
+					start_rotate()
+					
+			if event.keycode == KEY_X:
+				if not event.shift_pressed:
+					axis = TransformAxis.X
+				else:
+					axis = TransformAxis.YZ
+			if event.keycode == KEY_Y:
+				if not event.shift_pressed:
+					axis = TransformAxis.Y
+				else:
+					axis = TransformAxis.XZ
+			if event.keycode == KEY_Z:
+				if not event.shift_pressed:
+					axis = TransformAxis.Z
+				else:
+					axis = TransformAxis.XY
+		_plugin.transform_gizmo.edit_axis = axis
+			
+		if event is InputEventMouseMotion:
 			var snap = 0.0
-			if in_click:
-				drag_position = event.position
-				_plugin.update_overlays()
-				return true
 			if event.ctrl_pressed:
 				match _plugin.transform_gizmo.edit_mode:
 					1:  # translate
@@ -161,11 +244,51 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 					3:  # scale
 						snap = _plugin.snap_values.scale
 			_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
-		else:
-			_plugin.transform_gizmo.select(camera, event.position, true)
+		if event is InputEventMouseButton:
+			if event.button_index == MOUSE_BUTTON_LEFT:
+				if event.pressed:
+					in_edit = false
+					in_click = false
+					_plugin.transform_gizmo.end_edit()
+					mode = _MODE.NORMAL
+					gsr_apply = true
+					_plugin.set_timer_ignore_input()
+				return true
+			elif event.button_index == MOUSE_BUTTON_RIGHT:
+				in_edit = false
+				in_click = false
+				_plugin.transform_gizmo.abort_edit()
+				mode = _MODE.NORMAL
+				_plugin.set_timer_ignore_input()
+				return true
+				
 	return false
 
 func draw_box_selection(overlay):
 	if in_click and click_position.distance_to(drag_position) > 5:
 		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.5, 0.5, 0.7, 0.3), true)
 		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.7, 0.7, 1.0, 1.0), false)
+
+func start_grab():
+	mode = _MODE.GSR
+	gsr_mode == _GSR_MODE.GRAB
+	_plugin.transform_gizmo.in_edit = true
+	_plugin.transform_gizmo.edit_mode = TransformMode.TRANSLATE
+	axis = TransformAxis.XZ
+	_plugin.selection.begin_edit()
+	
+func start_rotate():
+	mode = _MODE.GSR
+	gsr_mode == _GSR_MODE.ROTATE
+	_plugin.transform_gizmo.in_edit = true
+	_plugin.transform_gizmo.edit_mode = TransformMode.ROTATE
+	axis = TransformAxis.Y
+	_plugin.selection.begin_edit()
+	
+func start_scale():
+	mode = _MODE.GSR
+	gsr_mode == _GSR_MODE.SCALE
+	_plugin.transform_gizmo.in_edit = true
+	_plugin.transform_gizmo.edit_mode = TransformMode.SCALE
+	axis = TransformAxis.XZ
+	_plugin.selection.begin_edit()
