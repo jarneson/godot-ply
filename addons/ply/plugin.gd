@@ -109,15 +109,12 @@ func _forward_3d_gui_input(camera: Camera3D, event: InputEvent):
 	last_camera = camera
 	return selector.handle_input(camera, event)
 
-var timer_ignore_input = 0.0
 func _process(_delta) -> void:
 	if last_camera:
 		transform_gizmo.process()
-	timer_ignore_input = clamp(timer_ignore_input - _delta, -1.0, 1.0)
-	if timer_ignore_input > 0.0:
-		ignore_inputs = true
-	else:
-		ignore_inputs = false
+	
 	
 func set_timer_ignore_input():
-	timer_ignore_input = 0.1
+	ignore_inputs = true
+	await get_tree().create_timer(0.1).timeout
+	ignore_inputs = false
