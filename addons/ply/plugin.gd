@@ -14,6 +14,9 @@ const Settings = preload("res://addons/ply/settings.gd")
 
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 
+var vertexPainting_toolbar = load("res://addons/ply/gui/toolbar/vertex_painting_toolbar.tscn").instantiate()
+var vertexPainting_color_picker = load("res://addons/ply/gui/toolbar/vertex_painting_color_picker.tscn").instantiate()
+
 var editor_settings = get_editor_interface().get_editor_settings()
 var snap_values = {translate=1.0, rotate=15.0, scale=0.1}
 
@@ -55,11 +58,22 @@ func _enter_tree() -> void:
 	snap_values.translate = editor_settings.get_setting('editors/ply_gizmos/snap_increments/translate')
 	snap_values.rotate = editor_settings.get_setting('editors/ply_gizmos/snap_increments/rotate')
 	snap_values.scale = editor_settings.get_setting('editors/ply_gizmos/snap_increments/scale')
-
-
+	
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, vertexPainting_toolbar)
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_RIGHT, vertexPainting_color_picker)
+	
+	vertexPainting_toolbar.plugin = self
+	vertexPainting_color_picker.plugin = self
+	
+	vertexPainting_color_picker.hide()
+	
 func _exit_tree() -> void:
 	remove_custom_type("PlyInstance")
 	remove_custom_type("PlyEditor")
+	
+	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, vertexPainting_toolbar)
+	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_RIGHT, vertexPainting_color_picker)
+
 
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, toolbar)
 	remove_inspector_plugin(inspector)
@@ -112,9 +126,21 @@ func _forward_3d_gui_input(camera: Camera3D, event: InputEvent):
 func _process(_delta) -> void:
 	if last_camera:
 		transform_gizmo.process()
+		
+	selector._process(_delta)
 	
 	
 func set_timer_ignore_input():
 	ignore_inputs = true
 	await get_tree().create_timer(0.1).timeout
 	ignore_inputs = false
+
+func vertex_painting_activated(_par):
+	if _par:
+		toolbar.hide()
+		vertexPainting_color_picker.show()
+		selector.vertex_painting_start()
+	else:
+		toolbar.show()
+		vertexPainting_color_picker.hide()
+		selector.vertex_painting_end()

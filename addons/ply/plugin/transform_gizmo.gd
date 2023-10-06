@@ -778,7 +778,8 @@ func abort_edit() -> void:
 func process() -> void:
 	var basis_override = null
 	if in_edit:
-		basis_override = transform.basis
+		if transform:
+			basis_override = transform.basis
 	if _plugin.selection and _plugin.selection.has_method("get_selection_transform"):
 		transform = _plugin.selection.get_selection_transform(
 			_plugin.toolbar.gizmo_mode, basis_override

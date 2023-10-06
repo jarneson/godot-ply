@@ -12,6 +12,7 @@ var selection: PlyEditor
 enum _MODE {
 	NORMAL,
 	GSR,
+	VERTEX_PAINTING,
 }
 
 enum _GSR_MODE {
@@ -21,6 +22,11 @@ enum _GSR_MODE {
 var mode = _MODE.NORMAL
 var gsr_mode = _GSR_MODE.GRAB
 var gsr_apply = false
+
+var vertex_painting_operating = false
+var vertex_painting_timer = 0.0
+var vertex_painting_camera 
+var vertex_painting_event 
 
 enum TransformMode { NONE, TRANSLATE, ROTATE, SCALE, MAX }
 enum TransformAxis { X, Y, Z, YZ, XZ, XY, MAX }
@@ -173,14 +179,16 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 					drag_position = event.position
 					_plugin.update_overlays()
 					return true
+				
+				match _plugin.transform_gizmo.edit_mode:
+					1:  # translate
+						snap = _plugin.snap_values.translate
+					2:  # rotate
+						snap = _plugin.snap_values.rotate  # to radians?
+					3:  # scale
+						snap = _plugin.snap_values.scale
 				if event.ctrl_pressed:
-					match _plugin.transform_gizmo.edit_mode:
-						1:  # translate
-							snap = _plugin.snap_values.translate
-						2:  # rotate
-							snap = _plugin.snap_values.rotate  # to radians?
-						3:  # scale
-							snap = _plugin.snap_values.scale
+					snap = 0.0
 				_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
 			else:
 				_plugin.transform_gizmo.select(camera, event.position, true)
@@ -236,15 +244,17 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 			
 		if event is InputEventMouseMotion:
 			var snap = 0.0
+			match _plugin.transform_gizmo.edit_mode:
+				1:  # translate
+					snap = _plugin.snap_values.translate
+				2:  # rotate
+					snap = _plugin.snap_values.rotate  # to radians?
+				3:  # scale
+					snap = _plugin.snap_values.scale
 			if event.ctrl_pressed:
-				match _plugin.transform_gizmo.edit_mode:
-					1:  # translate
-						snap = _plugin.snap_values.translate
-					2:  # rotate
-						snap = _plugin.snap_values.rotate  # to radians?
-					3:  # scale
-						snap = _plugin.snap_values.scale
+				snap = 0.0
 			_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
+			
 		if event is InputEventMouseButton:
 			if event.button_index == MOUSE_BUTTON_LEFT:
 				if event.pressed:
@@ -262,7 +272,29 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 				mode = _MODE.NORMAL
 				_plugin.set_timer_ignore_input()
 				return true
-				
+	elif mode == _MODE.VERTEX_PAINTING:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			vertex_painting_camera  = camera
+			vertex_painting_event = event
+			if event.is_pressed():
+				_plugin.update_overlays()
+				_scan_selection(camera , event)
+				vertex_painting_operating = true
+				vertex_painting_timer = 0.0
+			if event.is_released():
+				vertex_painting_operating = false
+			return true
+					
+		if event is InputEventMouseMotion:
+			if vertex_painting_operating:
+				var position = camera.get_viewport().get_mouse_position()
+				var start = position + Vector2(-16,-16)
+				var end = position + Vector2(16,16)
+				_box_select(camera, start, end, false)
+				_plugin.update_overlays()
+				return true
+		
+		
 	return false
 
 func draw_box_selection(overlay):
@@ -293,3 +325,29 @@ func start_scale():
 	_plugin.transform_gizmo.edit_mode = TransformMode.SCALE
 	axis = TransformAxis.XZ
 	_plugin.selection.begin_edit()
+
+var toolbar_selection_mode_prev = SelectionMode.MESH
+func vertex_painting_start():
+	mode = _MODE.VERTEX_PAINTING
+	toolbar_selection_mode_prev = _plugin.toolbar.selection_mode
+	_plugin.toolbar.selection_mode = SelectionMode.VERTEX
+	
+func vertex_painting_end():
+	mode = _MODE.NORMAL
+	_plugin.toolbar.selection_mode = toolbar_selection_mode_prev
+
+func vertex_painting_try():
+	if _plugin.selection:
+		var mesh = _plugin.selection
+		var color = _plugin.vertexPainting_color_picker.get_color()
+		for idx in mesh.selected_vertices:
+			_plugin.selection.ply_mesh.set_vertex_color(idx, color)
+			
+		_plugin.selection.ply_mesh.emit_change_signal()
+		vertex_painting_timer = 0.1
+	
+func _process(_delta):
+	if vertex_painting_operating:
+		vertex_painting_timer -= _delta
+		if vertex_painting_timer <= 0.0:
+			vertex_painting_try()

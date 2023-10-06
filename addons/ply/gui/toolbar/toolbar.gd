@@ -27,9 +27,9 @@ var plugin: EditorPlugin
 @onready var selection_edge = $Scroll/Content/Edge
 @onready var selection_vertex = $Scroll/Content/Vertex
 
-@onready var gizmo_global = $Scroll/Content/Global
-@onready var gizmo_local = $Scroll/Content/Local
-@onready var gizmo_normal = $Scroll/Content/Normal
+@onready var gizmo_global = $Scroll/Content/HBoxContainer/Global
+@onready var gizmo_local = $Scroll/Content/HBoxContainer/Local
+@onready var gizmo_normal = $Scroll/Content/HBoxContainer/Normal
 
 @onready var mesh_tools = $Scroll/Content/MeshTools
 @onready var mesh_subdivide = $Scroll/Content/MeshTools/Subdivide
@@ -574,3 +574,4 @@ func _on_vertex_color_changed(color: Color):
 	for v_idx in plugin.selection.selected_vertices:
 		plugin.selection.ply_mesh.set_vertex_color(v_idx, color)
 	plugin.selection.ply_mesh.emit_change_signal()
+
