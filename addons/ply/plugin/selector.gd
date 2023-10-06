@@ -174,21 +174,12 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 					_plugin.transform_gizmo.abort_edit()
 		if event is InputEventMouseMotion:
 			if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
-				var snap = 0.0
+				
 				if in_click:
 					drag_position = event.position
 					_plugin.update_overlays()
 					return true
-				
-				match _plugin.transform_gizmo.edit_mode:
-					1:  # translate
-						snap = _plugin.snap_values.translate
-					2:  # rotate
-						snap = _plugin.snap_values.rotate  # to radians?
-					3:  # scale
-						snap = _plugin.snap_values.scale
-				if event.ctrl_pressed:
-					snap = 0.0
+				var snap = get_snap(event)
 				_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
 			else:
 				_plugin.transform_gizmo.select(camera, event.position, true)
@@ -243,16 +234,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 		_plugin.transform_gizmo.edit_axis = axis
 			
 		if event is InputEventMouseMotion:
-			var snap = 0.0
-			match _plugin.transform_gizmo.edit_mode:
-				1:  # translate
-					snap = _plugin.snap_values.translate
-				2:  # rotate
-					snap = _plugin.snap_values.rotate  # to radians?
-				3:  # scale
-					snap = _plugin.snap_values.scale
-			if event.ctrl_pressed:
-				snap = 0.0
+			var snap = get_snap(event)
 			_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
 			
 		if event is InputEventMouseButton:
@@ -351,3 +333,29 @@ func _process(_delta):
 		vertex_painting_timer -= _delta
 		if vertex_painting_timer <= 0.0:
 			vertex_painting_try()
+
+func get_snap(event):
+	var snap = 0.0
+	if _plugin.snap: #snap is activated
+		match _plugin.transform_gizmo.edit_mode:
+			1:  # translate
+				snap = _plugin.snap_values.translate
+			2:  # rotate
+				snap = _plugin.snap_values.rotate  # to radians?
+			3:  # scale
+				snap = _plugin.snap_values.scale
+		if event.ctrl_pressed:
+			snap = 0.0
+	else:
+		#snap is inactive
+		if event.ctrl_pressed:
+			match _plugin.transform_gizmo.edit_mode:
+				1:  # translate
+					snap = _plugin.snap_values.translate
+				2:  # rotate
+					snap = _plugin.snap_values.rotate  # to radians?
+				3:  # scale
+					snap = _plugin.snap_values.scale
+		else:
+			snap = 0.0
+	return snap

@@ -19,6 +19,7 @@ var vertexPainting_color_picker = load("res://addons/ply/gui/toolbar/vertex_pain
 
 var editor_settings = get_editor_interface().get_editor_settings()
 var snap_values = {translate=1.0, rotate=15.0, scale=0.1}
+var snap := false
 
 func _get_plugin_name() -> String:
 	return "Ply"
@@ -144,3 +145,6 @@ func vertex_painting_activated(_par):
 		toolbar.show()
 		vertexPainting_color_picker.hide()
 		selector.vertex_painting_end()
+
+func set_snap(val):
+	snap = val
