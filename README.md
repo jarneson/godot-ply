@@ -116,12 +116,3 @@ Given this representation, a few limitations occur that are representable in oth
 Feel free to contribute! Both issues and pull requests are very welcome.
 
 Feel free to contact me on the [godot discord server](https://discord.gg/4JBkykG), where my name is `hints`
-
-
-## Edit by me, BabyPandaBear3
-These are several change I made to this great plugin
-
-- This adds GSR shortcut to grab scale and rotate like in Blender
-- Change default mode to snap, and hold control to disable snap
-- Add Vertex Color Painting
-- Add Face Color paint on Face Toolbar menu
