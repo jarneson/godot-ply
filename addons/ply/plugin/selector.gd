@@ -4,32 +4,23 @@ extends Object
 const Loop = preload("res://addons/ply/tools/loop.gd")
 const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
+const OperationMode = preload("res://addons/ply/utils/operation_mode.gd")
+const GsrMode = preload("res://addons/ply/utils/gsr_mode.gd")
+const TransformAxis = preload("res://addons/ply/utils/transform_axis.gd")
+const TransformMode = preload("res://addons/ply/utils/transform_mode.gd")
 
 var _plugin: EditorPlugin
-
+var _vertex_painting_toolbar : Vertex_Painting_Toolbar
 var selection: PlyEditor
 
-enum _MODE {
-	NORMAL,
-	GSR,
-	VERTEX_PAINTING,
-}
-
-enum _GSR_MODE {
-	GRAB, SCALE, ROTATE
-}
-
-var mode = _MODE.NORMAL
-var gsr_mode = _GSR_MODE.GRAB
-var gsr_apply = false
+var mode = OperationMode.NORMAL
+var gsr_mode = GsrMode.GRAB
+var gsr_applied = false
 
 var vertex_painting_operating = false
 var vertex_painting_timer = 0.0
 var vertex_painting_camera 
 var vertex_painting_event 
-
-enum TransformMode { NONE, TRANSLATE, ROTATE, SCALE, MAX }
-enum TransformAxis { X, Y, Z, YZ, XZ, XY, MAX }
 
 var axis = TransformAxis.XZ
 
@@ -139,144 +130,149 @@ var in_edit: bool
 func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	if _plugin.ignore_inputs:
 		return false
-	if mode == _MODE.NORMAL:
-		if event is InputEventMouseButton:
-			match event.button_index:
-				MOUSE_BUTTON_LEFT:
-					if gsr_apply:
-						gsr_apply = false
-						return true
-					if event.pressed:
-						if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
-							in_edit = true
+	match mode:
+		OperationMode.NORMAL:
+			if gsr_applied:
+				gsr_applied = false
+				return true
+			if event is InputEventMouseButton:
+				match event.button_index:
+					MOUSE_BUTTON_LEFT:
+						if event.pressed:
+							if not event.shift_pressed and _plugin.transform_gizmo.select(camera, event.position):
+								in_edit = true
+								return true
+							click_position = event.position
+							drag_position = event.position
+							in_click = true
 							return true
-						click_position = event.position
+						else:
+							var was_in_click = in_click
+							in_click = false
+							if was_in_click and click_position.distance_to(drag_position) > 5:
+								_box_select(camera, click_position, drag_position, event.shift_pressed)
+								_plugin.update_overlays()
+								return true
+								
+							if in_edit:
+								in_edit = false
+								_plugin.transform_gizmo.end_edit()
+								return true
+							if _plugin.selection:
+								_scan_selection(camera, event)
+								return true
+					MOUSE_BUTTON_RIGHT:
+						in_edit = false
+						_plugin.transform_gizmo.abort_edit()
+			if event is InputEventMouseMotion:
+				if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+					
+					if in_click:
 						drag_position = event.position
-						in_click = true
+						_plugin.update_overlays()
 						return true
+					var snap = get_snap(event)
+					_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
+				else:
+					_plugin.transform_gizmo.select(camera, event.position, true)
+			
+			if event is InputEventKey:
+				if event.keycode == KEY_G and event.pressed:
+					start_grab()
+				if event.keycode == KEY_R and event.pressed:
+					start_rotate()
+				if event.keycode == KEY_S and event.pressed and not event.ctrl_pressed:
+					start_scale()
+					
+		OperationMode.GSR:
+			#in_edit = true
+			#in_click = true
+			if event is InputEventKey and event.pressed:
+				if event.keycode == KEY_G:
+					if gsr_mode == GsrMode.GRAB:
+						mode = OperationMode.NORMAL
 					else:
-						var was_in_click = in_click
-						in_click = false
-						if was_in_click and click_position.distance_to(drag_position) > 5:
-							_box_select(camera, click_position, drag_position, event.shift_pressed)
-							_plugin.update_overlays()
-							return true
-							
-						if in_edit:
-							in_edit = false
-							_plugin.transform_gizmo.end_edit()
-							return true
-						if _plugin.selection:
-							_scan_selection(camera, event)
-							return true
-				MOUSE_BUTTON_RIGHT:
-					in_edit = false
-					_plugin.transform_gizmo.abort_edit()
-		if event is InputEventMouseMotion:
-			if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+						start_grab()
+						
+				if event.keycode == KEY_S:
+					if gsr_mode == GsrMode.SCALE:
+						mode = OperationMode.NORMAL
+					else:
+						start_scale()
+				if event.keycode == KEY_R:
+					if gsr_mode == GsrMode.ROTATE:
+						mode = OperationMode.NORMAL
+					else:
+						start_rotate()
+						
+				if event.keycode == KEY_X:
+					if event.shift_pressed and gsr_mode != GsrMode.ROTATE:
+						axis = TransformAxis.YZ
+					elif not event.shift_pressed:
+						axis = TransformAxis.X
+				if event.keycode == KEY_Y:
+					if event.shift_pressed and gsr_mode != GsrMode.ROTATE:
+						axis = TransformAxis.XZ
+					elif not event.shift_pressed:
+						axis = TransformAxis.Y
+				if event.keycode == KEY_Z:
+					if event.shift_pressed and gsr_mode != GsrMode.ROTATE:
+						axis = TransformAxis.XY
+					elif not event.shift_pressed:
+						axis = TransformAxis.Z
+						
+			_plugin.transform_gizmo.edit_axis = axis
 				
-				if in_click:
-					drag_position = event.position
-					_plugin.update_overlays()
-					return true
+			if event is InputEventMouseMotion:
 				var snap = get_snap(event)
 				_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
-			else:
-				_plugin.transform_gizmo.select(camera, event.position, true)
 				
-		gsr_apply = false
-		
-		if event is InputEventKey:
-			if event.keycode == KEY_G and event.pressed:
-				start_grab()
-			if event.keycode == KEY_R and event.pressed:
-				start_rotate()
-			if event.keycode == KEY_S and event.pressed:
-				start_scale()
-				
-	elif mode == _MODE.GSR:
-		in_edit = true
-		in_click = true
-		if event is InputEventKey and event.pressed:
-			if event.keycode == KEY_G:
-				if gsr_mode == _GSR_MODE.GRAB:
-					mode = _MODE.NORMAL
-				else:
-					start_grab()
-					
-			if event.keycode == KEY_S:
-				if gsr_mode == _GSR_MODE.SCALE:
-					mode = _MODE.NORMAL
-				else:
-					start_scale()
-			if event.keycode == KEY_R:
-				if gsr_mode == _GSR_MODE.ROTATE:
-					mode = _MODE.NORMAL
-				else:
-					start_rotate()
-					
-			if event.keycode == KEY_X:
-				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
-					axis = TransformAxis.YZ
-				elif not event.shift_pressed:
-					axis = TransformAxis.X
-			if event.keycode == KEY_Y:
-				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
-					axis = TransformAxis.XZ
-				elif not event.shift_pressed:
-					axis = TransformAxis.Y
-			if event.keycode == KEY_Z:
-				if event.shift_pressed and gsr_mode != _GSR_MODE.ROTATE:
-					axis = TransformAxis.XY
-				elif not event.shift_pressed:
-					axis = TransformAxis.Z
-					
-		_plugin.transform_gizmo.edit_axis = axis
-			
-		if event is InputEventMouseMotion:
-			var snap = get_snap(event)
-			_plugin.transform_gizmo.compute_edit(camera, event.position, snap)
-			
-		if event is InputEventMouseButton:
-			if event.button_index == MOUSE_BUTTON_LEFT:
-				if event.pressed:
+			if event is InputEventMouseButton:
+				if event.button_index == MOUSE_BUTTON_LEFT:
+					if event.pressed:
+						in_edit = false
+						in_click = false
+						_plugin.transform_gizmo.end_edit()
+						mode = OperationMode.NORMAL
+						_plugin.set_timer_ignore_input()
+						gsr_applied = true
+					return true
+				elif event.button_index == MOUSE_BUTTON_RIGHT:
 					in_edit = false
 					in_click = false
-					_plugin.transform_gizmo.end_edit()
-					mode = _MODE.NORMAL
-					gsr_apply = true
+					_plugin.transform_gizmo.abort_edit()
+					mode = OperationMode.NORMAL
 					_plugin.set_timer_ignore_input()
-				return true
-			elif event.button_index == MOUSE_BUTTON_RIGHT:
-				in_edit = false
-				in_click = false
-				_plugin.transform_gizmo.abort_edit()
-				mode = _MODE.NORMAL
-				_plugin.set_timer_ignore_input()
-				return true
-	elif mode == _MODE.VERTEX_PAINTING:
-		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-			vertex_painting_camera  = camera
-			vertex_painting_event = event
-			if event.is_pressed():
-				_plugin.update_overlays()
-				_scan_selection(camera , event)
-				vertex_painting_operating = true
-				vertex_painting_timer = 0.0
-			if event.is_released():
-				vertex_painting_operating = false
-			return true
+					gsr_applied = true
+					return true
 					
-		if event is InputEventMouseMotion:
+		OperationMode.VERTEX_PAINTING:
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+				if event.is_pressed():
+					#_plugin.update_overlays()
+					#_scan_selection(camera , event)
+					vertex_painting_operating = true
+					in_click = true
+				if event.is_released():
+					vertex_painting_operating = false
+					in_click = false
+				return true
+						
+			if event is InputEventMouseMotion:
+				if not vertex_painting_operating and in_click:
+					vertex_painting_operating = true
+					
 			if vertex_painting_operating:
 				var position = camera.get_viewport().get_mouse_position()
 				var start = position + Vector2(-16,-16)
 				var end = position + Vector2(16,16)
 				_box_select(camera, start, end, false)
 				_plugin.update_overlays()
+				vertex_painting_try()
+				vertex_painting_operating = false
+				_plugin.set_timer_ignore_input()
 				return true
-		
-		
+			
 	return false
 
 func draw_box_selection(overlay):
@@ -285,24 +281,24 @@ func draw_box_selection(overlay):
 		overlay.draw_rect(Rect2(click_position, drag_position-click_position), Color(0.7, 0.7, 1.0, 1.0), false)
 
 func start_grab():
-	mode = _MODE.GSR
-	gsr_mode = _GSR_MODE.GRAB
+	mode = OperationMode.GSR
+	gsr_mode = GsrMode.GRAB
 	_plugin.transform_gizmo.in_edit = true
 	_plugin.transform_gizmo.edit_mode = TransformMode.TRANSLATE
 	axis = TransformAxis.XZ
 	_plugin.selection.begin_edit()
 	
 func start_rotate():
-	mode = _MODE.GSR
-	gsr_mode = _GSR_MODE.ROTATE
+	mode = OperationMode.GSR
+	gsr_mode = GsrMode.ROTATE
 	_plugin.transform_gizmo.in_edit = true
 	_plugin.transform_gizmo.edit_mode = TransformMode.ROTATE
 	axis = TransformAxis.Y
 	_plugin.selection.begin_edit()
 	
 func start_scale():
-	mode = _MODE.GSR
-	gsr_mode = _GSR_MODE.SCALE
+	mode = OperationMode.GSR
+	gsr_mode = GsrMode.SCALE
 	_plugin.transform_gizmo.in_edit = true
 	_plugin.transform_gizmo.edit_mode = TransformMode.SCALE
 	axis = TransformAxis.XZ
@@ -310,12 +306,12 @@ func start_scale():
 
 var toolbar_selection_mode_prev = SelectionMode.MESH
 func vertex_painting_start():
-	mode = _MODE.VERTEX_PAINTING
+	mode = OperationMode.VERTEX_PAINTING
 	toolbar_selection_mode_prev = _plugin.toolbar.selection_mode
 	_plugin.toolbar.selection_mode = SelectionMode.VERTEX
 	
 func vertex_painting_end():
-	mode = _MODE.NORMAL
+	mode = OperationMode.NORMAL
 	_plugin.toolbar.selection_mode = toolbar_selection_mode_prev
 
 func vertex_painting_try():
@@ -326,17 +322,10 @@ func vertex_painting_try():
 			_plugin.selection.ply_mesh.set_vertex_color(idx, color)
 			
 		_plugin.selection.ply_mesh.emit_change_signal()
-		vertex_painting_timer = 0.1
-	
-func _process(_delta):
-	if vertex_painting_operating:
-		vertex_painting_timer -= _delta
-		if vertex_painting_timer <= 0.0:
-			vertex_painting_try()
 
 func get_snap(event):
 	var snap = 0.0
-	if _plugin.snap: #snap is activated
+	if _vertex_painting_toolbar.snap_enabled(): #snap is activated
 		match _plugin.transform_gizmo.edit_mode:
 			1:  # translate
 				snap = _plugin.snap_values.translate

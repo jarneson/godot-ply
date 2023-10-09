@@ -63,9 +63,8 @@ func _enter_tree() -> void:
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, vertexPainting_toolbar)
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_RIGHT, vertexPainting_color_picker)
 	
-	vertexPainting_toolbar.plugin = self
-	vertexPainting_color_picker.plugin = self
-	
+	vertexPainting_toolbar._plugin = self
+	selector._vertex_painting_toolbar = vertexPainting_toolbar
 	vertexPainting_color_picker.hide()
 	
 func _exit_tree() -> void:
@@ -127,8 +126,6 @@ func _forward_3d_gui_input(camera: Camera3D, event: InputEvent):
 func _process(_delta) -> void:
 	if last_camera:
 		transform_gizmo.process()
-		
-	selector._process(_delta)
 	
 	
 func set_timer_ignore_input():

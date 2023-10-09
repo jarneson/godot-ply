@@ -24,6 +24,8 @@ extends Object
 # SOFTWARE.
 #
 # -- Godot Engine <https://godotengine.org>
+const TransformAxis = preload("res://addons/ply/utils/transform_axis.gd")
+const TransformMode = preload("res://addons/ply/utils/transform_mode.gd")
 
 const GIZMO_CIRCLE_SIZE = 1.1
 const GIZMO_ARROW_OFFSET = GIZMO_CIRCLE_SIZE + 0.3
@@ -566,8 +568,6 @@ func select(camera: Camera3D, screen_position: Vector2, only_highlight: bool = f
 	return false
 
 
-enum TransformAxis { X, Y, Z, YZ, XZ, XY, MAX }
-enum TransformMode { NONE, TRANSLATE, ROTATE, SCALE, MAX }
 var edit_mode: int = TransformMode.NONE
 var edit_plane: bool = false
 var edit_axis: int = TransformAxis.X
