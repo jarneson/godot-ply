@@ -364,6 +364,15 @@ func try_select_all():
 				arr_data.append(i)
 				arr.append(arr_data)
 			_plugin.selection.select_geometry(arr, false)
+		SelectionMode.EDGE:
+			var arr = []
+			for i in _plugin.selection.ply_mesh.edge_count():
+				var arr_data = []
+				arr_data.append("E")
+				arr_data.append(i)
+				arr.append(arr_data)
+			_plugin.selection.select_geometry(arr, false)
+			
 		SelectionMode.VERTEX:
 			var arr = []
 			for i in _plugin.selection.ply_mesh.vertex_count():
@@ -372,3 +381,5 @@ func try_select_all():
 				arr_data.append(i)
 				arr.append(arr_data)
 			_plugin.selection.select_geometry(arr, false)
+			
+			
