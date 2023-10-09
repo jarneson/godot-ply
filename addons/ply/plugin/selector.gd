@@ -176,17 +176,20 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 				else:
 					_plugin.transform_gizmo.select(camera, event.position, true)
 			
-			if event is InputEventKey:
-				if event.keycode == KEY_G and event.pressed:
+			if event is InputEventKey and event.pressed:
+				if event.keycode == KEY_G:
 					start_grab()
-				if event.keycode == KEY_R and event.pressed:
+				if event.keycode == KEY_R:
 					start_rotate()
-				if event.keycode == KEY_S and event.pressed and not event.ctrl_pressed:
+				if event.keycode == KEY_S and not event.ctrl_pressed:
 					start_scale()
+				if event.keycode == KEY_A:
+					if not event.alt_pressed:
+						try_select_all()
+					else:
+						_plugin.selection.select_geometry([], false)
 					
 		OperationMode.GSR:
-			#in_edit = true
-			#in_click = true
 			if event is InputEventKey and event.pressed:
 				if event.keycode == KEY_G:
 					if gsr_mode == GsrMode.GRAB:
@@ -194,7 +197,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 					else:
 						start_grab()
 						
-				if event.keycode == KEY_S:
+				if event.keycode == KEY_S and not event.ctrl_pressed:
 					if gsr_mode == GsrMode.SCALE:
 						mode = OperationMode.NORMAL
 					else:
@@ -215,7 +218,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 						axis = TransformAxis.XZ
 					elif not event.shift_pressed:
 						axis = TransformAxis.Y
-				if event.keycode == KEY_Z:
+				if event.keycode == KEY_Z  and not event.ctrl_pressed:
 					if event.shift_pressed and gsr_mode != GsrMode.ROTATE:
 						axis = TransformAxis.XY
 					elif not event.shift_pressed:
@@ -249,8 +252,6 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 		OperationMode.VERTEX_PAINTING:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 				if event.is_pressed():
-					#_plugin.update_overlays()
-					#_scan_selection(camera , event)
 					vertex_painting_operating = true
 					in_click = true
 				if event.is_released():
@@ -348,3 +349,26 @@ func get_snap(event):
 		else:
 			snap = 0.0
 	return snap
+
+func try_select_all():
+	if not _plugin.toolbar:
+		return
+	var selection_mode = _plugin.toolbar.selection_mode
+	match selection_mode :
+		SelectionMode.FACE:
+			var arr = []
+			#for i in _plugin.selection.ply_mesh.vertex_count():
+			for i in range(_plugin.selection.ply_mesh.face_surfaces.size()):
+				var arr_data = []
+				arr_data.append("F")
+				arr_data.append(i)
+				arr.append(arr_data)
+			_plugin.selection.select_geometry(arr, false)
+		SelectionMode.VERTEX:
+			var arr = []
+			for i in _plugin.selection.ply_mesh.vertex_count():
+				var arr_data = []
+				arr_data.append("V")
+				arr_data.append(i)
+				arr.append(arr_data)
+			_plugin.selection.select_geometry(arr, false)

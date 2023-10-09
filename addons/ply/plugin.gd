@@ -142,6 +142,3 @@ func vertex_painting_activated(_par):
 		toolbar.show()
 		vertexPainting_color_picker.hide()
 		selector.vertex_painting_end()
-
-func set_snap(val):
-	snap = val
