@@ -86,10 +86,14 @@ func _box_select(camera: Camera3D, v1: Vector2, v2: Vector2, additive: bool) -> 
 
 func _scan_selection(camera: Camera3D, event: InputEventMouseButton) -> void:
 	var ray = camera.project_ray_normal(event.position)
-	var ray_pos = camera.project_ray_origin(event.position)
+	var ray_pos = _intersect_with_plane(camera, event.position, camera.global_transform.origin + (-camera.global_transform.basis.z * 0.1) , camera.global_transform.basis.z) 
+	var raydist = ray_pos.distance_to(_plugin.selected_node_parent.global_position)
+	if raydist > 100:
+		ray_pos += camera.global_transform.basis.z * (-raydist * 0.9)
+	ray_pos -= _plugin.selected_node_parent.global_position
 	var selection_mode = _plugin.toolbar.selection_mode
-
 	var hits = _plugin.selection.get_ray_intersection(ray_pos, ray, selection_mode)
+	
 	var deselect = true
 	if hits.size() > 0:
 		deselect = false
@@ -130,6 +134,7 @@ var in_edit: bool
 func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 	if _plugin.ignore_inputs:
 		return false
+	
 	match mode:
 		OperationMode.NORMAL:
 			if gsr_applied:
@@ -188,6 +193,8 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 						try_select_all()
 					else:
 						_plugin.selection.select_geometry([], false)
+				#if event.keycode == KEY_F:
+				#	camera.global_transform.origin = _plugin.selected_node_parent.global_transform.origin + (camera.global_transform.basis.z * 100)
 					
 		OperationMode.GSR:
 			if event is InputEventKey and event.pressed:
@@ -329,7 +336,7 @@ func get_snap(event):
 	if _vertex_painting_toolbar.snap_enabled(): #snap is activated
 		match _plugin.transform_gizmo.edit_mode:
 			1:  # translate
-				snap = _plugin.snap_values.translate
+				snap = 0.5#_plugin.snap_values.translate
 			2:  # rotate
 				snap = _plugin.snap_values.rotate  # to radians?
 			3:  # scale
@@ -341,7 +348,7 @@ func get_snap(event):
 		if event.ctrl_pressed:
 			match _plugin.transform_gizmo.edit_mode:
 				1:  # translate
-					snap = _plugin.snap_values.translate
+					snap = 0.5#_plugin.snap_values.translate
 				2:  # rotate
 					snap = _plugin.snap_values.rotate  # to radians?
 				3:  # scale
@@ -383,3 +390,10 @@ func try_select_all():
 			_plugin.selection.select_geometry(arr, false)
 			
 			
+func _intersect_with_plane(camera, screen_point, plane_origin, plane_normal):
+	var grid_plane = Plane(plane_normal, plane_origin)
+	var from = camera.project_ray_origin(screen_point)
+	var dir = camera.project_ray_normal(screen_point)
+	
+	var result = grid_plane.intersects_ray(from, dir)
+	return result

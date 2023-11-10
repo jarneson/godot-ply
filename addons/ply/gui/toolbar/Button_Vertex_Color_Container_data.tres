@@ -6,6 +6,8 @@
 script = ExtResource("1_71284")
 data = {
 "ButtonVertexColor": Color(1, 0, 0, 1),
-"ButtonVertexColor2": Color(0, 1, 0, 1),
-"ButtonVertexColor3": Color(0, 0, 1, 1)
+"ButtonVertexColor12": Color(0.662745, 0.419608, 0, 1),
+"ButtonVertexColor2": Color(0.215686, 0.721569, 0.235294, 1),
+"ButtonVertexColor3": Color(0, 0, 1, 1),
+"ButtonVertexColor9": Color(0.454902, 0.333333, 0.0196078, 1)
 }

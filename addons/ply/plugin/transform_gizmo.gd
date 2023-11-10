@@ -391,8 +391,9 @@ func _set_highlight(highlight_axis) -> void:
 			0, axis_materials_selected[i] if i + 12 == highlight_axis else axis_materials[i]
 		)
 
-
+var valid_selection = true
 func _update_view() -> void:
+	
 	if transform == null:
 		for i in range(3):
 			RenderingServer.instance_set_visible(move_gizmo_instances[i], false)
@@ -401,7 +402,14 @@ func _update_view() -> void:
 			RenderingServer.instance_set_visible(scale_gizmo_instances[i], false)
 			RenderingServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
 		return
-
+	if not valid_selection:
+		for i in range(3):
+			RenderingServer.instance_set_visible(move_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(move_plane_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(rotate_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(scale_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
+		return
 	var xform = _get_transform(_plugin.last_camera)
 
 	for i in range(3):

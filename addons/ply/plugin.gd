@@ -9,7 +9,7 @@ const SelectionMode = preload("res://addons/ply/utils/selection_mode.gd")
 const TransformGizmo = preload("res://addons/ply/plugin/transform_gizmo.gd")
 const Inspector = preload("res://addons/ply/plugin/inspector.gd")
 
-const Interop = preload("res://addons/ply/interop.gd")
+#const Interop = preload("res://addons/ply/interop.gd")
 const Settings = preload("res://addons/ply/settings.gd")
 
 const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
@@ -17,9 +17,12 @@ const PlyEditor = preload("res://addons/ply/nodes/ply.gd")
 var vertexPainting_toolbar = load("res://addons/ply/gui/toolbar/vertex_painting_toolbar.tscn").instantiate()
 var vertexPainting_color_picker = load("res://addons/ply/gui/toolbar/vertex_painting_color_picker.tscn").instantiate()
 
+var editor_interface = get_editor_interface()
 var editor_settings = get_editor_interface().get_editor_settings()
-var snap_values = {translate=1.0, rotate=15.0, scale=0.1}
+var snap_values = {translate=0.5, rotate=15.0, scale=0.1}
 var snap := false
+
+var editor_camera : Camera3D
 
 func _get_plugin_name() -> String:
 	return "Ply"
@@ -34,12 +37,12 @@ var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instantiate()
 
 
 func _enter_tree() -> void:
-	Interop.register(self, "ply")
+	#Interop.register(self, "ply")
 	Settings.initialize_plugin_settings(editor_settings)
 	
 	add_custom_type(
 		"PlyEditor",
-		"Node",
+		"PlyEditor",
 		preload("res://addons/ply/nodes/ply.gd"),
 		preload("res://addons/ply/icons/plugin.svg")
 	)
@@ -81,7 +84,7 @@ func _exit_tree() -> void:
 	toolbar.queue_free()
 	selector.teardown()
 	selector.free()
-	Interop.deregister(self)
+	#Interop.deregister(self)
 
 
 func _handles(o: Object) -> bool:
@@ -93,12 +96,16 @@ func _clear() -> void:
 
 
 var selection	# nullable PlyEditor
-
+var selected_node_parent
 
 func _edit(o: Object) -> void:
 	if selection and not selection.is_queued_for_deletion():
 		selection.selected = false
 		selection = null
+	elif selection:
+		if not (weakref(selection).get_ref()):
+			selection.selected = false
+			selection = null
 	
 	if o == null:
 		toolbar.visible = false
@@ -106,7 +113,15 @@ func _edit(o: Object) -> void:
 		selection = o
 		selection.selected = true
 		emit_signal("selection_changed", selection)
-
+	if (o is PlyEditor):
+		transform_gizmo.valid_selection = true
+		selected_node_parent = o.get_parent()
+	else:
+		transform_gizmo.valid_selection = false
+		transform_gizmo.transform = null
+		selected_node_parent = null
+		
+		
 
 func _make_visible(vis: bool) -> void:
 	toolbar.visible = vis
@@ -120,7 +135,9 @@ func _forward_3d_draw_over_viewport(overlay):
 
 
 func _forward_3d_gui_input(camera: Camera3D, event: InputEvent):
+	editor_camera = camera
 	last_camera = camera
+	
 	return selector.handle_input(camera, event)
 
 func _process(_delta) -> void:

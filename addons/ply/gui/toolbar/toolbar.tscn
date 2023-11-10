@@ -404,7 +404,7 @@ color = Color(1, 0, 0, 1)
 
 [node name="ButtonVertexColor2" parent="Scroll/Content/FaceTools/button_vertex_color_container" instance=ExtResource("15_8q26p")]
 layout_mode = 2
-color = Color(0, 1, 0, 1)
+color = Color(0.215686, 0.721569, 0.235294, 1)
 
 [node name="ButtonVertexColor3" parent="Scroll/Content/FaceTools/button_vertex_color_container" instance=ExtResource("15_8q26p")]
 layout_mode = 2
@@ -431,7 +431,7 @@ color = Color(0.496094, 0.496094, 0.496094, 1)
 
 [node name="ButtonVertexColor9" parent="Scroll/Content/FaceTools/button_vertex_color_container" instance=ExtResource("15_8q26p")]
 layout_mode = 2
-color = Color(1, 1, 1, 1)
+color = Color(0.454902, 0.333333, 0.0196078, 1)
 
 [node name="ButtonVertexColor10" parent="Scroll/Content/FaceTools/button_vertex_color_container" instance=ExtResource("15_8q26p")]
 layout_mode = 2
@@ -443,7 +443,7 @@ color = Color(1, 1, 1, 1)
 
 [node name="ButtonVertexColor12" parent="Scroll/Content/FaceTools/button_vertex_color_container" instance=ExtResource("15_8q26p")]
 layout_mode = 2
-color = Color(1, 1, 1, 1)
+color = Color(0.662745, 0.419608, 0, 1)
 
 [node name="PaintSurfaces" type="MarginContainer" parent="Scroll/Content/FaceTools"]
 layout_mode = 2
