@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://dqm8qkuky466i"]
+
+[ext_resource type="Script" path="res://addons/ply/gui/toolbar/button_vertex_color.gd" id="1_c0ock"]
+
+[node name="ButtonVertexColor" type="ColorPickerButton"]
+offset_right = 8.0
+offset_bottom = 8.0
+button_mask = 2
+text = "      "
+script = ExtResource("1_c0ock")
+
+[connection signal="color_changed" from="." to="." method="_on_color_changed"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

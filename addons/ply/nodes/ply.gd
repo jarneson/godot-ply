@@ -1,4 +1,6 @@
 @tool
+
+class_name PlyEditor
 extends Node
 
 signal selection_changed
@@ -221,8 +223,9 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 
 	var ai = parent.global_transform.affine_inverse()
 	var ai_origin = ai * origin
+	#var ai_origin = origin
 	var ai_direction = (ai.basis * direction).normalized()
-
+	#var ai_direction = direction
 	if mode == SelectionMode.VERTEX:
 		editor.call_each_vertex(func(v):
 			var hit_dist = v.intersects_ray(ai_origin, ai_direction)
@@ -238,8 +241,9 @@ func get_ray_intersection(origin: Vector3, direction: Vector3, mode: int) -> Arr
 		)
 
 	if mode == SelectionMode.FACE:
+		
 		editor.call_each_face(func(f):
-			var hit_dist = f.intersects_ray(ai_origin, ai_direction)
+			var hit_dist = f.intersects_ray(origin, ai_direction)
 			if hit_dist >= 0.0:
 				scan_results.push_back(["F", f.id(), hit_dist])
 		)
