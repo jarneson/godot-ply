@@ -152,7 +152,7 @@ func handle_input(camera: Camera3D, event: InputEvent) -> bool:
 				drag_position = event.position
 				_plugin.update_overlays()
 				return true
-			if event.ctrl_pressed:
+			if _plugin.current_settings.snap:
 				match _plugin.transform_gizmo.edit_mode:
 					1:  # translate
 						snap = _plugin.snap_values.translate

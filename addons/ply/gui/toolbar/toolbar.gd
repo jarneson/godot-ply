@@ -26,6 +26,7 @@ var plugin: EditorPlugin
 @onready var selection_face = $Scroll/Content/Face
 @onready var selection_edge = $Scroll/Content/Edge
 @onready var selection_vertex = $Scroll/Content/Vertex
+@onready var snap_checkbox = $Scroll/Content/SnapCheckbox
 
 @onready var gizmo_global = $Scroll/Content/Global
 @onready var gizmo_local = $Scroll/Content/Local
@@ -79,6 +80,7 @@ func _ready() -> void:
 	selection_face.toggled.connect(_update_selection_mode.bind(SelectionMode.FACE))
 	selection_edge.toggled.connect(_update_selection_mode.bind(SelectionMode.EDGE))
 	selection_vertex.toggled.connect(_update_selection_mode.bind(SelectionMode.VERTEX))
+	snap_checkbox.toggled.connect(_on_snap_checkbox_toggle)
 
 	gizmo_global.toggled.connect(_update_gizmo_mode.bind(GizmoMode.GLOBAL))
 	gizmo_local.toggled.connect(_update_gizmo_mode.bind(GizmoMode.LOCAL))
@@ -123,6 +125,7 @@ func _ready() -> void:
 	vertex_color_picker.popup_closed.connect(_on_face_color_closed)
 	
 	if plugin:
+		snap_checkbox.set_pressed_no_signal(plugin.current_settings.snap) #bool
 		plugin.selection_changed.connect(_on_selection_changed)
 
 var selected_mesh
@@ -447,6 +450,12 @@ func _edge_cut_loop():
 	Loop.edge_cut(
 		plugin.selection.ply_mesh, plugin.selection.selected_edges[0], plugin.get_undo_redo()
 	)
+
+
+
+func _on_snap_checkbox_toggle(state: bool) -> void:
+	plugin.change_settings_key('snap', state)
+
 
 
 func _edge_subdivide():

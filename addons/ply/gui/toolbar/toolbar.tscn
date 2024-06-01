@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://bb7qnjnl0y2lf"]
+[gd_scene load_steps=51 format=3 uid="uid://bb7qnjnl0y2lf"]
 
 [ext_resource type="Texture2D" uid="uid://da0i0pbup2umf" path="res://addons/ply/icons/dark/select_mesh_dark.png" id="5_5m67v"]
 [ext_resource type="Texture2D" uid="uid://cb212rtjh5ric" path="res://addons/ply/icons/dark/select_face_dark.png" id="6_yuw87"]
@@ -22,11 +22,13 @@
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_jgq6o"]
 
-[sub_resource type="InputEventKey" id="InputEventKey_wa7sa"]
+[sub_resource type="InputEventKey" id="InputEventKey_l6rws"]
+device = -1
 keycode = 49
+unicode = 49
 
-[sub_resource type="Shortcut" id="Shortcut_3n0xq"]
-events = [SubResource("InputEventKey_wa7sa")]
+[sub_resource type="Shortcut" id="Shortcut_kc1lk"]
+events = [SubResource("InputEventKey_l6rws")]
 
 [sub_resource type="InputEventKey" id="InputEventKey_477mp"]
 keycode = 50
@@ -40,13 +42,85 @@ keycode = 51
 [sub_resource type="Shortcut" id="8"]
 events = [SubResource("InputEventKey_g51mm")]
 
-[sub_resource type="InputEventKey" id="InputEventKey_xgrna"]
+[sub_resource type="InputEventKey" id="InputEventKey_y7tdk"]
+device = -1
 keycode = 52
+unicode = 52
 
-[sub_resource type="Shortcut" id="10"]
-events = [SubResource("InputEventKey_xgrna")]
+[sub_resource type="Shortcut" id="Shortcut_vc2bd"]
+events = [SubResource("InputEventKey_y7tdk")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_efma2"]
+device = -1
+keycode = 72
+unicode = 104
+
+[sub_resource type="InputEventKey" id="InputEventKey_jsfgl"]
+device = -1
+keycode = 86
+unicode = 118
+
+[sub_resource type="Shortcut" id="Shortcut_48tbk"]
+events = [SubResource("InputEventKey_efma2"), SubResource("InputEventKey_jsfgl")]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_xlkoy"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_m484a"]
+device = -1
+keycode = 84
+unicode = 116
+
+[sub_resource type="Shortcut" id="Shortcut_o6fr1"]
+events = [SubResource("InputEventKey_m484a")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_mos2o"]
+device = -1
+keycode = 89
+unicode = 121
+
+[sub_resource type="Shortcut" id="Shortcut_s2hlu"]
+events = [SubResource("InputEventKey_mos2o")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_i4c01"]
+device = -1
+keycode = 85
+unicode = 117
+
+[sub_resource type="Shortcut" id="Shortcut_af8g2"]
+events = [SubResource("InputEventKey_i4c01")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_4l3np"]
+device = -1
+alt_pressed = true
+keycode = 66
+
+[sub_resource type="Shortcut" id="Shortcut_ioitr"]
+events = [SubResource("InputEventKey_4l3np")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_e03mk"]
+device = -1
+keycode = 73
+unicode = 105
+
+[sub_resource type="Shortcut" id="Shortcut_hcfw2"]
+events = [SubResource("InputEventKey_e03mk")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_scx1k"]
+device = -1
+keycode = 71
+unicode = 103
+
+[sub_resource type="Shortcut" id="Shortcut_evhxi"]
+events = [SubResource("InputEventKey_scx1k")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_5kxv7"]
+device = -1
+alt_pressed = true
+ctrl_pressed = true
+keycode = 69
+
+[sub_resource type="Shortcut" id="Shortcut_5ecg7"]
+events = [SubResource("InputEventKey_5kxv7")]
 
 [sub_resource type="InputEventKey" id="InputEventKey_qn4mv"]
 ctrl_pressed = true
@@ -128,41 +202,46 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Tool"
 
-[node name="Mesh" type="Button" parent="Scroll/Content"]
-layout_mode = 2
-toggle_mode = true
-button_pressed = true
-button_group = SubResource("ButtonGroup_jgq6o")
-shortcut = SubResource("Shortcut_3n0xq")
-text = "Mesh"
-icon = ExtResource("5_5m67v")
-expand_icon = true
-
-[node name="Face" type="Button" parent="Scroll/Content"]
+[node name="Vertex" type="Button" parent="Scroll/Content"]
 layout_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_jgq6o")
-shortcut = SubResource("6")
-text = "Face"
-icon = ExtResource("6_yuw87")
+shortcut = SubResource("Shortcut_kc1lk")
+text = "Vertex"
+icon = ExtResource("8_0w4vc")
 expand_icon = true
 
 [node name="Edge" type="Button" parent="Scroll/Content"]
 layout_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_jgq6o")
-shortcut = SubResource("8")
+shortcut = SubResource("6")
 text = "Edge"
 icon = ExtResource("7_j2iu8")
 expand_icon = true
 
-[node name="Vertex" type="Button" parent="Scroll/Content"]
+[node name="Face" type="Button" parent="Scroll/Content"]
 layout_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_jgq6o")
-shortcut = SubResource("10")
-text = "Vertex"
-icon = ExtResource("8_0w4vc")
+shortcut = SubResource("8")
+text = "Face"
+icon = ExtResource("6_yuw87")
+expand_icon = true
+
+[node name="Mesh" type="Button" parent="Scroll/Content"]
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_jgq6o")
+shortcut = SubResource("Shortcut_vc2bd")
+text = "Mesh"
+icon = ExtResource("5_5m67v")
+expand_icon = true
+
+[node name="SnapCheckbox" type="CheckBox" parent="Scroll/Content"]
+layout_mode = 2
+shortcut = SubResource("Shortcut_48tbk")
+text = "Snap"
 expand_icon = true
 
 [node name="GizmoModeLabel" type="MarginContainer" parent="Scroll/Content"]
@@ -187,18 +266,21 @@ text = "Gizmo Mode"
 layout_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_xlkoy")
+shortcut = SubResource("Shortcut_o6fr1")
 text = "Global"
 
 [node name="Local" type="Button" parent="Scroll/Content"]
 layout_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_xlkoy")
+shortcut = SubResource("Shortcut_s2hlu")
 text = "Local"
 
 [node name="Normal" type="Button" parent="Scroll/Content"]
 layout_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_xlkoy")
+shortcut = SubResource("Shortcut_af8g2")
 text = "Normal"
 
 [node name="Spacer" type="CenterContainer" parent="Scroll/Content"]
@@ -206,6 +288,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="MeshTools" type="VBoxContainer" parent="Scroll/Content"]
+visible = false
 layout_mode = 2
 
 [node name="Tools" type="MarginContainer" parent="Scroll/Content/MeshTools"]
@@ -228,6 +311,7 @@ text = "Mesh Tools"
 
 [node name="Subdivide" type="Button" parent="Scroll/Content/MeshTools"]
 layout_mode = 2
+shortcut = SubResource("Shortcut_ioitr")
 text = "Subdivide"
 icon = ExtResource("5_5m67v")
 expand_icon = true
@@ -240,6 +324,7 @@ expand_icon = true
 
 [node name="InvertNormals" type="Button" parent="Scroll/Content/MeshTools"]
 layout_mode = 2
+shortcut = SubResource("Shortcut_hcfw2")
 text = "Invert Normals"
 icon = ExtResource("10_uborc")
 expand_icon = true
@@ -264,6 +349,7 @@ text = "Mesh Utilities"
 
 [node name="Generators" type="Button" parent="Scroll/Content/MeshTools"]
 layout_mode = 2
+shortcut = SubResource("Shortcut_evhxi")
 text = "Generate"
 
 [node name="Import" type="Button" parent="Scroll/Content/MeshTools"]
@@ -272,6 +358,7 @@ text = "Import"
 
 [node name="ExportOBJ" type="Button" parent="Scroll/Content/MeshTools"]
 layout_mode = 2
+shortcut = SubResource("Shortcut_5ecg7")
 text = "Export to OBJ"
 
 [node name="FaceTools" type="VBoxContainer" parent="Scroll/Content"]
