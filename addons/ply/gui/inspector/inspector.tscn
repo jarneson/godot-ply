@@ -6,198 +6,132 @@
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -1648.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1")
 
 [node name="G" type="GridContainer" parent="."]
 layout_mode = 2
-offset_right = 1152.0
-offset_bottom = 86.0
 columns = 2
 
 [node name="Translate" type="Label" parent="G"]
 layout_mode = 2
-offset_right = 73.0
-offset_bottom = 26.0
 text = "Translate"
 
 [node name="TranslateInputs" type="HBoxContainer" parent="G"]
 layout_mode = 2
-offset_left = 77.0
-offset_right = 1152.0
-offset_bottom = 26.0
 size_flags_horizontal = 3
 
 [node name="Rotate" type="Label" parent="G"]
 layout_mode = 2
-offset_top = 30.0
-offset_right = 73.0
-offset_bottom = 56.0
 text = "Rotate"
 
 [node name="RotateInputs" type="HBoxContainer" parent="G"]
 layout_mode = 2
-offset_left = 77.0
-offset_top = 30.0
-offset_right = 1152.0
-offset_bottom = 56.0
 size_flags_horizontal = 3
 
 [node name="Scale" type="Label" parent="G"]
 layout_mode = 2
-offset_top = 60.0
-offset_right = 73.0
-offset_bottom = 86.0
 text = "Scale"
 
 [node name="ScaleInputs" type="HBoxContainer" parent="G"]
 layout_mode = 2
-offset_left = 77.0
-offset_top = 60.0
-offset_right = 1152.0
-offset_bottom = 86.0
 size_flags_horizontal = 3
 
 [node name="V" type="GridContainer" parent="."]
 layout_mode = 2
-offset_top = 90.0
-offset_right = 1152.0
-offset_bottom = 226.0
 columns = 2
 
 [node name="Label" type="Label" parent="V"]
 layout_mode = 2
-offset_top = 2.0
-offset_right = 71.0
-offset_bottom = 28.0
 text = "Vertices "
 
 [node name="VertexCount" type="LineEdit" parent="V"]
 layout_mode = 2
-offset_left = 75.0
-offset_right = 1152.0
-offset_bottom = 31.0
 size_flags_horizontal = 3
 editable = false
 
 [node name="Label2" type="Label" parent="V"]
 layout_mode = 2
-offset_top = 37.0
-offset_right = 71.0
-offset_bottom = 63.0
 text = "Edges"
 
 [node name="EdgeCount" type="LineEdit" parent="V"]
 layout_mode = 2
-offset_left = 75.0
-offset_top = 35.0
-offset_right = 1152.0
-offset_bottom = 66.0
 size_flags_horizontal = 3
 editable = false
 
 [node name="Label3" type="Label" parent="V"]
 layout_mode = 2
-offset_top = 72.0
-offset_right = 71.0
-offset_bottom = 98.0
 text = "Faces"
 
 [node name="FaceCount" type="LineEdit" parent="V"]
 layout_mode = 2
-offset_left = 75.0
-offset_top = 70.0
-offset_right = 1152.0
-offset_bottom = 101.0
 size_flags_horizontal = 3
 editable = false
 
 [node name="Label4" type="Label" parent="V"]
 layout_mode = 2
-offset_top = 107.0
-offset_right = 71.0
-offset_bottom = 133.0
 text = "Selection"
 
 [node name="Selection" type="LineEdit" parent="V"]
 layout_mode = 2
-offset_left = 75.0
-offset_top = 105.0
-offset_right = 1152.0
-offset_bottom = 136.0
 size_flags_horizontal = 3
 editable = false
 
 [node name="HSeparator" type="HSeparator" parent="."]
 layout_mode = 2
-offset_top = 230.0
-offset_right = 1152.0
-offset_bottom = 234.0
 
 [node name="SnapValuesTitle" type="Label" parent="."]
 layout_mode = 2
-offset_top = 238.0
-offset_right = 1152.0
-offset_bottom = 264.0
 text = "Gizmo Snap Values"
 
-[node name="P" type="GridContainer" parent="."]
+[node name="P" type="HBoxContainer" parent="."]
 layout_mode = 2
-offset_top = 268.0
-offset_right = 1152.0
-offset_bottom = 299.0
-columns = 6
-
-[node name="Translate" type="Label" parent="P"]
-layout_mode = 2
-offset_top = 2.0
-offset_right = 73.0
-offset_bottom = 28.0
-text = "Translate"
 
 [node name="TranslateSnap" type="SpinBox" parent="P"]
 layout_mode = 2
-offset_left = 77.0
-offset_right = 386.0
-offset_bottom = 31.0
 size_flags_horizontal = 3
 min_value = 0.01
 max_value = 50000.0
 step = 0.001
 value = 1.0
 
-[node name="Rotate" type="Label" parent="P"]
-layout_mode = 2
-offset_left = 390.0
-offset_top = 2.0
-offset_right = 484.0
-offset_bottom = 28.0
-text = "Rotate (deg)"
-
 [node name="RotateSnap" type="SpinBox" parent="P"]
 layout_mode = 2
-offset_left = 488.0
-offset_right = 796.0
-offset_bottom = 31.0
 size_flags_horizontal = 3
 max_value = 360.0
 step = 0.001
 value = 15.0
 
-[node name="Scale" type="Label" parent="P"]
-layout_mode = 2
-offset_left = 800.0
-offset_top = 2.0
-offset_right = 840.0
-offset_bottom = 28.0
-text = "Scale"
-
 [node name="ScaleSnap" type="SpinBox" parent="P"]
 layout_mode = 2
-offset_left = 844.0
-offset_right = 1152.0
-offset_bottom = 31.0
 size_flags_horizontal = 3
 step = 0.001
 value = 0.1
+
+[node name="P2" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Translate" type="Label" parent="P2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Translate"
+horizontal_alignment = 1
+justification_flags = 171
+
+[node name="Rotate" type="Label" parent="P2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Rotate (deg)"
+horizontal_alignment = 1
+justification_flags = 171
+
+[node name="Scale" type="Label" parent="P2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Scale"
+horizontal_alignment = 1
+justification_flags = 171
