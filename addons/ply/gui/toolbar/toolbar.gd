@@ -49,15 +49,8 @@ var plugin: EditorPlugin
 @onready var face_subdivide = $Scroll/Content/FaceTools/Subdivide
 @onready var face_triangulate = $Scroll/Content/FaceTools/Triangulate
 
-@onready var face_set_shape_1 = $"Scroll/Content/FaceTools/Surfaces/1"
-@onready var face_set_shape_2 = $"Scroll/Content/FaceTools/Surfaces/2"
-@onready var face_set_shape_3 = $"Scroll/Content/FaceTools/Surfaces/3"
-@onready var face_set_shape_4 = $"Scroll/Content/FaceTools/Surfaces/4"
-@onready var face_set_shape_5 = $"Scroll/Content/FaceTools/Surfaces/5"
-@onready var face_set_shape_6 = $"Scroll/Content/FaceTools/Surfaces/6"
-@onready var face_set_shape_7 = $"Scroll/Content/FaceTools/Surfaces/7"
-@onready var face_set_shape_8 = $"Scroll/Content/FaceTools/Surfaces/8"
-@onready var face_set_shape_9 = $"Scroll/Content/FaceTools/Surfaces/9"
+@onready var face_set_surfaces = $"Scroll/Content/FaceTools/Surfaces"
+@onready var expand_surfaces_button = $"Scroll/Content/FaceTools/ExpandSurfaces"
 @onready var face_color_picker = $Scroll/Content/FaceTools/VertexColorPicker
 
 @onready var edge_tools = $Scroll/Content/EdgeTools
@@ -98,16 +91,17 @@ func _ready() -> void:
 	face_color_picker.pressed.connect(_on_face_color_pressed)
 	face_color_picker.popup_closed.connect(_on_face_color_closed)
 
-	face_set_shape_1.pressed.connect(_set_face_surface.bind(0))
-	face_set_shape_2.pressed.connect(_set_face_surface.bind(1))
-	face_set_shape_3.pressed.connect(_set_face_surface.bind(2))
-	face_set_shape_4.pressed.connect(_set_face_surface.bind(3))
-	face_set_shape_5.pressed.connect(_set_face_surface.bind(4))
-	face_set_shape_6.pressed.connect(_set_face_surface.bind(5))
-	face_set_shape_7.pressed.connect(_set_face_surface.bind(6))
-	face_set_shape_8.pressed.connect(_set_face_surface.bind(7))
-	face_set_shape_9.pressed.connect(_set_face_surface.bind(8))
-
+	for v: Button in face_set_surfaces.get_children():
+		v.pressed.connect(_set_face_surface.bind(v.name.to_int()))
+	
+	expand_surfaces_button.pressed.connect(func() -> void:
+		for v: Button in face_set_surfaces.get_children():
+			if v.name.to_int() > 9:
+				v.visible = expand_surfaces_button.button_pressed
+			expand_surfaces_button.text = ('Less' if expand_surfaces_button.button_pressed else 'More')
+	)
+	
+	
 	face_select_loop_1.pressed.connect(_face_select_loop.bind(0))
 	face_select_loop_2.pressed.connect(_face_select_loop.bind(1))
 	face_extrude.pressed.connect(_face_extrude)
@@ -130,10 +124,10 @@ func _ready() -> void:
 
 var selected_mesh
 func _on_selection_changed(selection):
-	if selected_mesh and selected_mesh.has_signal("selection_changed"):
+	if selected_mesh and is_instance_valid(selected_mesh) and selected_mesh.has_signal("selection_changed"):
 		selected_mesh.selection_changed.disconnect(_on_geometry_selection_changed)
 	selected_mesh = selection
-	if selected_mesh and selected_mesh.has_signal("selection_changed"):
+	if selected_mesh and is_instance_valid(selected_mesh) and selected_mesh.has_signal("selection_changed"):
 		selected_mesh.selection_changed.connect(_on_geometry_selection_changed)
 
 func _on_geometry_selection_changed():
