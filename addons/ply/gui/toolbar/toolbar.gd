@@ -97,7 +97,7 @@ func _ready() -> void:
 				if v2 != v:
 					v2.set_pressed_no_signal(false)
 			
-			_set_face_surface(v.name.to_int(), v.get_meta('faces', []))
+			_set_face_surface(v.name.to_int())
 		)
 		var unpress := func() -> void:
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT): #erase
