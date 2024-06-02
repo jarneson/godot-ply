@@ -472,118 +472,139 @@ columns = 3
 [node name="1" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "1"
 
 [node name="2" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "2"
 
 [node name="3" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "3"
 
 [node name="4" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "4"
 
 [node name="5" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "5"
 
 [node name="6" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "6"
 
 [node name="7" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "7"
 
 [node name="8" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "8"
 
 [node name="9" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "9"
 
 [node name="10" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "10"
 
 [node name="11" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "11"
 
 [node name="12" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "12"
 
 [node name="13" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "13"
 
 [node name="14" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "14"
 
 [node name="15" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "15"
 
 [node name="16" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "16"
 
 [node name="17" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "17"
 
 [node name="18" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "18"
 
 [node name="19" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "19"
 
 [node name="20" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "20"
 
 [node name="21" type="Button" parent="Scroll/Content/FaceTools/Surfaces"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+toggle_mode = true
 text = "21"
 
 [node name="ExpandSurfaces" type="Button" parent="Scroll/Content/FaceTools"]

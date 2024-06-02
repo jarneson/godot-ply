@@ -92,7 +92,25 @@ func _ready() -> void:
 	face_color_picker.popup_closed.connect(_on_face_color_closed)
 
 	for v: Button in face_set_surfaces.get_children():
-		v.pressed.connect(_set_face_surface.bind(v.name.to_int()))
+		v.pressed.connect(func() -> void:
+			for v2: Button in face_set_surfaces.get_children():
+				if v2 != v:
+					v2.set_pressed_no_signal(false)
+			
+			_set_face_surface(v.name.to_int(), v.get_meta('faces', []))
+		)
+		var unpress := func() -> void:
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT): #erase
+				_set_face_surface(0, v.get_meta('faces', []))
+				v.set_pressed_no_signal(false)
+		
+		v.mouse_entered.connect(func() -> void: unpress.call())
+		v.gui_input.connect(func(event: InputEvent) -> void:
+			if (event is InputEventMouseButton) and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+				unpress.call()
+		)
+	
+	
 	
 	expand_surfaces_button.pressed.connect(func() -> void:
 		for v: Button in face_set_surfaces.get_children():
@@ -122,6 +140,9 @@ func _ready() -> void:
 		snap_checkbox.set_pressed_no_signal(plugin.current_settings.snap) #bool
 		plugin.selection_changed.connect(_on_selection_changed)
 
+
+
+
 var selected_mesh
 func _on_selection_changed(selection):
 	if selected_mesh and is_instance_valid(selected_mesh) and selected_mesh.has_signal("selection_changed"):
@@ -129,23 +150,48 @@ func _on_selection_changed(selection):
 	selected_mesh = selection
 	if selected_mesh and is_instance_valid(selected_mesh) and selected_mesh.has_signal("selection_changed"):
 		selected_mesh.selection_changed.connect(_on_geometry_selection_changed)
+	
 
 func _on_geometry_selection_changed():
 	match selection_mode:
 		SelectionMode.FACE:
-			var color
-			var many = false
-			for f_idx in selected_mesh.selected_faces:
+			var color: Variant = null #Color?
+			var surface_ids: Dictionary = {} #Dictionary[int, Array[int]]
+			var many_different_colors = false
+			
+			
+			for f_idx: int in selected_mesh.selected_faces:
 				var f_color = selected_mesh.ply_mesh.get_face_color(f_idx)
+				var surface_id: int = selected_mesh.ply_mesh.face_surfaces[f_idx] if (selected_mesh.ply_mesh.face_surfaces.size() - 1) >= f_idx else 0
+				
 				if color == null:
 					color = f_color
-				if !color.is_equal_approx(f_color):
-					many = true
-
+				
+				
+				if surface_id != 0:
+					if !surface_ids.has(surface_id):
+						surface_ids[surface_id] = []
+					surface_ids[surface_id].append(f_idx)
+				
+				if color != null and !color.is_equal_approx(f_color):
+					many_different_colors = true
+			
 			if color == null:
 				color = Color.WHITE
 			
-			if many:
+			
+			var surface_ids_count := surface_ids.size()
+			for v: Button in face_set_surfaces.get_children():
+				if v.has_meta('faces'):		v.remove_meta('faces')
+				
+				if surface_ids_count <= 0:
+					v.set_pressed_no_signal(v.name.to_int() == surface_ids.keys()[0] if surface_ids_count > 0 else false)
+				else:
+					v.set_pressed_no_signal(surface_ids.has(v.name.to_int()))
+					if v.button_pressed:
+						v.set_meta('faces', surface_ids[v.name.to_int()] as Array[int])
+			
+			if many_different_colors:
 				face_color_picker.color = Color.WHITE
 				face_color_picker.get_node("Label").visible = true
 			else:
@@ -404,7 +450,7 @@ func _face_triangulate():
 	plugin.selection.ply_mesh.commit_edit("Triangulate Faces", plugin.get_undo_redo(), pre_edit)
 
 
-func _set_face_surface(s):
+func _set_face_surface(s: int, for_faces: Array = []): #Array[int]
 	if plugin.ignore_inputs:
 		return
 	if (
@@ -414,8 +460,10 @@ func _set_face_surface(s):
 	):
 		return
 	var pre_edit = plugin.selection.ply_mesh.begin_edit()
-	for f_idx in plugin.selection.selected_faces:
+	
+	for f_idx: int in (for_faces if !for_faces.is_empty() else plugin.selection.selected_faces):
 		plugin.selection.ply_mesh.set_face_surface(f_idx, s)
+	
 	plugin.selection.ply_mesh.commit_edit("Paint Face", plugin.get_undo_redo(), pre_edit)
 
 
