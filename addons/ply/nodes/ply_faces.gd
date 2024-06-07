@@ -9,7 +9,7 @@ var m = StandardMaterial3D.new()
 
 func _ready() -> void:
 	mesh = ImmediateMesh.new()
-	m.albedo_color = Color(0, 1, 0, 0.5)
+	m.albedo_color = Color(0, 1, 0, 0.04)
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	m.vertex_color_use_as_albedo = true
