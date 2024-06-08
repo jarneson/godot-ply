@@ -22,10 +22,12 @@ const Import = preload("res://addons/ply/tools/import.gd")
 
 var plugin: EditorPlugin
 
+@onready var content_vbox = $Scroll/Content
 @onready var selection_mesh = $Scroll/Content/Mesh
 @onready var selection_face = $Scroll/Content/Face
 @onready var selection_edge = $Scroll/Content/Edge
 @onready var selection_vertex = $Scroll/Content/Vertex
+@onready var select_all = $Scroll/Content/ToolModeLabel/MarginContainer/SelectAll
 @onready var snap_checkbox = $Scroll/Content/SnapCheckbox
 
 @onready var gizmo_global = $Scroll/Content/Global
@@ -49,6 +51,7 @@ var plugin: EditorPlugin
 @onready var face_subdivide = $Scroll/Content/FaceTools/Subdivide
 @onready var face_triangulate = $Scroll/Content/FaceTools/Triangulate
 
+@onready var zero_face_button = $'Scroll/Content/FaceTools/PaintSurfaces/MarginContainer/HboxContainer/0'
 @onready var face_set_surfaces = $"Scroll/Content/FaceTools/Surfaces"
 @onready var expand_surfaces_button = $"Scroll/Content/FaceTools/ExpandSurfaces"
 @onready var face_color_picker = $Scroll/Content/FaceTools/VertexColorPicker
@@ -62,6 +65,12 @@ var plugin: EditorPlugin
 @onready var vertex_tools = $Scroll/Content/VertexTools
 @onready var vertex_color_picker = $Scroll/Content/VertexTools/VertexColorPicker
 
+
+var replacing_surface_idx_button: Button = null
+var replacing_surface_label: Label = null
+var hovered_button: Button = null
+
+
 func _ready() -> void:
 	var config = ConfigFile.new()
 	var err = config.load("res://addons/ply/plugin.cfg")
@@ -73,6 +82,9 @@ func _ready() -> void:
 	selection_face.toggled.connect(_update_selection_mode.bind(SelectionMode.FACE))
 	selection_edge.toggled.connect(_update_selection_mode.bind(SelectionMode.EDGE))
 	selection_vertex.toggled.connect(_update_selection_mode.bind(SelectionMode.VERTEX))
+	
+	
+	select_all.pressed.connect(_select_all)
 	snap_checkbox.toggled.connect(_on_snap_checkbox_toggle)
 
 	gizmo_global.toggled.connect(_update_gizmo_mode.bind(GizmoMode.GLOBAL))
@@ -91,8 +103,15 @@ func _ready() -> void:
 	face_color_picker.pressed.connect(_on_face_color_pressed)
 	face_color_picker.popup_closed.connect(_on_face_color_closed)
 
-	for v: Button in face_set_surfaces.get_children():
+	for v: Button in (face_set_surfaces.get_children() + [zero_face_button]):
 		v.pressed.connect(func() -> void:
+			if replacing_surface_idx_button != null:
+				_set_face_surface(v.name.to_int(), replacing_surface_idx_button.get_meta('faces', []))
+				replacing_surface_idx_button = null
+				hovered_button = null
+				_on_geometry_selection_changed()
+				return
+			
 			for v2: Button in face_set_surfaces.get_children():
 				if v2 != v:
 					v2.set_pressed_no_signal(false)
@@ -100,15 +119,30 @@ func _ready() -> void:
 			_set_face_surface(v.name.to_int())
 		)
 		var unpress := func() -> void:
-			if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT): #erase
-				_set_face_surface(0, v.get_meta('faces', []))
-				v.set_pressed_no_signal(false)
+			_set_face_surface(0, v.get_meta('faces', []))
+			v.set_pressed_no_signal(false)
 		
-		v.mouse_entered.connect(func() -> void: unpress.call())
-		v.gui_input.connect(func(event: InputEvent) -> void:
-			if (event is InputEventMouseButton) and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		v.mouse_entered.connect(func() -> void:
+			if replacing_surface_idx_button != null:
+				hovered_button = v
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT): #erase
 				unpress.call()
 		)
+		v.mouse_exited.connect(func() -> void:
+			if replacing_surface_idx_button != null:	hovered_button = null
+		)
+		
+		v.gui_input.connect(func(event: InputEvent) -> void:
+			if (event is InputEventMouseButton) and event.pressed:
+				match event.button_index:
+					MOUSE_BUTTON_RIGHT:
+						unpress.call()
+					
+					MOUSE_BUTTON_MIDDLE:
+						hovered_button = v
+						replacing_surface_idx_button = v
+		)
+		
 	
 	
 	
@@ -122,6 +156,7 @@ func _ready() -> void:
 	
 	face_select_loop_1.pressed.connect(_face_select_loop.bind(0))
 	face_select_loop_2.pressed.connect(_face_select_loop.bind(1))
+	
 	face_extrude.pressed.connect(_face_extrude)
 	face_connect.pressed.connect(_face_connect)
 	face_subdivide.pressed.connect(_face_subdivide)
@@ -159,6 +194,7 @@ func _on_geometry_selection_changed():
 			var surface_ids: Dictionary = {} #Dictionary[int, Array[int]]
 			var many_different_colors = false
 			
+			replacing_surface_idx_button = null
 			
 			for f_idx: int in selected_mesh.selected_faces:
 				var f_color = selected_mesh.ply_mesh.get_face_color(f_idx)
@@ -168,10 +204,9 @@ func _on_geometry_selection_changed():
 					color = f_color
 				
 				
-				if surface_id != 0:
-					if !surface_ids.has(surface_id):
-						surface_ids[surface_id] = []
-					surface_ids[surface_id].append(f_idx)
+				if !surface_ids.has(surface_id):
+					surface_ids[surface_id] = []
+				surface_ids[surface_id].append(f_idx)
 				
 				if color != null and !color.is_equal_approx(f_color):
 					many_different_colors = true
@@ -181,7 +216,7 @@ func _on_geometry_selection_changed():
 			
 			
 			var surface_ids_count := surface_ids.size()
-			for v: Button in face_set_surfaces.get_children():
+			for v: Button in (face_set_surfaces.get_children() + [zero_face_button]):
 				if v.has_meta('faces'):		v.remove_meta('faces')
 				
 				if surface_ids_count <= 0:
@@ -190,6 +225,7 @@ func _on_geometry_selection_changed():
 					v.set_pressed_no_signal(surface_ids.has(v.name.to_int()))
 					if v.button_pressed:
 						v.set_meta('faces', surface_ids[v.name.to_int()] as Array[int])
+			
 			
 			if many_different_colors:
 				face_color_picker.color = Color.WHITE
@@ -221,6 +257,35 @@ func _on_geometry_selection_changed():
 
 func _process(_delta) -> void:
 	_update_tool_visibility()
+	
+	if replacing_surface_idx_button != null:
+		if !replacing_surface_label:
+			replacing_surface_label = Label.new()
+			replacing_surface_label.top_level = true
+			replacing_surface_label.name = '_replacing_surface_label'
+			add_child(replacing_surface_label)
+		
+		
+		replacing_surface_label.text = ('Replace %s -> %s (%s faces)' % [
+			replacing_surface_idx_button.name,
+			(hovered_button.name if hovered_button != null else '?'),
+			(str(replacing_surface_idx_button.get_meta('faces').size()) if replacing_surface_idx_button.has_meta('faces') else '?'), #Array | String
+		])
+		replacing_surface_label.global_position = get_global_mouse_position()
+		
+		if !hovered_button:
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				if replacing_surface_label != null:
+					remove_child(replacing_surface_label)
+					replacing_surface_label.queue_free()
+					replacing_surface_label = null
+					replacing_surface_idx_button = null
+					hovered_button = null
+	else:
+		if replacing_surface_label != null:
+			remove_child(replacing_surface_label)
+			replacing_surface_label.queue_free()
+			replacing_surface_label = null
 
 
 var selection_mode: int = SelectionMode.MESH
@@ -228,6 +293,10 @@ var selection_mode: int = SelectionMode.MESH
 
 func _update_selection_mode(selected, mode) -> void:
 	if selected:
+		var selection_button: Button = content_vbox.get_child(1 + mode)
+		if selection_button != null:
+			select_all.icon = selection_button.icon
+		
 		selection_mode = mode
 		emit_signal("selection_mode_changed", mode)
 
@@ -249,15 +318,25 @@ func _update_tool_visibility() -> void:
 
 
 func set_selection_mode(mode) -> void:
+	var selection_button: Button = null
 	match mode:
 		SelectionMode.MESH:
 			selection_mesh.pressed = true
+			selection_button = selection_mesh
 		SelectionMode.FACE:
 			selection_face.pressed = true
+			selection_button = selection_face
 		SelectionMode.EDGE:
 			selection_edge.pressed = true
+			selection_button = selection_edge
 		SelectionMode.VERTEX:
 			selection_vertex.pressed = true
+			selection_button = selection_vertex
+	
+	print(selection_button)
+	if selection_button != null:
+		select_all.icon = selection_button.icon
+		print(selection_button.icon, select_all)
 
 
 func _open_generators_modal():
@@ -428,6 +507,27 @@ func _face_connect():
 		plugin.selection.selected_faces[1],
 		plugin.get_undo_redo()
 	)
+
+func _select_all():
+	if plugin.ignore_inputs:
+		return
+	if (
+		not plugin.selection
+	):
+		return
+	
+	
+	if selection_mode == SelectionMode.MESH:
+		_update_selection_mode(true, SelectionMode.FACE)
+	
+	match selection_mode:
+		SelectionMode.VERTEX:			plugin.selection.selected_vertices = range(plugin.selection.ply_mesh.vertexes.size())
+		SelectionMode.EDGE:				plugin.selection.selected_edges = Array(plugin.selection.ply_mesh.vertex_edges)
+		SelectionMode.FACE:				plugin.selection.selected_faces = Array(plugin.selection.ply_mesh.edge_faces)
+	
+	if selected_mesh != null and is_instance_valid(selected_mesh):
+		selected_mesh.selection_changed.emit()
+
 
 
 func _face_subdivide():
