@@ -32,6 +32,8 @@ func _process(_delta) -> void:
 			colors[i] = Color.BLUE
 
 	mesh.clear_surfaces()
+	if vtxs.size() == 0:
+		return
 	var arrs = []
 	arrs.resize(Mesh.ARRAY_MAX)
 	arrs[Mesh.ARRAY_VERTEX] = vtxs
