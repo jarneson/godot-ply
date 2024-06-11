@@ -26,6 +26,33 @@ var transform_gizmo: TransformGizmo
 var inspector: Inspector
 var ignore_inputs = false
 
+const DEFAULT_SETTINGS: Dictionary = { #Dictionary[String, Variant]
+	'snap': true,
+}
+var current_settings := DEFAULT_SETTINGS
+
+
+
+func save_settings(default := false):
+	var settings_file := FileAccess.open('res://addons/ply/settings.json', FileAccess.WRITE_READ)
+	print(settings_file)
+	settings_file.store_line(JSON.stringify(DEFAULT_SETTINGS if default else current_settings))
+	settings_file.close()
+	if default:
+		current_settings = DEFAULT_SETTINGS
+
+func load_settings():
+	if not FileAccess.file_exists('res://addons/ply/settings.json'):
+		save_settings(true) #create file
+	
+	var settings_file := FileAccess.open('res://addons/ply/settings.json', FileAccess.READ)
+	var data: Variant = JSON.parse_string(settings_file.get_as_text()) if settings_file != null else null
+	if data != null:
+		current_settings = data
+	else:
+		save_settings(true) #overwrite file to default if error
+
+
 var toolbar = preload("res://addons/ply/gui/toolbar/toolbar.tscn").instantiate()
 
 
@@ -48,6 +75,7 @@ func _enter_tree() -> void:
 	selector.startup()
 	add_inspector_plugin(inspector)
 
+	load_settings()
 	toolbar.plugin = self
 	toolbar.visible = false
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, toolbar)
@@ -79,6 +107,15 @@ func _clear() -> void:
 
 
 var selection	# nullable PlyEditor
+
+
+func change_settings_key(key: String, value: Variant) -> void:
+	if !DEFAULT_SETTINGS.has(key):
+		printerr('PlyEditor: Not found "', key, '" key')
+		return
+	current_settings[key] = value
+	save_settings()
+
 
 
 func _edit(o: Object) -> void:
