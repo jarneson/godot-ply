@@ -1,0 +1,1 @@
+enum { GRAB, SCALE, ROTATE }

@@ -24,6 +24,8 @@ extends Object
 # SOFTWARE.
 #
 # -- Godot Engine <https://godotengine.org>
+const TransformAxis = preload("res://addons/ply/utils/transform_axis.gd")
+const TransformMode = preload("res://addons/ply/utils/transform_mode.gd")
 
 const GIZMO_CIRCLE_SIZE = 1.1
 const GIZMO_ARROW_OFFSET = GIZMO_CIRCLE_SIZE + 0.3
@@ -389,8 +391,9 @@ func _set_highlight(highlight_axis) -> void:
 			0, axis_materials_selected[i] if i + 12 == highlight_axis else axis_materials[i]
 		)
 
-
+var valid_selection = true
 func _update_view() -> void:
+	
 	if transform == null:
 		for i in range(3):
 			RenderingServer.instance_set_visible(move_gizmo_instances[i], false)
@@ -399,7 +402,14 @@ func _update_view() -> void:
 			RenderingServer.instance_set_visible(scale_gizmo_instances[i], false)
 			RenderingServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
 		return
-
+	if not valid_selection:
+		for i in range(3):
+			RenderingServer.instance_set_visible(move_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(move_plane_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(rotate_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(scale_gizmo_instances[i], false)
+			RenderingServer.instance_set_visible(scale_plane_gizmo_instances[i], false)
+		return
 	var xform = _get_transform(_plugin.last_camera)
 
 	for i in range(3):
@@ -566,8 +576,6 @@ func select(camera: Camera3D, screen_position: Vector2, only_highlight: bool = f
 	return false
 
 
-enum TransformAxis { X, Y, Z, YZ, XZ, XY, MAX }
-enum TransformMode { NONE, TRANSLATE, ROTATE, SCALE, MAX }
 var edit_mode: int = TransformMode.NONE
 var edit_plane: bool = false
 var edit_axis: int = TransformAxis.X
@@ -778,7 +786,8 @@ func abort_edit() -> void:
 func process() -> void:
 	var basis_override = null
 	if in_edit:
-		basis_override = transform.basis
+		if transform:
+			basis_override = transform.basis
 	if _plugin.selection and _plugin.selection.has_method("get_selection_transform"):
 		transform = _plugin.selection.get_selection_transform(
 			_plugin.toolbar.gizmo_mode, basis_override

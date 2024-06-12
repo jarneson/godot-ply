@@ -1,0 +1,1 @@
+enum { NONE, TRANSLATE, ROTATE, SCALE, MAX }

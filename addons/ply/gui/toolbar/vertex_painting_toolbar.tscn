@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://d3bdyngg7i6mp"]
+
+[ext_resource type="Script" path="res://addons/ply/gui/toolbar/vertex_painting_toolbar.gd" id="1_m86vm"]
+
+[node name="vertex_painting_toolbar" type="HBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_m86vm")
+
+[node name="chk_snap" type="CheckBox" parent="."]
+layout_mode = 2
+text = "Snap"
+
+[node name="chk_vertex_painting" type="CheckButton" parent="."]
+layout_mode = 2
+text = "Vertex Painting"
+
+[node name="MenuBar" type="MenuBar" parent="."]
+layout_mode = 2
+
+[node name="New Ply Mesh" type="PopupMenu" parent="MenuBar"]
+item_count = 2
+item_0/text = "Box"
+item_0/id = 0
+item_1/text = "Box With Collision"
+item_1/id = 1
+
+[connection signal="toggled" from="chk_vertex_painting" to="." method="_on_chk_vertex_painting_toggled"]
+[connection signal="index_pressed" from="MenuBar/New Ply Mesh" to="." method="_on_popup_menu_index_pressed"]
